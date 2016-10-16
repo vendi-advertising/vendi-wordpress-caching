@@ -40,12 +40,12 @@ if(! defined('WORDFENCE_VERSIONONLY_MODE')){ //Used to get version from file.
         }
     }
 
-    require_once 'lib/wordfenceConstants.php';
     require_once 'lib/wordfenceClass.php';
     require_once 'lib/wfCache.php';
     require_once 'lib/wfConfig.php';
     require_once 'lib/wfUtils.php';
     require_once 'lib/wfDB.php';
+    require_once 'lib/wfSchema.php';
     \Vendi\Wordfence\Caching\wordfence::install_actions();
 }
 
