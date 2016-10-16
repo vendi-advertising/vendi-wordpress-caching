@@ -143,12 +143,6 @@ class wfConfig {
         if (self::get('other_scanOutside', false) === false) {
             self::set('other_scanOutside', 0);
         }
-
-        if (self::get('email_summary_enabled')) {
-            wfActivityReport::scheduleCronJob();
-        } else {
-            wfActivityReport::disableCronJob();
-        }
     }
     public static function loadAllOptions() {
         global $wpdb;
@@ -273,14 +267,6 @@ class wfConfig {
             $msg = "wfConfig::set() got an array as second param with key: $key and value: " . var_export($val, true);
             wordfence::status(1, 'error', $msg);
             return;
-        }
-
-        if (($key == 'apiKey' || $key == 'isPaid' || $key == 'other_WFNet') && wfWAF::getInstance() && !WFWAF_SUBDIRECTORY_INSTALL) {
-            try {
-                wfWAF::getInstance()->getStorageEngine()->setConfig($key, $val);
-            } catch (wfWAFStorageFileException $e) {
-                error_log($e->getMessage());
-            }
         }
         
         if (!self::$tableExists) {
