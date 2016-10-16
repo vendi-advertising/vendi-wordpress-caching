@@ -70,4 +70,18 @@ class wfUtils {
     public static function getSiteBaseURL(){
         return rtrim(site_url(), '/') . '/';
     }
+    public static function isNginx(){
+        $sapi = php_sapi_name();
+        $serverSoft = $_SERVER['SERVER_SOFTWARE'];
+        if($sapi == 'fpm-fcgi' && stripos($serverSoft, 'nginx') !== false){
+            return true;
+        }
+    }
+    public static function cleanupOneEntryPerLine($string) {
+        $string = str_replace(",", "\n", $string); // fix old format
+        return implode("\n", array_unique(array_filter(array_map('trim', explode("\n", $string)))));
+    }
+    public static function bigRandomHex(){
+        return dechex(rand(0, 2147483647)) . dechex(rand(0, 2147483647)) . dechex(rand(0, 2147483647));
+    }
 }
