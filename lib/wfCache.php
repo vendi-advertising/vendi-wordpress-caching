@@ -62,7 +62,7 @@ class wfCache {
                     }
                 }
             }
-            ob_start('wfCache::obComplete'); //Setup routine to store the file
+            ob_start( array( __NAMESPACE__ . '\wfCache', 'obComplete') ); //Setup routine to store the file
         }
     }
     public static function redirectFilter($status){
