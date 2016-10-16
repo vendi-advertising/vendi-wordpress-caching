@@ -1,4 +1,7 @@
 <?php
+
+namespace Vendi\Wordfence\Caching;
+
 class wfConfig {
     const AUTOLOAD = 'yes';
     const DONT_AUTOLOAD = 'no';
@@ -748,6 +751,4 @@ Options -ExecCGI
     }
 }
 
-class wfConfigException extends Exception {}
-
-?>
+class wfConfigException extends \Exception {}

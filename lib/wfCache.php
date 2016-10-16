@@ -1,4 +1,7 @@
-f<?php
+<?php
+
+namespace Vendi\Wordfence\Caching;
+
 class wfCache {
     private static $cacheType = false;
     private static $fileCache = array();

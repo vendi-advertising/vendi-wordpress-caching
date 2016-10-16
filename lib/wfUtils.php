@@ -1,5 +1,7 @@
 <?php
 
+namespace Vendi\Wordfence\Caching;
+
 class wfUtils {
     public static function patternToRegex($pattern, $mod = 'i', $sep = '/') {
         $pattern = preg_quote(trim($pattern), $sep);
@@ -31,5 +33,41 @@ class wfUtils {
             return $err['message'];
         }
         return '';
+    }
+    public static function isAdmin($user = false){
+        if($user){
+            if(is_multisite()){
+                if(user_can($user, 'manage_network')){
+                    return true;
+                }
+            } else {
+                if(user_can($user, 'manage_options')){
+                    return true;
+                }
+            }
+        } else {
+            if(is_multisite()){
+                if(current_user_can('manage_network')){
+                    return true;
+                }
+            } else {
+                if(current_user_can('manage_options')){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public static function isAdminPageMU(){
+        if(preg_match('/^[\/a-zA-Z0-9\-\_\s\+\~\!\^\.]*\/wp-admin\/network\//', $_SERVER['REQUEST_URI'])){
+            return true;
+        }
+        return false;
+    }
+    public static function getBaseURL(){
+        return plugins_url('', WORDFENCE_FCPATH) . '/';
+    }
+    public static function getSiteBaseURL(){
+        return rtrim(site_url(), '/') . '/';
     }
 }
