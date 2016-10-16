@@ -21,5 +21,6 @@ wp-content/plugins/hello.php
 /readme.html
 /sitemap.xml
 /sitemap.xml.gz
+/_logs/
 
 >>>>>>> 9db3842ff64f1b080d26b465652506edd92557cd
