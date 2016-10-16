@@ -1,4 +1,4 @@
-<?php
+f<?php
 class wfCache {
     private static $cacheType = false;
     private static $fileCache = array();
@@ -30,7 +30,6 @@ class wfCache {
             }
         }
         add_action('wordfence_cache_clear', 'wfCache::scheduledCacheClear');
-        add_action('wordfence_update_blocked_IPs', 'wfCache::scheduleUpdateBlockedIPs');
         add_action('comment_post', 'wfCache::action_commentPost'); //Might not be logged in
         add_filter('wp_redirect', 'wfCache::redirectFilter');
 
@@ -569,148 +568,6 @@ EOT;
     }
     private static function regexSpaceFix($str){
         return str_replace(' ', '\\s', $str);
-    }
-    public static function scheduleUpdateBlockedIPs(){
-        wp_clear_scheduled_hook('wordfence_update_blocked_IPs');
-        if(wfConfig::get('cacheType') != 'falcon'){ 
-            self::updateBlockedIPs('remove'); //Fail silently if .htaccess is not readable. Will fall back to old blocking via WP
-            return; 
-        }
-        self::updateBlockedIPs('add'); //Fail silently if .htaccess is not readable. Will fall back to old blocking via WP
-        wp_schedule_single_event(time() + 300, 'wordfence_update_blocked_IPs');
-    }
-
-    /**
-     * @param $action
-     * @return bool|string|void
-     */
-    public static function updateBlockedIPs($action){ //'add' or 'remove'
-        if(wfConfig::get('cacheType') != 'falcon'){ return; }
-
-        $htaccessPath = self::getHtaccessPath();
-        if(! $htaccessPath){
-            return "Wordfence could not find your .htaccess file.";
-        }
-        if($action == 'remove'){
-            $fh = @fopen($htaccessPath, 'r+');
-            if(! $fh){
-                $err = error_get_last();
-                return $err['message'];
-            }
-            flock($fh, LOCK_EX);
-            fseek($fh, 0, SEEK_SET); //start of file
-            clearstatcache();
-            $contents = @fread($fh, filesize($htaccessPath));
-            if(! $contents){
-                fclose($fh);
-                return "Could not read from $htaccessPath";
-            }
-
-            $contents = preg_replace('/#WFIPBLOCKS.*WFIPBLOCKS[\r\s\n\t]*/s', '', $contents);
-
-            ftruncate($fh, 0);
-            fflush($fh);
-            fseek($fh, 0, SEEK_SET);
-            @fwrite($fh, $contents);
-            flock($fh, LOCK_UN);
-            fclose($fh);
-            return false;
-        } else if($action == 'add'){
-            $fh = @fopen($htaccessPath, 'r+');
-            if(! $fh){
-                $err = error_get_last();
-                return $err['message'];
-            }
-
-            $lines = array();
-            $wfLog = new wfLog(wfConfig::get('apiKey'), wfUtils::getWPVersion());
-            $IPs = $wfLog->getBlockedIPsAddrOnly();
-            if(sizeof($IPs) > 0){
-                foreach($IPs as $IP){
-                    $lines[] = "Deny from $IP\n";
-                }
-            }
-            $ranges = $wfLog->getRangesBasic();
-            $browserAdded = false;
-            $browserLines = array();
-            if($ranges){
-                foreach($ranges as $r){
-                    $arr = explode('|', $r);
-                    $range = isset($arr[0]) ? $arr[0] : false;
-                    $browser = isset($arr[1]) ? $arr[1] : false;
-                    $referer = isset($arr[2]) ? $arr[2] : false;
-
-                    if($range){
-                        if($browser || $referer){ continue; } //We don't allow combos in falcon
-
-                        list($start_range, $end_range) = explode('-', $range);
-                        if (preg_match('/[\.:]/', $start_range)) {
-                            $start_range = wfUtils::inet_pton($start_range);
-                            $end_range = wfUtils::inet_pton($end_range);
-                        } else {
-                            $start_range = wfUtils::inet_pton(long2ip($start_range));
-                            $end_range = wfUtils::inet_pton(long2ip($end_range));
-                        }
-
-                        $cidrs = wfUtils::rangeToCIDRs($start_range, $end_range);
-
-                        $hIPs = wfUtils::inet_ntop($start_range) . ' - ' . wfUtils::inet_ntop($end_range);
-                        if(sizeof($cidrs) > 0){
-                            $lines[] = '#Start of blocking code for IP range: ' . $hIPs . "\n";
-                            foreach($cidrs as $c){
-                                $lines[] = "Deny from $c\n";
-                            }
-                            $lines[] = '#End of blocking code for IP range: ' . $hIPs . "\n";
-                        }
-                    } else if($browser){
-                        if($range || $referer){ continue; }
-                        $browserLines[] = "\t#Blocking code for browser pattern: $browser\n";
-                        $browser = preg_replace('/([\-\_\.\+\!\@\#\$\%\^\&\(\)\[\]\{\}\/])/', "\\\\$1", $browser);
-                        $browser = preg_replace('/\*/', '.*', $browser);
-                        $browserLines[] = "\tSetEnvIf User-Agent \"" . $browser . "\" WordfenceBadBrowser=1\n";
-                        $browserAdded = true;
-                    } else if($referer){
-                        if($browser || $range){ continue; }
-                        $browserLines[] = "\t#Blocking code for referer pattern: $referer\n";
-                        $referer = preg_replace('/([\-\_\.\+\!\@\#\$\%\^\&\(\)\[\]\{\}\/])/', "\\\\$1", $referer);
-                        $referer = preg_replace('/\*/', '.*', $referer);
-                        $browserLines[] = "\tSetEnvIf Referer \"" . $referer . "\" WordfenceBadBrowser=1\n";
-                        $browserAdded = true;
-                    }
-                }
-            }
-            if($browserAdded){
-                $lines[] = "<IfModule mod_setenvif.c>\n";
-                foreach($browserLines as $l){
-                    $lines[] = $l;
-                }
-                $lines[] = "\tDeny from env=WordfenceBadBrowser\n";
-                $lines[] = "</IfModule>\n";
-            }
-        }
-        $blockCode = "#WFIPBLOCKS - Do not remove this line. Disable Web Caching in Wordfence to remove this data.\nOrder Deny,Allow\n";
-        $blockCode .= implode('', $lines);
-        $blockCode .= "#Do not remove this line. Disable Web Caching in Wordfence to remove this data - WFIPBLOCKS\n";
-
-
-        //Minimize time between lock/unlock
-        flock($fh, LOCK_EX);
-        fseek($fh, 0, SEEK_SET); //start of file
-        clearstatcache(); //Or we get the wrong size from a cached entry and corrupt the file
-        $contents = @fread($fh, filesize($htaccessPath));
-        if(! $contents){
-            fclose($fh);
-            return "Could not read from $htaccessPath";
-        }
-        $contents = preg_replace('/#WFIPBLOCKS.*WFIPBLOCKS[\r\s\n\t]*/s', '', $contents);
-        $contents = $blockCode . $contents;
-        ftruncate($fh, 0);
-        fflush($fh);
-        fseek($fh, 0, SEEK_SET);
-        @fwrite($fh, $contents);
-        flock($fh, LOCK_UN);
-        fclose($fh);
-        return false;
     }
     public static function getHtaccessPath(){
         if (!function_exists('get_home_path')) {
