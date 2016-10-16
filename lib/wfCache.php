@@ -49,8 +49,6 @@ class wfCache {
             $fileDeleted = true;
         }
 
-
-        add_action('wp_logout', 'wfCache::logout');
         if(self::isCachable()){
             if( (! $fileDeleted) && self::$cacheType == 'php'){ //Then serve the file if it's still valid
                 $stat = @stat($file);
@@ -199,9 +197,6 @@ class wfCache {
             @mkdir($file, 0755, true);
         }
     }
-    public static function logout(){
-        wfUtils::setcookie('wf_logout', '1', 0, null, null, null, true);
-    }
     public static function cacheDirectoryTest(){
         $cacheDir = WP_CONTENT_DIR . '/wfcache/';
         if(! is_dir($cacheDir)){
@@ -225,26 +220,6 @@ class wfCache {
         self::removeCacheDirectoryHtaccess();
         return false;
         // return self::writeCacheDirectoryHtaccess(); //Everything is OK
-    }
-
-    /**
-     * Returns false on success to match wfCache::cacheDirectoryTest
-     *
-     * @see wfCache::cacheDirectoryTest
-     *
-     * @return bool|string
-     */
-    public static function writeCacheDirectoryHtaccess() {
-        $cacheDir = WP_CONTENT_DIR . '/wfcache/';
-        if (!file_exists($cacheDir . '.htaccess') && !@file_put_contents($cacheDir . '.htaccess', 'Deny from all', LOCK_EX)) {
-            $err = error_get_last();
-            $msg = "We could not write to the file $cacheDir" . ".htaccess.";
-            if($err){
-                $msg .= " The error was: " . $err['message'];
-            }
-            return $msg;
-        }
-        return false;
     }
 
     public static function removeCacheDirectoryHtaccess() {
@@ -511,13 +486,13 @@ class wfCache {
             }
         }
 
-        //We exclude URLs that are banned so that Wordfence PHP code can catch the IP address, then ban that IP and the ban is added to .htaccess. 
-        $excludedURLs = "";
-        if(wfConfig::get('bannedURLs', false)){
-            foreach(explode(',', wfConfig::get('bannedURLs', false)) as $URL){
-                $excludedURLs .= "RewriteCond %{REQUEST_URI} !" .  wfUtils::patternToRegex($URL, '', '') . "\n\t";
-            }
-        }
+        // //We exclude URLs that are banned so that Wordfence PHP code can catch the IP address, then ban that IP and the ban is added to .htaccess. 
+        // $excludedURLs = "";
+        // if(wfConfig::get('bannedURLs', false)){
+        //     foreach(explode(',', wfConfig::get('bannedURLs', false)) as $URL){
+        //         $excludedURLs .= "RewriteCond %{REQUEST_URI} !" .  wfUtils::patternToRegex($URL, '', '') . "\n\t";
+        //     }
+        // }
 
         $code = <<<EOT
 #WFCACHECODE - Do not remove this line. Disable Web Caching in Wordfence to remove this data.
