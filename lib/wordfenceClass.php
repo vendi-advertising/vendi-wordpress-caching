@@ -19,13 +19,11 @@ class wordfence {
     // public static $newVisit = false;
     // private static $wfLog = false;
     // private static $hitID = 0;
-    // private static $debugOn = null;
     private static $runInstallCalled = false;
     // public static $commentSpamItems = array();
 
     public static $diagnosticParams = array(
         'addCacheComment',
-        'debugOn',
         'startScansRemotely',
         'ssl_verify',
         'disableConfigCaching',
@@ -50,10 +48,17 @@ class wordfence {
             wfConfig::set('cacheType', false);
         }
 
-
         //Used by MU code below
         update_option('wordfenceActivated', 0);
+
+        $schema = new wfSchema();
+        $schema->dropAll();
+        wfConfig::updateTableExists();
+        foreach(array('wordfence_version', 'wordfenceActivated') as $opt){
+            delete_option($opt);
+        }
     }
+
     public static function runInstall(){
         if(self::$runInstallCalled){ return; }
         self::$runInstallCalled = true;
@@ -577,20 +582,6 @@ SQL
         }
         $opts['loginSec_userBlacklist'] = wfUtils::cleanupOneEntryPerLine($opts['loginSec_userBlacklist']);
 
-        $opts['apiKey'] = trim($opts['apiKey']);
-        if($opts['apiKey'] && (! preg_match('/^[a-fA-F0-9]+$/', $opts['apiKey'])) ){ //User entered something but it's garbage.
-            return array('errorMsg' => "You entered an API key but it is not in a valid format. It must consist only of characters A to F and 0 to 9.");
-        }
-
-        if(sizeof($invalidUsers) > 0){
-            return array('errorMsg' => "The following users you selected to ignore in live traffic reports are not valid on this system: " . wp_kses(implode(', ', $invalidUsers), array()) );
-        }
-        if(sizeof($validUsers) > 0){
-            $opts['liveTraf_ignoreUsers'] = implode(',', $validUsers);
-        } else {
-            $opts['liveTraf_ignoreUsers'] = '';
-        }
-
         $validIPs = array();
         $invalidIPs = array();
         foreach(explode(',', preg_replace('/[\r\n\s\t]+/', '', $opts['liveTraf_ignoreIPs'])) as $val){
@@ -605,31 +596,7 @@ SQL
         if(sizeof($invalidIPs) > 0){
             return array('errorMsg' => "The following IPs you selected to ignore in live traffic reports are not valid: " . wp_kses(implode(', ', $invalidIPs), array()) );
         }
-        if(sizeof($validIPs) > 0){
-            $opts['liveTraf_ignoreIPs'] = implode(',', $validIPs);
-        }
-
-        if(preg_match('/[a-zA-Z0-9\d]+/', $opts['liveTraf_ignoreUA'])){
-            $opts['liveTraf_ignoreUA'] = trim($opts['liveTraf_ignoreUA']);
-        } else {
-            $opts['liveTraf_ignoreUA'] = '';
-        }
-        if(! $opts['other_WFNet']){
-            $wfdb = new wfDB();
-            global $wpdb;
-            $p = $wpdb->base_prefix;
-            $wfdb->queryWrite("delete from $p"."wfBlocks where wfsn=1 and permanent=0");
-        }
-        if($opts['howGetIPs'] != wfConfig::get('howGetIPs', '')){
-            $reload = 'reload';
-        }
         $regenerateHtaccess = false;
-        if (isset($opts['bannedURLs'])) {
-            $opts['bannedURLs'] = preg_replace('/[\n\r]+/',',', $opts['bannedURLs']);
-        }
-        if(wfConfig::get('bannedURLs', false) != $opts['bannedURLs']){
-            $regenerateHtaccess = true;
-        }
 
         if (!is_numeric($opts['liveTraf_maxRows'])) {
             return array(
@@ -657,54 +624,8 @@ SQL
             return array('errorMsg' => $e->getMessage());
         }
 
-        if (!empty($opts['email_summary_enabled'])) {
-            wfConfig::set('email_summary_enabled', 1);
-            wfConfig::set('email_summary_interval', $opts['email_summary_interval']);
-            wfConfig::set('email_summary_excluded_directories', $opts['email_summary_excluded_directories']);
-        } else {
-            wfConfig::set('email_summary_enabled', 0);
-        }
-
         $paidKeyMsg = false;
 
-
-        // if(! $opts['apiKey']){ //Empty API key (after trim above), then try to get one.
-        //     $api = new wfAPI('', wfUtils::getWPVersion());
-        //     try {
-        //         $keyData = $api->call('get_anon_api_key');
-        //         if($keyData['ok'] && $keyData['apiKey']){
-        //             wfConfig::set('apiKey', $keyData['apiKey']);
-        //             wfConfig::set('isPaid', 0);
-        //             $reload = 'reload';
-        //             self::licenseStatusChanged();
-        //         } else {
-        //             throw new Exception("We could not understand the Wordfence server's response because it did not contain an 'ok' and 'apiKey' element.");
-        //         }
-        //     } catch(Exception $e){
-        //         return array('errorMsg' => "Your options have been saved, but we encountered a problem. You left your API key blank, so we tried to get you a free API key from the Wordfence servers. However we encountered a problem fetching the free key: " . wp_kses($e->getMessage(), array()) );
-        //     }
-        // } else if($opts['apiKey'] != wfConfig::get('apiKey')){
-        //     $api = new wfAPI($opts['apiKey'], wfUtils::getWPVersion());
-        //     try {
-        //         $res = $api->call('check_api_key', array(), array());
-        //         if($res['ok'] && isset($res['isPaid'])){
-        //             wfConfig::set('apiKey', $opts['apiKey']);
-        //             $reload = 'reload';
-        //             wfConfig::set('isPaid', $res['isPaid']); //res['isPaid'] is boolean coming back as JSON and turned back into PHP struct. Assuming JSON to PHP handles bools.
-        //             if($res['isPaid']){
-        //                 $paidKeyMsg = true;
-        //             }
-        //             self::licenseStatusChanged();
-        //         } else {
-        //             throw new Exception("We could not understand the Wordfence API server reply when updating your API key.");
-        //         }
-        //     } catch (Exception $e){
-        //         return array('errorMsg' => "Your options have been saved. However we noticed you changed your API key and we tried to verify it with the Wordfence servers and received an error: " . wp_kses($e->getMessage(), array()) );
-        //     }
-        // } else {
-        //     $api = new wfAPI($opts['apiKey'], wfUtils::getWPVersion());
-        //     $api->call('ping_api_key', array(), array());
-        // }
         return array('ok' => 1, 'reload' => $reload, 'paidKeyMsg' => $paidKeyMsg );
     }
 
@@ -951,8 +872,8 @@ SQL
             'loadBlockRanges', 'unblockRange', 'whois',
             'loadStaticPanel', 'saveConfig', 'downloadHtaccess', 'checkFalconHtaccess',
             'updateConfig', 'saveCacheConfig', 'removeFromCache', 'adminEmailChoice', 'suPHPWAFUpdateChoice', 'falconDeprecationChoice', 'saveCacheOptions', 'clearPageCache',
-            'getCacheStats', 'clearAllBlocked', 'killScan', 'saveCountryBlocking', 'saveScanSchedule', 'tourClosed',
-            'welcomeClosed', 'startTourAgain', 'downgradeLicense', 'addTwoFactor', 'twoFacActivate', 'twoFacDel',
+            'getCacheStats', 'clearAllBlocked', 'killScan', 'saveCountryBlocking', 'saveScanSchedule',
+            'startTourAgain', 'downgradeLicense', 'addTwoFactor', 'twoFacActivate', 'twoFacDel',
             'loadTwoFactor', 'loadAvgSitePerf', 'sendTestEmail', 'addCacheExclusion', 'removeCacheExclusion',
             'loadCacheExclusions',
             'sendDiagnostic', 'whitelistWAFParamKey',
@@ -1001,12 +922,12 @@ SQL
             'ajaxURL' => admin_url('admin-ajax.php'),
             'firstNonce' => wp_create_nonce('wp-ajax'),
             'siteBaseURL' => wfUtils::getSiteBaseURL(),
-            'debugOn' => wfConfig::get('debugOn', 0),
+            'debugOn' => 0,
             'actUpdateInterval' => $updateInt,
-            'tourClosed' => wfConfig::get('tourClosed', 0),
-            'welcomeClosed' => wfConfig::get('welcomeClosed', 0),
+            'tourClosed' => 1,
+            'welcomeClosed' => 1,
             'cacheType' => wfConfig::get('cacheType'),
-            'liveTrafficEnabled' => wfConfig::liveTrafficEnabled()
+            'liveTrafficEnabled' => 0
             ));
     }
     public static function activation_warning(){
