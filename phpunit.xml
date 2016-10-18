@@ -24,7 +24,6 @@
         </whitelist>
 
         <blacklist>
-          <!-- <directory suffix=".php">/home/chrishaas/wordpress-develop/</directory> -->
           <directory suffix=".php">./tests/</directory>
         </blacklist>
     </filter>
