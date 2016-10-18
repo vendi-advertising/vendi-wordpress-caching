@@ -6,11 +6,14 @@ $w = new wfConfig();
 ?>
 <div class="wordfenceModeElem" id="wordfenceMode_caching"></div>
 <div class="wrap">
-	<?php require('menuHeader.php'); ?>
-	<?php $pageTitle = "Vendi - Site Performance"; $helpLink="http://docs.wordfence.com/en/Falcon_Cache"; $helpLabel="Learn more about Wordfence Caching"; include('pageTitle.php'); ?>
 	<?php
-	include WORDFENCE_PATH . '/views/marketing/rightrail.php';
+	if( 'falcon' === wfConfig::get( 'cacheType' ) )
+	{
+	    echo '<div title="Wordfence Falcon Engine Enabled for Maximum Site Performance" class="wfFalcon"></div>';
+	}
 	?>
+	<div class="wordfence-lock-icon wordfence-icon32"><br /></div>
+	<h2 id="wfHeading">Vendi - Site Performance</h2>
 	<div class="wordfenceWrap" style="margin: 20px 20px 20px 30px; max-width: 800px;">
 		<div id="wordfenceFalconDeprecationWarning">
 			<p>
