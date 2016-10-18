@@ -127,7 +127,7 @@
 					this.setupSwitches('wfLiveTrafficOnOff', 'liveTrafficEnabled', function() {
 					});
 					jQuery('#wfLiveTrafficOnOff').change(function() {
-						if (/^(?:falcon|php)$/.test(WordfenceAdminVars.cacheType)) {
+						if (/^(?:enhanced|php)$/.test(WordfenceAdminVars.cacheType)) {
 							jQuery('#wfLiveTrafficOnOff').attr('checked', false);
 							self.colorbox('400px', "Live Traffic not available in high performance mode", "Please note that you can't enable live traffic when Falcon Engine or basic caching is enabled. This is done for performance reasons. If you want live traffic, go to the 'Performance Setup' menu and disable caching.");
 						} else {
@@ -1864,7 +1864,7 @@
 			},
 			confirmSwitchToFalcon: function(noEditHtaccess) {
 				jQuery.colorbox.close();
-				var cacheType = 'falcon';
+				var cacheType = 'enhanced';
 				var self = this;
 				this.ajax('wordfence_saveCacheConfig', {
 						cacheType: cacheType,
@@ -1878,7 +1878,7 @@
 			},
 			saveCacheConfig: function() {
 				var cacheType = jQuery('input:radio[name=cacheType]:checked').val();
-				if (cacheType == 'falcon') {
+				if (cacheType == 'enhanced') {
 					return this.switchToFalcon();
 				}
 				var self = this;
