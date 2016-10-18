@@ -4,25 +4,22 @@ namespace Vendi\WordPress\Caching\Legacy;
 
 use Vendi\WordPress\Caching\cache_settings;
 
-class wordfence {
-    // public static $printStatus = false;
-    // public static $wordfence_wp_version = false;
-    // /**
-    //  * @var WP_Error
-    //  */
-    // public static $authError;
-    // private static $passwordCodePattern = '/\s+wf([a-z0-9 ]+)$/i'; 
-    // protected static $lastURLError = false;
-    // protected static $curlContent = "";
-    // protected static $curlDataWritten = 0;
-    // protected static $hasher = '';
-    // protected static $itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    // protected static $ignoreList = false;
-    // public static $newVisit = false;
-    // private static $wfLog = false;
-    // private static $hitID = 0;
+class wordfence
+{
     private static $runInstallCalled = false;
-    // public static $commentSpamItems = array();
+
+    private static $vwc_cache_settings;
+
+    public static function get_vwc_cache_settings()
+    {
+        if( ! self::$vwc_cache_settings )
+        {
+            self::$vwc_cache_settings = new cache_settings();
+        }
+
+        return self::$vwc_cache_settings;
+
+    }
 
     public static function installPlugin(){
         self::runInstall();
@@ -31,19 +28,21 @@ class wordfence {
     }
     public static function uninstallPlugin(){
         //Check if caching is enabled and if it is, disable it and fix the .htaccess file.
-        $cacheType = wfConfig::get('cacheType', false);
+        $cacheType = self::get_vwc_cache_settings()->get_cache_mode();
         if($cacheType == cache_settings::CACHE_MODE_ENHANCED ){
             wfCache::addHtaccessCode('remove');
-            wfConfig::set('cacheType', false);
+            self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
 
             //We currently don't clear the cache when plugin is disabled because it will take too long if done synchronously and won't work because plugin is disabled if done asynchronously.
             //wfCache::scheduleCacheClear();
         } else if($cacheType == cache_settings::CACHE_MODE_PHP ){
-            wfConfig::set('cacheType', false);
+            self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
         }
 
         //Used by MU code below
         update_option('wordfenceActivated', 0);
+
+        cache_settings::uninstall();
     }
 
     public static function runInstall(){
@@ -56,15 +55,15 @@ class wordfence {
         update_option('wordfence_version', VENDI_WORDPRESS_CACHING_VERSION); //In case we have a fatal error we don't want to keep running install.
         //EVERYTHING HERE MUST BE IDEMPOTENT
 
-        if (wfConfig::get('cacheType') == cache_settings::CACHE_MODE_PHP || wfConfig::get('cacheType') == cache_settings::CACHE_MODE_ENHANCED ) {
+        if (self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_PHP || self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED ) {
             wfCache::removeCacheDirectoryHtaccess();
         }
 
         //Must be the final line
     }
     public static function install_actions(){
-        register_activation_hook(  VENDI_WORDPRESS_CACHING_FCPATH, array( __NAMESPACE__ . '\wordfence', 'installPlugin')   );
-        register_deactivation_hook(VENDI_WORDPRESS_CACHING_FCPATH, array( __NAMESPACE__ . '\wordfence', 'uninstallPlugin') );
+        register_activation_hook(  VENDI_WORDPRESS_CACHING_FCPATH, array( __CLASS__, 'installPlugin')   );
+        register_deactivation_hook(VENDI_WORDPRESS_CACHING_FCPATH, array( __CLASS__, 'uninstallPlugin') );
 
         $versionInOptions = get_option('wordfence_version', false);
         if( (! $versionInOptions) || version_compare(VENDI_WORDPRESS_CACHING_VERSION, $versionInOptions, '>')){
@@ -79,24 +78,24 @@ class wordfence {
             if($blog_id == 1 && get_option('wordfenceActivated') != 1){ return; } //Because the plugin is active once installed, even before it's network activated, for site 1 (WordPress team, why?!)
         }
 
-        add_action('publish_future_post', array( __NAMESPACE__ . '\wordfence', 'publishFuturePost' ) );
-        add_action('mobile_setup', array( __NAMESPACE__ . '\wordfence', 'jetpackMobileSetup' ) ); //Action called in Jetpack Mobile Theme: modules/minileven/minileven.php
+        add_action('publish_future_post', array( __CLASS__, 'publishFuturePost' ) );
+        add_action('mobile_setup', array( __CLASS__, 'jetpackMobileSetup' ) ); //Action called in Jetpack Mobile Theme: modules/minileven/minileven.php
 
         if(is_admin()){
-            add_action('admin_init', array( __NAMESPACE__ . '\wordfence', 'admin_init' ) );
-            // add_action('admin_head', array( __NAMESPACE__ . '\wordfence', '_retargetWordfenceSubmenuCallout' ) );
+            add_action('admin_init', array( __CLASS__, 'admin_init' ) );
+            // add_action('admin_head', array( __CLASS__, '_retargetWordfenceSubmenuCallout' ) );
             if(is_multisite()){
                 if(wfUtils::isAdminPageMU()){
-                    add_action('network_admin_menu', array( __NAMESPACE__ . '\wordfence', 'admin_menus' ) );
+                    add_action('network_admin_menu', array( __CLASS__, 'admin_menus' ) );
                 } //else don't show menu
             } else {
-                add_action('admin_menu', array( __NAMESPACE__ . '\wordfence', 'admin_menus' ) );
+                add_action('admin_menu', array( __CLASS__, 'admin_menus' ) );
             }
-            add_filter('pre_update_option_permalink_structure', array( __NAMESPACE__ . '\wordfence', 'disablePermalinksFilter' ) , 10, 2);
-            if( preg_match('/^(?:' . cache_settings::CACHE_MODE_ENHANCED . '|' . cache_settings::CACHE_MODE_PHP . ')$/', wfConfig::get('cacheType')) ){
-                add_filter('post_row_actions', array( __NAMESPACE__ . '\wordfence', 'postRowActions' ) , 0, 2);
-                add_filter('page_row_actions', array( __NAMESPACE__ . '\wordfence', 'pageRowActions' ) , 0, 2);
-                add_action('post_submitbox_start', array( __NAMESPACE__ . '\wordfence', 'postSubmitboxStart' ) );
+            add_filter('pre_update_option_permalink_structure', array( __CLASS__, 'disablePermalinksFilter' ) , 10, 2);
+            if( preg_match('/^(?:' . cache_settings::CACHE_MODE_ENHANCED . '|' . cache_settings::CACHE_MODE_PHP . ')$/', self::get_vwc_cache_settings()->get_cache_mode()) ){
+                add_filter('post_row_actions', array( __CLASS__, 'postRowActions' ) , 0, 2);
+                add_filter('page_row_actions', array( __CLASS__, 'pageRowActions' ) , 0, 2);
+                add_action('post_submitbox_start', array( __CLASS__, 'postSubmitboxStart' ) );
             }
         }
     }
@@ -122,7 +121,7 @@ class wordfence {
         }
         //func is e.g. wordfence_ticker so need to munge it
         $func = str_replace('wordfence_', '', $func);
-        $fq_func = array( __NAMESPACE__ . '\wordfence', 'ajax_' . $func . '_callback' );
+        $fq_func = array( __CLASS__, 'ajax_' . $func . '_callback' );
         if( ! is_callable( $fq_func ) )
         {
             die(json_encode(array('errorMsg' => "Could not find AJAX func $func")));
@@ -147,7 +146,7 @@ class wordfence {
      * @vendi_flag  KEEP
      */
     public static function publishFuturePost($id){
-        if(wfConfig::get('clearCacheSched')){
+        if(self::get_vwc_cache_settings()->get_do_clear_on_save()){
             wfCache::scheduleCacheClear();
         }
     }
@@ -190,9 +189,9 @@ class wordfence {
      * @vendi_flag  KEEP
      */
     public static function disablePermalinksFilter($newVal, $oldVal){
-        if(wfConfig::get('cacheType', false) == cache_settings::CACHE_MODE_ENHANCED && $oldVal && (! $newVal) ){ //Falcon is enabled and admin is disabling permalinks
+        if( self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED && $oldVal && (! $newVal) ){ //Falcon is enabled and admin is disabling permalinks
             wfCache::addHtaccessCode('remove');
-            wfConfig::set('cacheType', false);
+            self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
         }
         return $newVal;
     }
@@ -233,13 +232,13 @@ class wordfence {
      */
     public static function ajax_saveCacheOptions_callback(){
         $changed = false;
-        if($_POST['allowHTTPSCaching'] != wfConfig::get('allowHTTPSCaching', false)){
+        if($_POST['allowHTTPSCaching'] != self::get_vwc_cache_settings()->get_do_cache_https_urls()){
             $changed = true;
         }
-        wfConfig::set('allowHTTPSCaching', $_POST['allowHTTPSCaching'] == '1' ? 1 : 0);
-        wfConfig::set('addCacheComment', $_POST['addCacheComment'] == 1 ? '1' : 0);
-        wfConfig::set('clearCacheSched', $_POST['clearCacheSched'] == 1 ? '1' : 0);
-        if($changed && wfConfig::get('cacheType', false) == cache_settings::CACHE_MODE_ENHANCED ){
+        self::get_vwc_cache_settings()->set_do_cache_https_urls( $_POST['allowHTTPSCaching'] == 1 );
+        self::get_vwc_cache_settings()->set_do_append_debug_message( $_POST['addCacheComment']   == 1 );
+        self::get_vwc_cache_settings()->set_do_clear_on_save( $_POST['clearCacheSched']   == 1 );
+        if($changed && self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED ){
             $err = wfCache::addHtaccessCode('add');
             if($err){
                 return array('updateErr' => "Wordfence could not edit your .htaccess file. The error was: " . $err, 'code' => wfCache::getHtaccessCode() );
@@ -300,7 +299,7 @@ class wordfence {
         }
 
         //Mainly we clear the cache here so that any footer cache diagnostic comments are rebuilt. We could just leave it intact unless caching is being disabled.
-        if($cacheType != wfConfig::get('cacheType', false)){
+        if($cacheType != self::get_vwc_cache_settings()->get_cache_mode()){
             wfCache::scheduleCacheClear();
         }
         $htMsg = "";
@@ -308,10 +307,10 @@ class wordfence {
             $htMsg = " <strong style='color: #F00;'>Warning: We could not remove the caching code from your .htaccess file. you need to remove this manually yourself.</strong> ";
         }
         if($cacheType == cache_settings::CACHE_MODE_OFF ){
-            wfConfig::set('cacheType', false);
+            self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
             return array('ok' => 1, 'heading' => "Caching successfully disabled.", 'body' => "{$htMsg}Caching has been disabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>");
         } else if($cacheType == cache_settings::CACHE_MODE_PHP ){
-            wfConfig::set('cacheType', cache_settings::CACHE_MODE_PHP );
+            self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_PHP );
             return array('ok' => 1, 'heading' => "Wordfence Basic Caching Enabled", 'body' => "{$htMsg}Wordfence basic caching has been enabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>");
         } else if($cacheType == cache_settings::CACHE_MODE_ENHANCED ){
             if($_POST['noEditHtaccess'] != '1'){
@@ -320,7 +319,7 @@ class wordfence {
                     return array('ok' => 1, 'heading' => "Wordfence could not edit .htaccess", 'body' => "Wordfence could not edit your .htaccess code. The error was: " . $err);
                 }
             }
-            wfConfig::set('cacheType', cache_settings::CACHE_MODE_ENHANCED );
+            self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_ENHANCED );
             // wfCache::scheduleUpdateBlockedIPs(); //Runs every 5 mins until we change cachetype
             return array('ok' => 1, 'heading' => "Wordfence Falcon Engine Activated!", 'body' => "Wordfence Falcon Engine has been activated on your system. You will see this icon appear on the Wordfence admin pages as long as Falcon is active indicating your site is running in high performance mode:<div class='wfFalconImage'></div><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>");
         }
@@ -428,7 +427,7 @@ class wordfence {
      * @vendi_flag  KEEP
      */
     public static function ajax_addCacheExclusion_callback(){
-        $ex = wfConfig::get('cacheExclusions', false);
+        $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
 
         // if($ex){
         //     $ex = unserialize($ex);
@@ -440,9 +439,9 @@ class wordfence {
             'p' => $_POST['pattern'],
             'id' => microtime(true)
             );
-        wfConfig::set('cacheExclusions', $ex);
+        self::get_vwc_cache_settings()->set_cache_exclusions( $ex );
         wfCache::scheduleCacheClear();
-        if(wfConfig::get('cacheType', false) == cache_settings::CACHE_MODE_ENHANCED && preg_match('/^(?:uac|uaeq|cc)$/', $_POST['patternType'])){
+        if(self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED && preg_match('/^(?:uac|uaeq|cc)$/', $_POST['patternType'])){
             if(wfCache::addHtaccessCode('add')){ //rewrites htaccess rules
                 return array('errorMsg' => "We added the rule you requested but could not modify your .htaccess file. Please delete this rule, check the permissions on your .htaccess file and then try again.");
             }
@@ -455,21 +454,22 @@ class wordfence {
      */
     public static function ajax_removeCacheExclusion_callback(){
         $id = $_POST['id'];
-        $ex = wfConfig::get('cacheExclusions', false);
-        if(! $ex){
+        $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
+        if(! $ex || 0 === count( $ex ) )
+        {
             return array('ok' => 1);
         }
         $rewriteHtaccess = false;
         for($i = 0; $i < sizeof($ex); $i++){
             if((string)$ex[$i]['id'] == (string)$id){
-                if(wfConfig::get('cacheType', false) == cache_settings::CACHE_MODE_ENHANCED && preg_match('/^(?:uac|uaeq|cc)$/', $ex[$i]['pt'])){
+                if(self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED && preg_match('/^(?:uac|uaeq|cc)$/', $ex[$i]['pt'])){
                     $rewriteHtaccess = true;
                 }
                 array_splice($ex, $i, 1);
                 //Dont break in case of dups
             }
         }
-        wfConfig::set('cacheExclusions', $ex);
+        self::get_vwc_cache_settings()->set_cache_exclusions( $ex );
         if($rewriteHtaccess && wfCache::addHtaccessCode('add')){ //rewrites htaccess rules
             return array('errorMsg', "We removed that rule but could not rewrite your .htaccess file. You're going to have to manually remove this rule from your .htaccess file. Please reload this page now.");
         }
@@ -480,8 +480,9 @@ class wordfence {
      * @vendi_flag  KEEP
      */
     public static function ajax_loadCacheExclusions_callback(){
-        $ex = wfConfig::get('cacheExclusions', false);
-        if(! $ex){
+        $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
+        if(! $ex || 0 === count( $ex ) )
+        {
             return array('ex' => false);
         }
         return array('ex' => $ex);
@@ -755,13 +756,13 @@ class wordfence {
             'hideFileHtaccess', 'saveDebuggingConfig', 'wafConfigureAutoPrepend',
             'whitelistBulkDelete', 'whitelistBulkEnable', 'whitelistBulkDisable',
         ) as $func){
-            // if( is_callable( array( __NAMESPACE__ . '\wordfence', 'ajaxReceiver' )  ) )
+            // if( is_callable( array( __CLASS__, 'ajaxReceiver' )  ) )
             // {
-                add_action('wp_ajax_wordfence_' . $func, array( __NAMESPACE__ . '\wordfence', 'ajaxReceiver' ) );
+                add_action('wp_ajax_wordfence_' . $func, array( __CLASS__, 'ajaxReceiver' ) );
             // }
         }
 
-        if(isset($_GET['page']) && preg_match('/^Wordfence/', @$_GET['page']) ){
+        if(isset($_GET['page']) && preg_match('/^VendiWPCaching/', @$_GET['page']) ){
             wp_enqueue_style('wp-pointer');
             wp_enqueue_script('wp-pointer');
             wp_enqueue_style('wordfence-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_WORDPRESS_CACHING_VERSION);
@@ -786,10 +787,7 @@ class wordfence {
         }
     }
     private static function setupAdminVars(){
-        // $updateInt = wfConfig::get('actUpdateInterval', 2);
-        // if(! preg_match('/^\d+$/', $updateInt)){
-            $updateInt = 2;
-        // }
+        $updateInt = 2;
         $updateInt *= 1000;
 
         wp_localize_script('wordfenceAdminjs', 'WordfenceAdminVars', array(
@@ -800,7 +798,7 @@ class wordfence {
             'actUpdateInterval' => $updateInt,
             'tourClosed' => 1,
             'welcomeClosed' => 1,
-            'cacheType' => wfConfig::get('cacheType'),
+            'cacheType' => self::get_vwc_cache_settings()->get_cache_mode(),
             'liveTrafficEnabled' => 0
             ));
     }
@@ -826,14 +824,14 @@ class wordfence {
         $warningAdded = false;
         if(get_option('wf_plugin_act_error', false)){
             if(wfUtils::isAdminPageMU()){
-                add_action('network_admin_notices', array( __NAMESPACE__ . '\wordfence', 'activation_warning' ) );
+                add_action('network_admin_notices', array( __CLASS__, 'activation_warning' ) );
             } else {
-                add_action('admin_notices', array( __NAMESPACE__ . '\wordfence', 'activation_warning' ) );
+                add_action('admin_notices', array( __CLASS__, 'activation_warning' ) );
             }
             $warningAdded = true;
         }
 
-        add_menu_page('Vendi Wordfence', 'Performance Setup', 'activate_plugins', 'WordfenceSitePerf', array( __NAMESPACE__ . '\wordfence', 'menu_sitePerf' ) , wfUtils::getBaseURL() . 'images/wordfence-logo-16x16.png');
+        add_menu_page('Vendi Caching', 'Performance Setup', 'activate_plugins', 'VendiWPCaching', array( __CLASS__, 'menu_sitePerf' ) , wfUtils::getBaseURL() . 'images/wordfence-logo-16x16.png');
     }
     public static function menu_sitePerf(){
         require 'menu_sitePerf.php';

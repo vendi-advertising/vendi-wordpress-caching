@@ -13,7 +13,7 @@ class cache_settings
 
     private $do_clear_on_save = self::DEFAULT_VALUE_DO_CLEAR_ON_SAVE;
 
-    private $cache_exclusions = array();
+    private $cache_exclusions = self::DEFAULT_VALUE_CACHE_EXCLUSIONS;
 
     private $_settings_loaded_from = 'class';
 
@@ -24,27 +24,29 @@ class cache_settings
     const CACHE_MODE_PHP                            = 'php';
     const CACHE_MODE_ENHANCED                       = 'enhanced';
 
-    const DEFAULT_VALUE_CACHE_MODE                  = 'off';
+    const DEFAULT_VALUE_CACHE_MODE                  = self::CACHE_MODE_OFF;
     const DEFAULT_VALUE_DO_CACHE_HTTPS_URLS         = false;
     const DEFAULT_VALUE_DO_APPEND_DEBUG_MESSAGE     = false;
     const DEFAULT_VALUE_DO_CLEAR_ON_SAVE            = false;
+    const DEFAULT_VALUE_CACHE_EXCLUSIONS            = array();
 
     const OPTION_KEY_NAME_CACHE_MODE                = 'vwc_cache_mode';
     const OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS       = 'vwc_do_cache_https_urls';
     const OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE   = 'vwc_do_append_debug_message';
     const OPTION_KEY_NAME_DO_CLEAR_ON_SAVE          = 'vwc_do_clear_on_save';
+    const OPTION_KEY_NAME_CACHE_EXCLUSIONS          = 'vwc_cache_exclusions';
 
 /*Property Access*/
     public function get_cache_mode()
     {
-        return $this->cache_mode;
+        return get_option( self::OPTION_KEY_NAME_CACHE_MODE, self::DEFAULT_VALUE_CACHE_MODE );
     }
 
     public function set_cache_mode( $cache_mode )
     {
         if( self::is_valid_cache_mode( $cache_mode ) )
         {
-            $this->cache_mode = $cache_mode;
+            update_option( self::OPTION_KEY_NAME_CACHE_MODE, $cache_mode );
             return;
         }
 
@@ -53,107 +55,95 @@ class cache_settings
 
     public function get_do_cache_https_urls()
     {
-        return $this->do_cache_https_urls;
+        return true == get_option( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS, self::DEFAULT_VALUE_DO_CACHE_HTTPS_URLS );
     }
 
     public function set_do_cache_https_urls( $do_cache_https_urls )
     {
-        $this->do_cache_https_urls = $do_cache_https_urls;
+        update_option( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS, $do_cache_https_urls );
     }
 
     public function get_do_append_debug_message()
     {
-        return $this->do_append_debug_message;
+        return true == get_option( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE, self::DEFAULT_VALUE_DO_APPEND_DEBUG_MESSAGE );
     }
 
     public function set_do_append_debug_message( $do_append_debug_message )
     {
-        $this->do_append_debug_message = $do_append_debug_message;
+        update_option( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE, $do_append_debug_message );
     }
 
     public function get_do_clear_on_save()
     {
-        return $this->do_clear_on_save;
+        return true == get_option( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE, self::DEFAULT_VALUE_DO_CLEAR_ON_SAVE );
     }
 
     public function set_do_clear_on_save( $do_clear_on_save )
     {
-        $this->do_clear_on_save = $do_clear_on_save;
+        update_option( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE, $do_clear_on_save );
     }
 
     public function get_cache_exclusions()
     {
-        return $this->cache_exclusions;
+        $tmp = get_option( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS, self::DEFAULT_VALUE_CACHE_EXCLUSIONS );
+        if( ! $tmp )
+        {
+            $tmp = [];
+        }
+        elseif( is_serialized( $tmp ) )
+        {
+            $tmp = unserialize( $tmp );
+        }
+        return $tmp;
     }
 
     public function set_cache_exclusions( $cache_exclusions )
     {
-        $this->cache_exclusions = $cache_exclusions;
+        if( ! is_serialized( $cache_exclusions ) )
+        {
+            $cache_exclusions = serialize( $cache_exclusions );
+        }
+        update_option( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS, $cache_exclusions );
     }
 
-    public function add_single_cache_exclusion( $cache_exclusion )
+    // public function add_single_cache_exclusion( $cache_exclusion )
+    // {
+    //     if( ! $cache_exclusion )
+    //     {
+    //         throw new cache_setting_exception( __( 'Empty value passed to add_single_cache_exclusion.', 'Vendi Caching' ) );
+    //     }
+
+    //     if( ! $cache_exclusion instanceof cache_exclusion )
+    //     {
+    //         throw new cache_setting_exception( __( 'Method add_single_cache_exclusion must be provided with type cache_exclusion.', 'Vendi Caching' ) );
+    //     }
+
+    //     $this->cache_exclusions[] = $cache_exclusion;
+    // }
+
+/*Database loading/saving/uninstall*/
+
+    public static function uninstall()
     {
-        if( ! $cache_exclusion )
-        {
-            throw new cache_setting_exception( __( 'Empty value passed to add_single_cache_exclusion.', 'Vendi Caching' ) );
-        }
-
-        if( ! $cache_exclusion instanceof cache_exclusion )
-        {
-            throw new cache_setting_exception( __( 'Method add_single_cache_exclusion must be provided with type cache_exclusion.', 'Vendi Caching' ) );
-        }
-
-        $this->cache_exclusions[] = $cache_exclusion;
-    }
-
-/*Database loading*/
-    public function load_from_database()
-    {
-        $tmp = get_option( self::OPTION_KEY_NAME_CACHE_MODE, self::DEFAULT_VALUE_CACHE_MODE );
-        if( ! self::is_valid_cache_mode( $tmp ) )
-        {
-            //TODO: Logging here
-            $tmp = self::DEFAULT_VALUE_CACHE_MODE;
-        }
-
-        $this->set_cache_mode( $tmp );
-        $this->set_do_cache_https_urls(     true == get_option( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS,     self::DEFAULT_VALUE_DO_CACHE_HTTPS_URLS ) );
-        $this->set_do_append_debug_message( true == get_option( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE, self::DEFAULT_VALUE_DO_APPEND_DEBUG_MESSAGE ) );
-        $this->set_do_clear_on_save(        true == get_option( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE,        self::DEFAULT_VALUE_DO_CLEAR_ON_SAVE ) );
-
-        $this->_settings_loaded_from = 'database';
-    }
-
-    public function persist_to_database()
-    {
-        $auto_load = true;
-        if( self::CACHE_MODE_OFF === $this->get_cache_mode() )
-        {
-            //Only autoload our settings if the cache is enabled
-            $auto_load = false;
-        }
-        update_option( self::OPTION_KEY_NAME_CACHE_MODE,                $this->get_cache_mode(),                $auto_load );
-        update_option( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS,       $this->get_do_cache_https_urls(),       $auto_load );
-        update_option( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE,   $this->get_do_append_debug_message(),   $auto_load );
-        update_option( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE,          $this->get_do_clear_on_save(),          $auto_load );
+        delete_option( self::OPTION_KEY_NAME_CACHE_MODE );
+        delete_option( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS );
+        delete_option( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE );
+        delete_option( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE );
+        delete_option( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS );
     }
 
 /*Static Factory Methods*/
-    public static function get_instance( $refresh_from_database = false )
+    public static function get_instance( $not_used = false )
     {
         if( ! self::$instance )
         {
             self::$instance = new self();
-            if( $refresh_from_database )
-            {
-                self::$instance->load_from_database();
-            }
         }
-
         return self::$instance;
 
     }
 
+/*Static Factory Helper*/
     private static function is_valid_cache_mode( $cache_mode )
     {
         switch( $cache_mode )

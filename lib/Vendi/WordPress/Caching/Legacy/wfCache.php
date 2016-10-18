@@ -11,16 +11,31 @@ class wfCache {
     private static $cacheClearedThisRequest = false;
     private static $clearScheduledThisRequest = false;
     private static $lastRecursiveDeleteError = false;
-    public static function setupCaching(){
-        self::$cacheType = wfConfig::get('cacheType');
+
+    private static $vwc_cache_settings;
+
+    public static function get_vwc_cache_settings()
+    {
+        if( ! self::$vwc_cache_settings )
+        {
+            self::$vwc_cache_settings = new cache_settings();
+        }
+
+        return self::$vwc_cache_settings;
+
+    }
+
+    public static function setupCaching()
+    {
+        self::$cacheType = self::get_vwc_cache_settings()->get_cache_mode();
         if(self::$cacheType != cache_settings::CACHE_MODE_PHP && self::$cacheType != cache_settings::CACHE_MODE_ENHANCED ){
             return; //cache is disabled
         }
         if(wfUtils::hasLoginCookie()){  
-            add_action('publish_post', 'wfCache::action_publishPost');
-            add_action('publish_page', 'wfCache::action_publishPost');
+            add_action('publish_post', array( __CLASS__, 'action_publishPost' ) );
+            add_action('publish_page', array( __CLASS__, 'action_publishPost') );
             foreach(array('clean_object_term_cache', 'clean_post_cache', 'clean_term_cache', 'clean_page_cache', 'after_switch_theme', 'customize_save_after', 'activated_plugin', 'deactivated_plugin', 'update_option_sidebars_widgets') as $action){
-                add_action($action, 'wfCache::action_clearPageCache'); //Schedules a cache clear for immediately so it won't lag current request.
+                add_action($action, array( __CLASS__, 'action_clearPageCache') ); //Schedules a cache clear for immediately so it won't lag current request.
             }
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 foreach(array(
@@ -34,9 +49,9 @@ class wfCache {
                 }
             }
         }
-        add_action('wordfence_cache_clear', 'wfCache::scheduledCacheClear');
-        add_action('comment_post', 'wfCache::action_commentPost'); //Might not be logged in
-        add_filter('wp_redirect', 'wfCache::redirectFilter');
+        add_action('wordfence_cache_clear', array( __CLASS__, 'scheduledCacheClear') );
+        add_action('comment_post', array( __CLASS__, 'action_commentPost') ); //Might not be logged in
+        add_filter('wp_redirect', array( __CLASS__, 'redirectFilter') );
 
         //Routines to clear cache run even if cache is disabled
         $file = self::fileFromRequest( ($_SERVER['HTTP_HOST'] ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']), $_SERVER['REQUEST_URI']);
@@ -62,7 +77,7 @@ class wfCache {
                     }
                 }
             }
-            ob_start( array( __NAMESPACE__ . '\wfCache', 'obComplete') ); //Setup routine to store the file
+            ob_start( array( __CLASS__, 'obComplete') ); //Setup routine to store the file
         }
     }
     public static function redirectFilter($status){
@@ -75,7 +90,7 @@ class wfCache {
         if(defined('WFDONOTCACHE') || defined('DONOTCACHEPAGE') || defined('DONOTCACHEDB') || defined('DONOTCACHEOBJECT')){ //If you want to tell Wordfence not to cache something in another plugin, simply define one of these. 
             return false;
         }
-        if(! wfConfig::get('allowHTTPSCaching')){
+        if( ! self::get_vwc_cache_settings()->get_do_cache_https_urls() ){
             if(self::isHTTPSPage()){
                 return false;
             }
@@ -99,9 +114,8 @@ class wfCache {
                 }
             }
         }
-        $ex = wfConfig::get('cacheExclusions', false);
+        $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
         if($ex){
-            $ex = unserialize($ex);
             foreach($ex as $v){
                 if($v['pt'] == 'eq'){ if(strtolower($uri) == strtolower($v['p'])){ return false; } }
                 if($v['pt'] == 's'){ if(stripos($uri, $v['p']) === 0){ return false; } }
@@ -147,9 +161,10 @@ class wfCache {
         // self::writeCacheDirectoryHtaccess();
         $append = "";
         $appendGzip = "";
-        if(wfConfig::get('addCacheComment', false)){
+        if( self::get_vwc_cache_settings()->get_do_append_debug_message() )
+        {
             $append = "\n<!-- Cached by Wordfence ";
-            if(wfConfig::get('cacheType', false) == cache_settings::CACHE_MODE_ENHANCED ){
+            if(self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED ){
                 $append .= "Falcon Engine. ";
             } else {
                 $append .= "PHP Caching Engine. ";
@@ -468,13 +483,14 @@ class wfCache {
             }
         }
         $sslString = "RewriteCond %{HTTPS} off";
-        if(wfConfig::get('allowHTTPSCaching')){
+        if( self::get_vwc_cache_settings()->get_do_cache_https_urls() )
+        {
             $sslString = "";
         }
         $otherRewriteConds = "";
-        $ex = wfConfig::get('cacheExclusions', false);
-        if($ex){
-            $ex = unserialize($ex);
+        $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
+        if( $ex && count( $ex ) > 0 )
+        {
             foreach($ex as $v){
                 if($v['pt'] == 'uac'){
                     $otherRewriteConds .= "\n\tRewriteCond %{HTTP_USER_AGENT} !" . self::regexSpaceFix(preg_quote($v['p'])) . " [NC]";
@@ -487,14 +503,6 @@ class wfCache {
                 }
             }
         }
-
-        // //We exclude URLs that are banned so that Wordfence PHP code can catch the IP address, then ban that IP and the ban is added to .htaccess. 
-        // $excludedURLs = "";
-        // if(wfConfig::get('bannedURLs', false)){
-        //     foreach(explode(',', wfConfig::get('bannedURLs', false)) as $URL){
-        //         $excludedURLs .= "RewriteCond %{REQUEST_URI} !" .  wfUtils::patternToRegex($URL, '', '') . "\n\t";
-        //     }
-        // }
 
         $code = <<<EOT
 #WFCACHECODE - Do not remove this line. Disable Web Caching in Wordfence to remove this data.
