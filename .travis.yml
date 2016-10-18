@@ -33,4 +33,4 @@ before_script:
     - wget https://raw.github.com/benbalter/wordpress-plugin-tests/setup/setup.sh
     - source setup.sh
 
-script: phpunit
+script: phpunit --coverage-html ./tests/logs/coverage/
