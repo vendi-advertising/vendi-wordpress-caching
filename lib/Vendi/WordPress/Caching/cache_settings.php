@@ -28,7 +28,7 @@ class cache_settings
     const DEFAULT_VALUE_DO_CACHE_HTTPS_URLS         = false;
     const DEFAULT_VALUE_DO_APPEND_DEBUG_MESSAGE     = false;
     const DEFAULT_VALUE_DO_CLEAR_ON_SAVE            = false;
-    const DEFAULT_VALUE_CACHE_EXCLUSIONS            = array();
+    const DEFAULT_VALUE_CACHE_EXCLUSIONS            = null;
 
     const OPTION_KEY_NAME_CACHE_MODE                = 'vwc_cache_mode';
     const OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS       = 'vwc_do_cache_https_urls';
