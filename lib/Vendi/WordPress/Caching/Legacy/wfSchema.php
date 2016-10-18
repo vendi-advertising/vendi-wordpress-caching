@@ -1,6 +1,6 @@
 <?php
 
-namespace Vendi\Wordfence\Caching;
+namespace Vendi\WordPress\Caching\Legacy;
 
 class wfSchema {
     private $tables = array(

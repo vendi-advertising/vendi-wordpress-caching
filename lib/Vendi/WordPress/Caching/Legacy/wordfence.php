@@ -1,6 +1,6 @@
 <?php
 
-namespace Vendi\Wordfence\Caching;
+namespace Vendi\WordPress\Caching\Legacy;
 
 class wordfence {
     // public static $printStatus = false;
@@ -66,7 +66,7 @@ class wordfence {
             ignore_user_abort(true);
         }
         $previous_version = get_option('wordfence_version', '0.0.0');
-        update_option('wordfence_version', WORDFENCE_VERSION); //In case we have a fatal error we don't want to keep running install.
+        update_option('wordfence_version', VENDI_WORDPRESS_CACHING_VERSION); //In case we have a fatal error we don't want to keep running install.
         //EVERYTHING HERE MUST BE IDEMPOTENT
 
         $schema = new wfSchema();
@@ -114,11 +114,11 @@ SQL
         //Must be the final line
     }
     public static function install_actions(){
-        register_activation_hook(  WORDFENCE_FCPATH, array( __NAMESPACE__ . '\wordfence', 'installPlugin')   );
-        register_deactivation_hook(WORDFENCE_FCPATH, array( __NAMESPACE__ . '\wordfence', 'uninstallPlugin') );
+        register_activation_hook(  VENDI_WORDPRESS_CACHING_FCPATH, array( __NAMESPACE__ . '\wordfence', 'installPlugin')   );
+        register_deactivation_hook(VENDI_WORDPRESS_CACHING_FCPATH, array( __NAMESPACE__ . '\wordfence', 'uninstallPlugin') );
 
         $versionInOptions = get_option('wordfence_version', false);
-        if( (! $versionInOptions) || version_compare(WORDFENCE_VERSION, $versionInOptions, '>')){
+        if( (! $versionInOptions) || version_compare(VENDI_WORDPRESS_CACHING_VERSION, $versionInOptions, '>')){
             //Either there is no version in options or the version in options is greater and we need to run the upgrade
             self::runInstall();
         }
@@ -890,24 +890,24 @@ SQL
         if(isset($_GET['page']) && preg_match('/^Wordfence/', @$_GET['page']) ){
             wp_enqueue_style('wp-pointer');
             wp_enqueue_script('wp-pointer');
-            wp_enqueue_style('wordfence-main-style', wfUtils::getBaseURL() . 'css/main.css', '', WORDFENCE_VERSION);
-            wp_enqueue_style('wordfence-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', WORDFENCE_VERSION);
-            wp_enqueue_style('wordfence-dttable-style', wfUtils::getBaseURL() . 'css/dt_table.css', '', WORDFENCE_VERSION);
+            wp_enqueue_style('wordfence-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_WORDPRESS_CACHING_VERSION);
+            wp_enqueue_style('wordfence-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', VENDI_WORDPRESS_CACHING_VERSION);
+            wp_enqueue_style('wordfence-dttable-style', wfUtils::getBaseURL() . 'css/dt_table.css', '', VENDI_WORDPRESS_CACHING_VERSION);
 
 
             wp_enqueue_script('json2');
-            wp_enqueue_script('jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array('jquery'), WORDFENCE_VERSION);
-            wp_enqueue_script('jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array('jquery'), WORDFENCE_VERSION);
-            wp_enqueue_script('jquery.wfdataTables', wfUtils::getBaseURL() . 'js/jquery.dataTables.min.js', array('jquery'), WORDFENCE_VERSION);
-            wp_enqueue_script('jquery.qrcode', wfUtils::getBaseURL() . 'js/jquery.qrcode.min.js', array('jquery'), WORDFENCE_VERSION);
+            wp_enqueue_script('jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array('jquery'), VENDI_WORDPRESS_CACHING_VERSION);
+            wp_enqueue_script('jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array('jquery'), VENDI_WORDPRESS_CACHING_VERSION);
+            wp_enqueue_script('jquery.wfdataTables', wfUtils::getBaseURL() . 'js/jquery.dataTables.min.js', array('jquery'), VENDI_WORDPRESS_CACHING_VERSION);
+            wp_enqueue_script('jquery.qrcode', wfUtils::getBaseURL() . 'js/jquery.qrcode.min.js', array('jquery'), VENDI_WORDPRESS_CACHING_VERSION);
             //wp_enqueue_script('jquery.tools', wfUtils::getBaseURL() . 'js/jquery.tools.min.js', array('jquery'));
-            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), WORDFENCE_VERSION);
-            wp_enqueue_script('wordfenceAdminExtjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), WORDFENCE_VERSION);
+            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), VENDI_WORDPRESS_CACHING_VERSION);
+            wp_enqueue_script('wordfenceAdminExtjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), VENDI_WORDPRESS_CACHING_VERSION);
             self::setupAdminVars();
         } else {
             wp_enqueue_style('wp-pointer');
             wp_enqueue_script('wp-pointer');
-            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), WORDFENCE_VERSION);
+            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), VENDI_WORDPRESS_CACHING_VERSION);
             self::setupAdminVars();
         }
     }

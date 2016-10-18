@@ -1,6 +1,6 @@
 <?php
 
-namespace Vendi\Wordfence\Caching;
+namespace Vendi\WordPress\Caching\Legacy;
 
 class wfUtils {
     public static function patternToRegex($pattern, $mod = 'i', $sep = '/') {
@@ -65,7 +65,7 @@ class wfUtils {
         return false;
     }
     public static function getBaseURL(){
-        return plugins_url('', WORDFENCE_FCPATH) . '/';
+        return plugins_url('', VENDI_WORDPRESS_CACHING_FCPATH) . '/';
     }
     public static function getSiteBaseURL(){
         return rtrim(site_url(), '/') . '/';

@@ -1,10 +1,11 @@
 <?php
 /*
-Plugin Name: Vendi - Wordfence Caching
-Plugin URI: http://www.wordfence.com/
-Author: Wordfence
-Version: 6.2.2
-Author URI: http://www.wordfence.com/
+Plugin Name: Vendi - WordPress Caching
+Description: Disk-based page and post cache. (Formerly Wordfence Falcon Cachine)
+Plugin URI: https://www.vendiadvertising.com/
+Author: Vendi Advertising (Chris Haas)
+Version: 1.0.0
+Author URI: https://www.vendiadvertising.com/
 Network: true
 */
 
@@ -15,11 +16,10 @@ if( defined( 'WP_INSTALLING' ) && WP_INSTALLING )
 
 //Shortcuts to the root of the plugin for various formats
 define( 'VENDI_WORDPRESS_CACHING_FILE', __FILE__ );
-define( 'VENDI_WORDPRESS_CACHING_PATH', dirname( __FILE__ ) );
 define( 'VENDI_WORDPRESS_CACHING_URL',  plugin_dir_url( __FILE__ ) );
 
 
-define( 'WORDFENCE_VERSION', '6.2.2' );
+define( 'VENDI_WORDPRESS_CACHING_VERSION', '1.0.0' );
 
 //I'm pretty sure this has to do with allowing the plugin to be hosted outside
 //of the normal location.
@@ -28,25 +28,25 @@ foreach ($wp_plugin_paths as $dir => $realdir)
 {
     if ( 0 === strpos( __FILE__, $realdir ) )
     {
-        define( 'WORDFENCE_FCPATH', $dir . '/' . basename( __FILE__ ) );
-        define( 'WORDFENCE_PATH', trailingslashit( $dir ) );
+        define( 'VENDI_WORDPRESS_CACHING_FCPATH', $dir . '/' . basename( __FILE__ ) );
+        define( 'VENDI_WORDPRESS_CACHING_PATH', trailingslashit( $dir ) );
         break;
     }
 }
 
-if ( ! defined( 'WORDFENCE_FCPATH' ) )
+if ( ! defined( 'VENDI_WORDPRESS_CACHING_FCPATH' ) )
 {
-    define( 'WORDFENCE_FCPATH', __FILE__ );
-    define( 'WORDFENCE_PATH', trailingslashit( dirname( WORDFENCE_FCPATH ) ) );
+    define( 'VENDI_WORDPRESS_CACHING_FCPATH', __FILE__ );
+    define( 'VENDI_WORDPRESS_CACHING_PATH', trailingslashit( dirname( VENDI_WORDPRESS_CACHING_FCPATH ) ) );
 }
 
-if ( 1 != get_option( 'wordfenceActivated' ) )
+if ( 1 != get_option( 'vendiWordPressCachingActivated' ) )
 {
     add_action(
                 'activated_plugin',
                 function()
                 {
-                    update_option( 'wf_plugin_act_error',  ob_get_contents() );
+                    update_option( 'vwc_plugin_act_error',  ob_get_contents() );
                 }
             );
 }
@@ -64,4 +64,4 @@ if ( (int) @ini_get( 'memory_limit' ) < 128 )
 require_once VENDI_WORDPRESS_CACHING_PATH . '/autoload.php';
 
 //Init
-\Vendi\Wordfence\Caching\wordfence::install_actions();
+\Vendi\WordPress\Caching\Legacy\wordfence::install_actions();

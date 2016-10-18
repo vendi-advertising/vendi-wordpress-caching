@@ -1,24 +1,24 @@
 <?php
 
-//Legacy autoloader
-spl_autoload_register(
-                        function( $class )
-                        {
-                            $legacy = array(
-                                                'Vendi\\Wordfence\\Caching\\wfCache'   => 'wfCache.php',
-                                                'Vendi\\Wordfence\\Caching\\wfConfig'  => 'wfConfig.php',
-                                                'Vendi\\Wordfence\\Caching\\wfUtils'   => 'wfUtils.php',
-                                                'Vendi\\Wordfence\\Caching\\wfDB'      => 'wfDB.php',
-                                                'Vendi\\Wordfence\\Caching\\wfSchema'  => 'wfSchema.php',
-                                                'Vendi\\Wordfence\\Caching\\wordfence' => 'wordfenceClass.php',
-                                        );
+// //Legacy autoloader
+// spl_autoload_register(
+//                         function( $class )
+//                         {
+//                             $legacy = array(
+//                                                 'Vendi\\WordPress\\Caching\\Legacy\\wfCache'   => 'wfCache.php',
+//                                                 'Vendi\\WordPress\\Caching\\Legacy\\wfConfig'  => 'wfConfig.php',
+//                                                 'Vendi\\WordPress\\Caching\\Legacy\\wfUtils'   => 'wfUtils.php',
+//                                                 'Vendi\\WordPress\\Caching\\Legacy\\wfDB'      => 'wfDB.php',
+//                                                 'Vendi\\WordPress\\Caching\\Legacy\\wfSchema'  => 'wfSchema.php',
+//                                                 'Vendi\\WordPress\\Caching\\Legacy\\wordfence' => 'wordfenceClass.php',
+//                                         );
 
-                            if( array_key_exists( $class, $legacy ) )
-                            {
-                                require_once VENDI_WORDPRESS_CACHING_PATH . '/lib/' . $legacy[ $class ];
-                            }
-                        }
-                    );
+//                             if( array_key_exists( $class, $legacy ) )
+//                             {
+//                                 require_once VENDI_WORDPRESS_CACHING_PATH . '/lib/' . $legacy[ $class ];
+//                             }
+//                         }
+//                     );
 
 //New autoloader
 spl_autoload_register(
