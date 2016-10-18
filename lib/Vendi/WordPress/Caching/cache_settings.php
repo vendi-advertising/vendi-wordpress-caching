@@ -88,7 +88,7 @@ class cache_settings
         $tmp = get_option( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS, self::DEFAULT_VALUE_CACHE_EXCLUSIONS );
         if( ! $tmp )
         {
-            $tmp = [];
+            $tmp = array();
         }
         elseif( is_serialized( $tmp ) )
         {
