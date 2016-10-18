@@ -2,6 +2,8 @@
 
 namespace Vendi\WordPress\Caching\Legacy;
 
+use Vendi\WordPress\Caching\cache_settings;
+
 class wfCache {
     private static $cacheType = false;
     private static $fileCache = array();
@@ -11,7 +13,7 @@ class wfCache {
     private static $lastRecursiveDeleteError = false;
     public static function setupCaching(){
         self::$cacheType = wfConfig::get('cacheType');
-        if(self::$cacheType != 'php' && self::$cacheType != 'falcon'){
+        if(self::$cacheType != cache_settings::CACHE_MODE_PHP && self::$cacheType != cache_settings::CACHE_MODE_ENHANCED ){
             return; //cache is disabled
         }
         if(wfUtils::hasLoginCookie()){  
@@ -50,7 +52,7 @@ class wfCache {
         }
 
         if(self::isCachable()){
-            if( (! $fileDeleted) && self::$cacheType == 'php'){ //Then serve the file if it's still valid
+            if( (! $fileDeleted) && self::$cacheType == cache_settings::CACHE_MODE_PHP ){ //Then serve the file if it's still valid
                 $stat = @stat($file);
                 if($stat){
                     $age = time() - $stat[9];
@@ -147,7 +149,7 @@ class wfCache {
         $appendGzip = "";
         if(wfConfig::get('addCacheComment', false)){
             $append = "\n<!-- Cached by Wordfence ";
-            if(wfConfig::get('cacheType', false) == 'falcon'){
+            if(wfConfig::get('cacheType', false) == cache_settings::CACHE_MODE_ENHANCED ){
                 $append .= "Falcon Engine. ";
             } else {
                 $append .= "PHP Caching Engine. ";
@@ -163,7 +165,7 @@ class wfCache {
 
         @file_put_contents($file, $buffer . $append, LOCK_EX);
         chmod($file, 0644);
-        if(self::$cacheType == 'falcon'){ //create gzipped files so we can send precompressed files
+        if(self::$cacheType == cache_settings::CACHE_MODE_ENHANCED ){ //create gzipped files so we can send precompressed files
             $file .= '_gzip';
             @file_put_contents($file, gzencode($buffer . $appendGzip, 9), LOCK_EX);
             chmod($file, 0644);
@@ -533,7 +535,6 @@ class wfCache {
     {$sslString}
     RewriteCond %{QUERY_STRING} ^(?:\d+=\d+)?$
     RewriteCond %{REQUEST_URI} (?:\/|\.html)$ [NC]
-    {$excludedURLs}
     RewriteCond %{HTTP_COOKIE} !(comment_author|wp\-postpass|wf_logout|wordpress_logged_in|wptouch_switch_toggle|wpmp_switcher) [NC]
     {$otherRewriteConds}
     RewriteCond %{REQUEST_URI} \/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)(.*)$
