@@ -494,7 +494,7 @@ class wordfence
     public static function ajax_saveConfig_callback(){
         $reload = '';
         // $opts = wfConfig::parseOptions();
-        $opts = [];
+        $opts = array();
 
         $opts['scan_exclude'] = wfUtils::cleanupOneEntryPerLine($opts['scan_exclude']);
 
