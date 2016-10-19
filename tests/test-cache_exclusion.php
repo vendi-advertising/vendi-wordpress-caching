@@ -15,7 +15,12 @@ class test_cache_exclusion extends WP_UnitTestCase
 
         foreach( $tests as $test )
         {
-            $exclusion = $method( $test[ 0 ] );
+            if( ! is_callable( $method ) )
+            {
+                throw new \Exception( 'Not callable method passed to test_static_factories' );
+            }
+
+            $exclusion = call_user_func( $method, $test[ 0 ] );
             $this->assertSame( $property, $exclusion->get_property() );
             $this->assertSame( $comparison, $exclusion->get_comparison() );
             $this->assertSame( $test[ 0 ], $exclusion->get_value() );
