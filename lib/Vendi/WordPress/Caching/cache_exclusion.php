@@ -84,6 +84,10 @@ class cache_exclusion
     }
 
 /*Constructor*/
+    /**
+     * @param string $property
+     * @param string $comparison
+     */
     private function __construct($property, $comparison, $value)
     {
         $this->set_property($property);

@@ -125,50 +125,50 @@ class utils
      * @param  integer|mixed $default_value Optional. If the $key cannot be found the value to return. Default null.
      * @return integer|mixed                The value of the HTTP SERVER for the given $key or the $default.
      */
-    public static function get_server_value_int( $key, $default_value = null )
+    public static function get_server_value_int($key, $default_value = null)
     {
-        return self::get_request_value_int( 'SERVER', $key, $default_value );
+        return self::get_request_value_int('SERVER', $key, $default_value);
     }
 
     /**
      * @param string $request_method
      * @param string $key
      */
-    public static function get_request_value_int( $request_method, $key, $default_value = null )
+    public static function get_request_value_int($request_method, $key, $default_value = null)
     {
-        $value = self::get_request_value( $request_method, $key, null );
-        if( self::is_integer_like( $value ) )
+        $value = self::get_request_value($request_method, $key, null);
+        if (self::is_integer_like($value))
         {
-            return (int)$value;
+            return (int) $value;
         }
 
         return $default_value;
     }
 
-    public static function get_request_value( $request_method, $key, $default_value = null )
+    public static function get_request_value($request_method, $key, $default_value = null)
     {
-        $request_obj = self::get_request_object( $request_method );
-        if( null === $request_obj || ! is_array( $request_obj ) || ! array_key_exists( $key, $request_obj ) )
+        $request_obj = self::get_request_object($request_method);
+        if (null === $request_obj || ! is_array($request_obj) || ! array_key_exists($key, $request_obj))
         {
             return $default_value;
         }
 
-        return trim( $request_obj[ $key ] );
+        return trim($request_obj[$key]);
     }
 
-    public static function get_request_object( $request_method )
+    public static function get_request_object($request_method)
     {
         $obj = null;
-        switch( $request_method )
+        switch ($request_method)
         {
             case 'GET':
-                return ( isset( $_GET ) && is_array( $_GET ) && count( $_GET ) > 0 ? $_GET : null );
+                return (isset($_GET) && is_array($_GET) && count($_GET) > 0 ? $_GET : null);
             case 'POST':
-                return ( isset( $_POST ) && is_array( $_POST ) && count( $_POST ) > 0 ? $_POST : null );
+                return (isset($_POST) && is_array($_POST) && count($_POST) > 0 ? $_POST : null);
             case 'COOKIE':
-                return ( isset( $_COOKIE ) && is_array( $_COOKIE ) && count( $_COOKIE ) > 0 ? $_COOKIE : null );
+                return (isset($_COOKIE) && is_array($_COOKIE) && count($_COOKIE) > 0 ? $_COOKIE : null);
             case 'SERVER':
-                return ( isset( $_SERVER ) && is_array( $_SERVER ) && count( $_SERVER ) > 0 ? $_SERVER : null );
+                return (isset($_SERVER) && is_array($_SERVER) && count($_SERVER) > 0 ? $_SERVER : null);
             default:
                 return null;
         }

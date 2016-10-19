@@ -180,14 +180,14 @@ class wfCache {
 
         @file_put_contents($file, $buffer . $append, LOCK_EX);
         chmod($file, 0644);
-        if(self::$cacheType == cache_settings::CACHE_MODE_ENHANCED ){ //create gzipped files so we can send precompressed files
+        if (self::$cacheType == cache_settings::CACHE_MODE_ENHANCED) { //create gzipped files so we can send precompressed files
             $file .= '_gzip';
             @file_put_contents($file, gzencode($buffer . $appendGzip, 9), LOCK_EX);
             chmod($file, 0644);
         }
         return $buffer;
     }
-    public static function fileFromRequest($host, $URI){
+    public static function fileFromRequest($host, $URI) {
         return self::fileFromURI($host, $URI, self::isHTTPSPage());
     }
 
@@ -214,6 +214,10 @@ class wfCache {
         self::$fileCache[$key] = $file;
         return $file;
     }
+
+    /**
+     * @param string $file
+     */
     public static function makeDirIfNeeded($file){
         $file = preg_replace('/\/[^\/]*$/', '', $file);
         if(! is_dir($file)){
@@ -306,51 +310,51 @@ class wfCache {
     /**
      * @param string $dir
      */
-    private static function recursiveStats($dir){
-        $files = array_diff(scandir($dir), array('.','..')); 
-        foreach($files as $file){
+    private static function recursiveStats($dir) {
+        $files = array_diff(scandir($dir), array('.', '..')); 
+        foreach ($files as $file) {
             $fullPath = $dir . '/' . $file;
-            if(is_dir($fullPath)){
+            if (is_dir($fullPath)) {
                 self::$cacheStats['dirs']++;
                 self::recursiveStats($fullPath);
             } else {
-                if($file == 'clear.lock'){ continue; }
+                if ($file == 'clear.lock') { continue; }
                 self::$cacheStats['files']++;
                 $stat = stat($fullPath);
-                if(is_array($stat)){
+                if (is_array($stat)) {
                     $size = $stat[7];
-                    if($size){
+                    if ($size) {
                         $size = round($size / 1024);
                         self::$cacheStats['data'] += $size;
-                        if(strrpos($file, '_gzip') == strlen($file) - 6){
+                        if (strrpos($file, '_gzip') == strlen($file) - 6) {
                             self::$cacheStats['compressedFiles']++;
                             self::$cacheStats['compressedKBytes'] += $size;
                         } else {
                             self::$cacheStats['uncompressedFiles']++;
                             self::$cacheStats['uncompressedKBytes'] += $size;
                         }
-                        if(self::$cacheStats['largestFile'] < $size){
+                        if (self::$cacheStats['largestFile'] < $size) {
                             self::$cacheStats['largestFile'] = $size;
                         }
                     }
 
                     $ctime = $stat[10];
-                    if(self::$cacheStats['oldestFile'] > $ctime || self::$cacheStats['oldestFile'] === false){
+                    if (self::$cacheStats['oldestFile'] > $ctime || self::$cacheStats['oldestFile'] === false) {
                         self::$cacheStats['oldestFile'] = $ctime;
                     }
-                    if(self::$cacheStats['newestFile'] === false || self::$cacheStats['newestFile'] < $ctime){
+                    if (self::$cacheStats['newestFile'] === false || self::$cacheStats['newestFile'] < $ctime) {
                         self::$cacheStats['newestFile'] = $ctime;
                     }
                 }
             }
         }
     }
-    public static function clearPageCacheSafe(){
-        if(self::$cacheClearedThisRequest){ return; }
+    public static function clearPageCacheSafe() {
+        if (self::$cacheClearedThisRequest) { return; }
         self::$cacheClearedThisRequest = true;
         self::clearPageCache();
     }
-    public static function clearPageCache(){ //If a clear is in progress this does nothing. 
+    public static function clearPageCache() { //If a clear is in progress this does nothing. 
         self::$cacheStats = array(
             'dirsDeleted' => 0,
             'filesDeleted' => 0,
@@ -391,25 +395,25 @@ class wfCache {
     /**
      * @param string $dir
      */
-    public static function recursiveDelete($dir){
-        $files = array_diff(scandir($dir), array('.','..')); 
+    public static function recursiveDelete($dir) {
+        $files = array_diff(scandir($dir), array('.', '..')); 
         foreach ($files as $file) { 
-            if(is_dir($dir . '/' . $file)){
-                if(! self::recursiveDelete($dir . '/' . $file)){
+            if (is_dir($dir . '/' . $file)) {
+                if ( ! self::recursiveDelete($dir . '/' . $file)) {
                     return false;
                 }
             } else {
-                if($file == 'clear.lock'){ continue; } //Don't delete our lock file
+                if ($file == 'clear.lock') { continue; } //Don't delete our lock file
                 $size = filesize($dir . '/' . $file);
-                if($size){
+                if ($size) {
                     self::$cacheStats['totalData'] += round($size / 1024);
                 }
-                if(strpos($dir, 'wfcache/') === false){
+                if (strpos($dir, 'wfcache/') === false) {
                     self::$lastRecursiveDeleteError = "Not deleting file in directory $dir because it appears to be in the wrong path.";
                     self::$cacheStats['totalErrors']++;
                     return false; //Safety check that we're in a subdir of the cache
                 }
-                if(@unlink($dir . '/' . $file)){
+                if (@unlink($dir . '/' . $file)) {
                     self::$cacheStats['filesDeleted']++;
                 } else {
                     self::$lastRecursiveDeleteError = "Could not delete file " . $dir . "/" . $file . " : " . wfUtils::getLastError();
@@ -440,16 +444,16 @@ class wfCache {
     /**
      * @param string $action
      */
-    public static function addHtaccessCode($action){
-        if($action != 'add' && $action != 'remove'){
+    public static function addHtaccessCode($action) {
+        if ($action != 'add' && $action != 'remove') {
             die("Error: addHtaccessCode must be called with 'add' or 'remove' as param");
         }
         $htaccessPath = self::getHtaccessPath();
-        if(! $htaccessPath){
+        if ( ! $htaccessPath) {
             return "Wordfence could not find your .htaccess file.";
         }
         $fh = @fopen($htaccessPath, 'r+');
-        if(! $fh){
+        if ( ! $fh) {
             $err = error_get_last();
             return $err['message'];
         }
@@ -575,20 +579,20 @@ EOT;
     /**
      * @param string $str
      */
-    private static function regexSpaceFix($str){
+    private static function regexSpaceFix($str) {
         return str_replace(' ', '\\s', $str);
     }
-    public static function getHtaccessPath(){
-        if (!function_exists('get_home_path')) {
+    public static function getHtaccessPath() {
+        if ( ! function_exists('get_home_path')) {
             include_once ABSPATH . 'wp-admin/includes/file.php';
         }
 
         $homePath = get_home_path();
-        $htaccessFile = $homePath.'.htaccess';
+        $htaccessFile = $homePath . '.htaccess';
         return $htaccessFile;
     }
-    public static function doNotCache(){
-        if(! defined('WFDONOTCACHE')){
+    public static function doNotCache() {
+        if ( ! defined('WFDONOTCACHE')) {
             define('WFDONOTCACHE', true);
         }
     }
