@@ -10,7 +10,7 @@ class test_cache_exclusion extends WP_UnitTestCase
      *  
      * @covers Vendi\WordPress\Caching\cache_exclusion
      */
-    public function test_static_factories( callable $method, string $property, string $comparison, array $tests )
+    public function test_static_factories( $method, string $property, string $comparison, array $tests )
     {
 
         foreach( $tests as $test )
@@ -33,7 +33,7 @@ class test_cache_exclusion extends WP_UnitTestCase
     {
         $text = '/test/';
 
-        $exclusion = cache_exclusion::create_from_legacy( [ 'pt' => $pt, 'p' => $text ] );
+        $exclusion = cache_exclusion::create_from_legacy( array( 'pt' => $pt, 'p' => $text ) );
         $this->assertSame( $property, $exclusion->get_property() );
         $this->assertSame( $comparison, $exclusion->get_comparison() );
         $this->assertSame( $text, $exclusion->get_value() );
@@ -46,7 +46,7 @@ class test_cache_exclusion extends WP_UnitTestCase
      */
     public function test_create_from_legacy_unknown_property( )
     {
-        cache_exclusion::create_from_legacy( [ 'pt' => 'invalid', 'p' => '' ] );
+        cache_exclusion::create_from_legacy( array( 'pt' => 'invalid', 'p' => '' ) );
     }
 
     /**
@@ -86,7 +86,7 @@ class test_cache_exclusion extends WP_UnitTestCase
      */
     public function test_create_from_legacy_missing_key()
     {
-        cache_exclusion::create_from_legacy( [ 'test' => 'invalid' ] );
+        cache_exclusion::create_from_legacy( array( 'test' => 'invalid' ) );
     }
 
     /**
@@ -96,89 +96,89 @@ class test_cache_exclusion extends WP_UnitTestCase
      */
     public function test_create_from_legacy_missing_key_other()
     {
-        cache_exclusion::create_from_legacy( [ 'pt' => 'invalid', 'x' => 'y' ] );
+        cache_exclusion::create_from_legacy( array( 'pt' => 'invalid', 'x' => 'y' ) );
     }
 
     public function provider_for_create_from_legacy()
     {
-        return [
-                    [ 'eq',     cache_exclusion::PROPERTY_URL,          cache_exclusion::COMPARISON_EXACT ],
-                    [ 'c',      cache_exclusion::PROPERTY_URL,          cache_exclusion::COMPARISON_CONTAINS ],
-                    [ 'e',      cache_exclusion::PROPERTY_URL,          cache_exclusion::COMPARISON_ENDS_WITH ],
-                    [ 's',      cache_exclusion::PROPERTY_URL,          cache_exclusion::COMPARISON_STARTS_WITH ],
+        return array(
+                    array( 'eq',     cache_exclusion::PROPERTY_URL,          cache_exclusion::COMPARISON_EXACT ),
+                    array( 'c',      cache_exclusion::PROPERTY_URL,          cache_exclusion::COMPARISON_CONTAINS ),
+                    array( 'e',      cache_exclusion::PROPERTY_URL,          cache_exclusion::COMPARISON_ENDS_WITH ),
+                    array( 's',      cache_exclusion::PROPERTY_URL,          cache_exclusion::COMPARISON_STARTS_WITH ),
 
-                    [ 'uac',    cache_exclusion::PROPERTY_USER_AGENT,   cache_exclusion::COMPARISON_CONTAINS ],
-                    [ 'uaeq',   cache_exclusion::PROPERTY_USER_AGENT,   cache_exclusion::COMPARISON_EXACT ],
+                    array( 'uac',    cache_exclusion::PROPERTY_USER_AGENT,   cache_exclusion::COMPARISON_CONTAINS ),
+                    array( 'uaeq',   cache_exclusion::PROPERTY_USER_AGENT,   cache_exclusion::COMPARISON_EXACT ),
 
-                    [ 'cc',     cache_exclusion::PROPERTY_COOKIE_NAME,  cache_exclusion::COMPARISON_CONTAINS ],
-            ];
+                    array( 'cc',     cache_exclusion::PROPERTY_COOKIE_NAME,  cache_exclusion::COMPARISON_CONTAINS ),
+            );
     }
 
     public function provider_for_static_factories()
     {
-        return [
-                    [
-                        [ cache_exclusion::class, 'create_url_exact' ],
+        return array(
+                    array(
+                        array( cache_exclusion::class, 'create_url_exact' ),
                         cache_exclusion::PROPERTY_URL,
                         cache_exclusion::COMPARISON_EXACT,
-                        [
-                            [ 'abc', 'abc', true ],
-                        ],
-                    ],
-                    [
-                        [ cache_exclusion::class, 'create_url_contains' ],
+                        array(
+                            array( 'abc', 'abc', true ),
+                        ),
+                    ),
+                    array(
+                        array( cache_exclusion::class, 'create_url_contains' ),
                         cache_exclusion::PROPERTY_URL,
                         cache_exclusion::COMPARISON_CONTAINS,
-                        [
-                            [ 'abc', 'abc', true ],
-                        ],
-                    ],
-                    [
-                        [ cache_exclusion::class, 'create_url_ends_with' ],
+                        array(
+                            array( 'abc', 'abc', true ),
+                        ),
+                    ),
+                    array(
+                        array( cache_exclusion::class, 'create_url_ends_with' ),
                         cache_exclusion::PROPERTY_URL,
                         cache_exclusion::COMPARISON_ENDS_WITH,
-                        [
-                            [ 'abc', 'c', true ],
-                        ],
-                    ],
-                    [
-                        [ cache_exclusion::class, 'create_url_starts_with' ],
+                        array(
+                            array( 'abc', 'c', true ),
+                        ),
+                    ),
+                    array(
+                        array( cache_exclusion::class, 'create_url_starts_with' ),
                         cache_exclusion::PROPERTY_URL,
                         cache_exclusion::COMPARISON_STARTS_WITH,
-                        [
-                            [ 'abc', 'a', true ],
-                        ],
-                    ],
+                        array(
+                            array( 'abc', 'a', true ),
+                        ),
+                    ),
 
 
 
-                    [
-                        [ cache_exclusion::class, 'create_user_agent_contains' ],
+                    array(
+                        array( cache_exclusion::class, 'create_user_agent_contains' ),
                         cache_exclusion::PROPERTY_USER_AGENT,
                         cache_exclusion::COMPARISON_CONTAINS,
-                        [
-                            [ 'abc', 'b', true ],
-                        ],
-                    ],
-                    [
-                        [ cache_exclusion::class, 'create_user_agent_exact' ],
+                        array(
+                            array( 'abc', 'b', true ),
+                        ),
+                    ),
+                    array(
+                        array( cache_exclusion::class, 'create_user_agent_exact' ),
                         cache_exclusion::PROPERTY_USER_AGENT,
                         cache_exclusion::COMPARISON_EXACT,
-                        [
-                            [ 'abc', 'abc', true ],
-                        ],
-                    ],
+                        array(
+                            array( 'abc', 'abc', true ),
+                        ),
+                    ),
 
 
 
-                    [
-                        [ cache_exclusion::class, 'create_cookie_contains' ],
+                    array(
+                        array( cache_exclusion::class, 'create_cookie_contains' ),
                         cache_exclusion::PROPERTY_COOKIE_NAME,
                         cache_exclusion::COMPARISON_CONTAINS,
-                        [
-                            [ 'abc', [ 'b' => false ], true ],
-                        ],
-                    ],
-            ];
+                        array(
+                            array( 'abc', array( 'b' => false ), true ),
+                        ),
+                    ),
+            );
     }
 }
