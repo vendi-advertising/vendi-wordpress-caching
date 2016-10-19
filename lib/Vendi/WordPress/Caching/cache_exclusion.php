@@ -36,6 +36,9 @@ class cache_exclusion
         return $this->property;
     }
 
+    /**
+     * @param string $property
+     */
     public function set_property($property)
     {
         switch ($property)
@@ -55,6 +58,9 @@ class cache_exclusion
         return $this->comparison;
     }
 
+    /**
+     * @param string $comparison
+     */
     public function set_comparison($comparison)
     {
         switch ($comparison)
