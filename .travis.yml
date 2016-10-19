@@ -1,28 +1,21 @@
 language: php
 
-# notifications:
-#   email:
-#     on_success: never
-#     on_failure: change
-
 branches:
   only:
     - master
 
 php:
   - 5.3
-#  - 5.4
-#  - 5.5
-#  - 5.6
-#  - 7.0
-#  - hhvm
-#  - nightly
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+  - hhvm
+  - nightly
 
 env:
  - WP_VERSION=latest WP_MULTISITE=0
-#  - WP_VERSION=3.7 WP_MULTISITE=0
-#  - WP_VERSION=4.6.1 WP_MULTISITE=0
-#  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://localhost:12000 WP_TEST_USER=test WP_TEST_USER_PASS=test
+ - WP_VERSION=3.7 WP_MULTISITE=0
 
 #matrix:
 #  include:
@@ -31,7 +24,19 @@ env:
 
 before_script:
     - bash bin/install-wp-tests.sh wordpress_test travis '' localhost $WP_VERSION
-    #- wget https://raw.github.com/benbalter/wordpress-plugin-tests/setup/setup.sh
-    #- source setup.sh
 
-script: phpunit
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - |
+    if [[ "$TRAVIS_PHP_VERSION" == "5.6" && "$WP_VERSION" == "master" && "$WP_MULTISITE" == "0" ]] ; then
+        phpunit --coverage-clover=coverage.xml
+        wget https://scrutinizer-ci.com/ocular.phar
+        php ocular.phar code-coverage:upload --format=php-clover coverage.xml
+    else
+        phpunit
+    fi
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+#Borrowed from https://github.com/humanmade/backupwordpress/blob/master/.travis.yml
