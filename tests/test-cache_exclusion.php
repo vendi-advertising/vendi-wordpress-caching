@@ -10,7 +10,7 @@ class test_cache_exclusion extends WP_UnitTestCase
      *  
      * @covers Vendi\WordPress\Caching\cache_exclusion
      */
-    public function test_static_factories( $method, string $property, string $comparison, array $tests )
+    public function test_static_factories( $method, $property, $comparison, array $tests )
     {
 
         foreach( $tests as $test )
@@ -29,7 +29,7 @@ class test_cache_exclusion extends WP_UnitTestCase
      *  
      * @covers Vendi\WordPress\Caching\cache_exclusion::create_from_legacy
      */
-    public function test_create_from_legacy( string $pt, string $property, string $comparison )
+    public function test_create_from_legacy( $pt, $property, $comparison )
     {
         $text = '/test/';
 
