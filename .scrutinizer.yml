@@ -4,3 +4,12 @@ filter:
         - "js/"
         - "css/"
         - "bin/"
+
+build:
+    tests:
+        override:
+            -
+                command: 'phpunit --coverage-clover=./tests/logs/clover.xml'
+                coverage:
+                    file: './tests/logs/clover.xml'
+                    format: 'clover'
