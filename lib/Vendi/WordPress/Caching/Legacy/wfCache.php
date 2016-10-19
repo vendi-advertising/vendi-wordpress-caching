@@ -16,7 +16,7 @@ class wfCache {
 
     public static function get_vwc_cache_settings()
     {
-        if( ! self::$vwc_cache_settings )
+        if ( ! self::$vwc_cache_settings)
         {
             self::$vwc_cache_settings = new cache_settings();
         }
@@ -28,104 +28,104 @@ class wfCache {
     public static function setupCaching()
     {
         self::$cacheType = self::get_vwc_cache_settings()->get_cache_mode();
-        if(self::$cacheType != cache_settings::CACHE_MODE_PHP && self::$cacheType != cache_settings::CACHE_MODE_ENHANCED ){
+        if (self::$cacheType != cache_settings::CACHE_MODE_PHP && self::$cacheType != cache_settings::CACHE_MODE_ENHANCED) {
             return; //cache is disabled
         }
-        if(wfUtils::hasLoginCookie()){  
-            add_action('publish_post', array( __CLASS__, 'action_publishPost' ) );
-            add_action('publish_page', array( __CLASS__, 'action_publishPost') );
-            foreach(array('clean_object_term_cache', 'clean_post_cache', 'clean_term_cache', 'clean_page_cache', 'after_switch_theme', 'customize_save_after', 'activated_plugin', 'deactivated_plugin', 'update_option_sidebars_widgets') as $action){
-                add_action($action, array( __CLASS__, 'action_clearPageCache') ); //Schedules a cache clear for immediately so it won't lag current request.
+        if (wfUtils::hasLoginCookie()) {  
+            add_action('publish_post', array(__CLASS__, 'action_publishPost'));
+            add_action('publish_page', array(__CLASS__, 'action_publishPost'));
+            foreach (array('clean_object_term_cache', 'clean_post_cache', 'clean_term_cache', 'clean_page_cache', 'after_switch_theme', 'customize_save_after', 'activated_plugin', 'deactivated_plugin', 'update_option_sidebars_widgets') as $action) {
+                add_action($action, array(__CLASS__, 'action_clearPageCache')); //Schedules a cache clear for immediately so it won't lag current request.
             }
-            if($_SERVER['REQUEST_METHOD'] == 'POST'){
-                foreach(array(
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                foreach (array(
                     '/\/wp\-admin\/options\.php$/',
                     '/\/wp\-admin\/options\-permalink\.php$/'
-                    ) as $pattern){
-                    if(preg_match($pattern, $_SERVER['REQUEST_URI'])){
+                    ) as $pattern) {
+                    if (preg_match($pattern, $_SERVER['REQUEST_URI'])) {
                         self::scheduleCacheClear();
                         break;
                     }
                 }
             }
         }
-        add_action('wordfence_cache_clear', array( __CLASS__, 'scheduledCacheClear') );
-        add_action('comment_post', array( __CLASS__, 'action_commentPost') ); //Might not be logged in
-        add_filter('wp_redirect', array( __CLASS__, 'redirectFilter') );
+        add_action('wordfence_cache_clear', array(__CLASS__, 'scheduledCacheClear'));
+        add_action('comment_post', array(__CLASS__, 'action_commentPost')); //Might not be logged in
+        add_filter('wp_redirect', array(__CLASS__, 'redirectFilter'));
 
         //Routines to clear cache run even if cache is disabled
-        $file = self::fileFromRequest( ($_SERVER['HTTP_HOST'] ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']), $_SERVER['REQUEST_URI']);
+        $file = self::fileFromRequest(($_SERVER['HTTP_HOST'] ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']), $_SERVER['REQUEST_URI']);
         $fileDeleted = false;
         $doDelete = false;
-        if($_SERVER['REQUEST_METHOD'] != 'GET'){ //If our URL is hit with a POST, PUT, DELETE or any other non 'GET' request, then clear cache.
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') { //If our URL is hit with a POST, PUT, DELETE or any other non 'GET' request, then clear cache.
             $doDelete = true;
         }
 
-        if($doDelete){
+        if ($doDelete) {
             @unlink($file);
             $fileDeleted = true;
         }
 
-        if(self::isCachable()){
-            if( (! $fileDeleted) && self::$cacheType == cache_settings::CACHE_MODE_PHP ){ //Then serve the file if it's still valid
+        if (self::isCachable()) {
+            if (( ! $fileDeleted) && self::$cacheType == cache_settings::CACHE_MODE_PHP) { //Then serve the file if it's still valid
                 $stat = @stat($file);
-                if($stat){
+                if ($stat) {
                     $age = time() - $stat[9];
-                    if($age < 10000){
+                    if ($age < 10000) {
                         readfile($file); //sends file to stdout
                         die();
                     }
                 }
             }
-            ob_start( array( __CLASS__, 'obComplete') ); //Setup routine to store the file
+            ob_start(array(__CLASS__, 'obComplete')); //Setup routine to store the file
         }
     }
-    public static function redirectFilter($status){
-        if(! defined('WFDONOTCACHE')){
+    public static function redirectFilter($status) {
+        if ( ! defined('WFDONOTCACHE')) {
             define('WFDONOTCACHE', true);
         }
         return $status;
     }
-    public static function isCachable(){
-        if(defined('WFDONOTCACHE') || defined('DONOTCACHEPAGE') || defined('DONOTCACHEDB') || defined('DONOTCACHEOBJECT')){ //If you want to tell Wordfence not to cache something in another plugin, simply define one of these. 
+    public static function isCachable() {
+        if (defined('WFDONOTCACHE') || defined('DONOTCACHEPAGE') || defined('DONOTCACHEDB') || defined('DONOTCACHEOBJECT')) { //If you want to tell Wordfence not to cache something in another plugin, simply define one of these. 
             return false;
         }
-        if( ! self::get_vwc_cache_settings()->get_do_cache_https_urls() ){
-            if(self::isHTTPSPage()){
+        if ( ! self::get_vwc_cache_settings()->get_do_cache_https_urls()) {
+            if (self::isHTTPSPage()) {
                 return false;
             }
         }
 
-        if(is_admin()){ return false; } //dont cache any admin pages.
+        if (is_admin()) { return false; } //dont cache any admin pages.
         $uri = $_SERVER['REQUEST_URI'];
 
-        if(strrpos($uri, '/') !== strlen($uri) - 1){ //must end with a '/' char.
+        if (strrpos($uri, '/') !== strlen($uri) - 1) { //must end with a '/' char.
             return false;
         }
-        if($_SERVER['REQUEST_METHOD'] != 'GET'){ return false; } //Only cache GET's
-        if(isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING']) > 0 && (! preg_match('/^\d+=\d+$/', $_SERVER['QUERY_STRING'])) ){ //Don't cache query strings unless they are /?123132423=123123234 DDoS style.
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') { return false; } //Only cache GET's
+        if (isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING']) > 0 && ( ! preg_match('/^\d+=\d+$/', $_SERVER['QUERY_STRING']))) { //Don't cache query strings unless they are /?123132423=123123234 DDoS style.
             return false; 
         } 
         //wordpress_logged_in_[hash] cookies indicates logged in
-        if(is_array($_COOKIE)){
-            foreach(array_keys($_COOKIE) as $c){
-                foreach(array('comment_author','wp-postpass','wf_logout','wordpress_logged_in','wptouch_switch_toggle','wpmp_switcher') as $b){
-                    if(strpos($c, $b) !== false){ return false; } //contains a cookie which indicates user must not be cached
+        if (is_array($_COOKIE)) {
+            foreach (array_keys($_COOKIE) as $c) {
+                foreach (array('comment_author', 'wp-postpass', 'wf_logout', 'wordpress_logged_in', 'wptouch_switch_toggle', 'wpmp_switcher') as $b) {
+                    if (strpos($c, $b) !== false) { return false; } //contains a cookie which indicates user must not be cached
                 }
             }
         }
         $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
-        if($ex){
-            foreach($ex as $v){
-                if($v['pt'] == 'eq'){ if(strtolower($uri) == strtolower($v['p'])){ return false; } }
-                if($v['pt'] == 's'){ if(stripos($uri, $v['p']) === 0){ return false; } }
-                if($v['pt'] == 'e'){ if(stripos($uri, $v['p']) === (strlen($uri) - strlen($v['p'])) ){ return false; } }
-                if($v['pt'] == 'c'){ if(stripos($uri, $v['p']) !== false){ return false; } }
-                if($v['pt'] == 'uac'){ if(stripos($_SERVER['HTTP_USER_AGENT'], $v['p']) !== false){ return false; } } //User-agent contains
-                if($v['pt'] == 'uaeq'){ if(strtolower($_SERVER['HTTP_USER_AGENT']) == strtolower($v['p'])){ return false; } } //user-agent equals
-                if($v['pt'] == 'cc'){
-                    foreach($_COOKIE as $cookieName){
-                        if(stripos($cookieName, $v['p']) !== false){ //Cookie name contains pattern
+        if ($ex) {
+            foreach ($ex as $v) {
+                if ($v['pt'] == 'eq') { if (strtolower($uri) == strtolower($v['p'])) { return false; } }
+                if ($v['pt'] == 's') { if (stripos($uri, $v['p']) === 0) { return false; } }
+                if ($v['pt'] == 'e') { if (stripos($uri, $v['p']) === (strlen($uri) - strlen($v['p']))) { return false; } }
+                if ($v['pt'] == 'c') { if (stripos($uri, $v['p']) !== false) { return false; } }
+                if ($v['pt'] == 'uac') { if (stripos($_SERVER['HTTP_USER_AGENT'], $v['p']) !== false) { return false; } } //User-agent contains
+                if ($v['pt'] == 'uaeq') { if (strtolower($_SERVER['HTTP_USER_AGENT']) == strtolower($v['p'])) { return false; } } //user-agent equals
+                if ($v['pt'] == 'cc') {
+                    foreach ($_COOKIE as $cookieName) {
+                        if (stripos($cookieName, $v['p']) !== false) { //Cookie name contains pattern
                             return false;
                         }
                     }
@@ -134,37 +134,37 @@ class wfCache {
         }
         return true;
     }
-    public static function isHTTPSPage(){
-        if( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off'){ 
+    public static function isHTTPSPage() {
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off') { 
             return true;
         }
-        if( !empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' ){ //In case we're behind a proxy and user used HTTPS.
+        if ( ! empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') { //In case we're behind a proxy and user used HTTPS.
             return true;
         }
         return false;
     }
-    public static function obComplete($buffer = ''){
-        if(function_exists('is_404') && is_404()){
+    public static function obComplete($buffer = '') {
+        if (function_exists('is_404') && is_404()) {
             return false;
         }
 
-        if(defined('WFDONOTCACHE') || defined('DONOTCACHEPAGE') || defined('DONOTCACHEDB') || defined('DONOTCACHEOBJECT')){  
+        if (defined('WFDONOTCACHE') || defined('DONOTCACHEPAGE') || defined('DONOTCACHEDB') || defined('DONOTCACHEOBJECT')) {  
             //These constants may have been set after we did the initial isCachable check by e.g. wp_redirect filter. If they're set then just return the buffer and don't cache.
             return $buffer; 
         }
-        if(strlen($buffer) < 1000){ //The average web page size is 1246,000 bytes. If web page is less than 1000 bytes, don't cache it. 
+        if (strlen($buffer) < 1000) { //The average web page size is 1246,000 bytes. If web page is less than 1000 bytes, don't cache it. 
             return $buffer;
         }
 
-        $file = self::fileFromRequest( ($_SERVER['HTTP_HOST'] ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']), $_SERVER['REQUEST_URI']);
+        $file = self::fileFromRequest(($_SERVER['HTTP_HOST'] ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']), $_SERVER['REQUEST_URI']);
         self::makeDirIfNeeded($file);
         // self::writeCacheDirectoryHtaccess();
         $append = "";
         $appendGzip = "";
-        if( self::get_vwc_cache_settings()->get_do_append_debug_message() )
+        if (self::get_vwc_cache_settings()->get_do_append_debug_message())
         {
             $append = "\n<!-- Cached by Wordfence ";
-            if(self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED ){
+            if (self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED) {
                 $append .= "Falcon Engine. ";
             } else {
                 $append .= "PHP Caching Engine. ";
@@ -190,6 +190,12 @@ class wfCache {
     public static function fileFromRequest($host, $URI){
         return self::fileFromURI($host, $URI, self::isHTTPSPage());
     }
+
+    /**
+     * @param boolean $isHTTPS
+     *
+     * @return string
+     */
     public static function fileFromURI($host, $URI, $isHTTPS){
         $key = $host . $URI . ($isHTTPS ? '_HTTPS' : '');
         if(isset(self::$fileCache[$key])){ return self::$fileCache[$key]; }
@@ -246,41 +252,41 @@ class wfCache {
         }
     }
 
-    public static function action_publishPost($id){
+    public static function action_publishPost($id) {
         $perm = get_permalink($id);
         self::deleteFileFromPermalink($perm);
         self::scheduleCacheClear();
     }
-    public static function action_commentPost($commentID){
+    public static function action_commentPost($commentID) {
         $c = get_comment($commentID, ARRAY_A);
         $perm = get_permalink($c['comment_post_ID']);
         self::deleteFileFromPermalink($perm);
         self::scheduleCacheClear();
     }
-    public static function action_clearPageCache(){ //Can safely call this as many times as we like because it'll only schedule one clear
+    public static function action_clearPageCache() { //Can safely call this as many times as we like because it'll only schedule one clear
         self::scheduleCacheClear();
     }
-    public static function scheduleCacheClear(){
-        if(self::$clearScheduledThisRequest){ return; }
+    public static function scheduleCacheClear() {
+        if (self::$clearScheduledThisRequest) { return; }
         self::$clearScheduledThisRequest = true;
-        wp_schedule_single_event(time() - 15, 'wordfence_cache_clear', array( rand(0,999999999) )); //rand makes sure this is called every time and isn't subject to the 10 minute window where the same event won't be run twice with wp_schedule_single_event
+        wp_schedule_single_event(time() - 15, 'wordfence_cache_clear', array(rand(0, 999999999))); //rand makes sure this is called every time and isn't subject to the 10 minute window where the same event won't be run twice with wp_schedule_single_event
         $url = admin_url('admin-ajax.php');
         wp_remote_get($url);
     }
-    public static function scheduledCacheClear($random){
+    public static function scheduledCacheClear($random) {
         self::clearPageCacheSafe(); //Will only run if clearPageCache() has not run this request
     }
-    public static function deleteFileFromPermalink($perm){
-        if(preg_match('/\/\/([^\/]+)(\/.*)$/', $perm, $matches)){
+    public static function deleteFileFromPermalink($perm) {
+        if (preg_match('/\/\/([^\/]+)(\/.*)$/', $perm, $matches)) {
             $host = $matches[1];
             $uri = $matches[2];
             $file = self::fileFromRequest($host, $uri);
-            if(is_file($file)){
+            if (is_file($file)) {
                 @unlink($file);
             }
         }
     }
-    public static function getCacheStats(){
+    public static function getCacheStats() {
         self::$cacheStats = array(
             'files' => 0,
             'dirs' => 0,
@@ -296,6 +302,10 @@ class wfCache {
         self::recursiveStats(WP_CONTENT_DIR . '/wfcache/');
         return self::$cacheStats;
     }
+
+    /**
+     * @param string $dir
+     */
     private static function recursiveStats($dir){
         $files = array_diff(scandir($dir), array('.','..')); 
         foreach($files as $file){
@@ -349,25 +359,25 @@ class wfCache {
             'error' => '',
             );
         $cacheClearLock = WP_CONTENT_DIR . '/wfcache/clear.lock';
-        if(! is_file($cacheClearLock)){
-            if(! touch($cacheClearLock)){
+        if ( ! is_file($cacheClearLock)) {
+            if ( ! touch($cacheClearLock)) {
                 self::$cacheStats['error'] = "Could not create a lock file $cacheClearLock to clear the cache.";
                 self::$cacheStats['totalErrors']++;
                 return self::$cacheStats;
             }
         }
         $fp = fopen($cacheClearLock, 'w');
-        if(! $fp){ 
+        if ( ! $fp) { 
             self::$cacheStats['error'] = "Could not open the lock file $cacheClearLock to clear the cache. Please make sure the directory is writable by your web server.";
             self::$cacheStats['totalErrors']++;
             return self::$cacheStats;
         }
-        if(flock($fp, LOCK_EX | LOCK_NB)){ //non blocking exclusive flock attempt. If we get a lock then it continues and returns true. If we don't lock, then return false, don't block and don't clear the cache. 
+        if (flock($fp, LOCK_EX | LOCK_NB)) { //non blocking exclusive flock attempt. If we get a lock then it continues and returns true. If we don't lock, then return false, don't block and don't clear the cache. 
                     // This logic means that if a cache clear is currently in progress we don't try to clear the cache.
                     // This prevents web server children from being queued up waiting to be able to also clear the cache. 
             self::$lastRecursiveDeleteError = false;
             self::recursiveDelete(WP_CONTENT_DIR . '/wfcache/');
-            if(self::$lastRecursiveDeleteError){
+            if (self::$lastRecursiveDeleteError) {
                 self::$cacheStats['error'] = self::$lastRecursiveDeleteError;
                 self::$cacheStats['totalErrors']++;
             }
@@ -377,6 +387,10 @@ class wfCache {
 
         return self::$cacheStats;
     }
+
+    /**
+     * @param string $dir
+     */
     public static function recursiveDelete($dir){
         $files = array_diff(scandir($dir), array('.','..')); 
         foreach ($files as $file) { 
@@ -404,13 +418,13 @@ class wfCache {
                 }
             }
         } 
-        if($dir != WP_CONTENT_DIR . '/wfcache/'){
-            if(strpos($dir, 'wfcache/') === false){
+        if ($dir != WP_CONTENT_DIR . '/wfcache/') {
+            if (strpos($dir, 'wfcache/') === false) {
                 self::$lastRecursiveDeleteError = "Not deleting directory $dir because it appears to be in the wrong path.";
                 self::$cacheStats['totalErrors']++;
                 return false; //Safety check that we're in a subdir of the cache
             }
-            if(@rmdir($dir)){
+            if (@rmdir($dir)) {
                 self::$cacheStats['dirsDeleted']++;
             } else {
                 self::$lastRecursiveDeleteError = "Could not delete directory $dir : " . wfUtils::getLastError();
@@ -422,6 +436,10 @@ class wfCache {
             return true;
         }
     }
+
+    /**
+     * @param string $action
+     */
     public static function addHtaccessCode($action){
         if($action != 'add' && $action != 'remove'){
             die("Error: addHtaccessCode must be called with 'add' or 'remove' as param");
@@ -439,12 +457,12 @@ class wfCache {
         fseek($fh, 0, SEEK_SET); //start of file
         clearstatcache();
         $contents = fread($fh, filesize($htaccessPath));
-        if(! $contents){
+        if ( ! $contents) {
             fclose($fh);
             return "Could not read from $htaccessPath";
         }
         $contents = preg_replace('/#WFCACHECODE.*WFCACHECODE[\r\s\n\t]*/s', '', $contents);
-        if($action == 'add'){
+        if ($action == 'add') {
             $code = self::getHtaccessCode();
             $contents = $code . "\n" . $contents;
         }
@@ -456,49 +474,49 @@ class wfCache {
         fclose($fh);
         return false;
     }
-    public static function getHtaccessCode(){
+    public static function getHtaccessCode() {
         $siteURL = site_url();
         $homeURL = home_url();
         $pathPrefix = "";
-        if(preg_match('/^https?:\/\/[^\/]+\/(.+)$/i', $siteURL, $matches)){
+        if (preg_match('/^https?:\/\/[^\/]+\/(.+)$/i', $siteURL, $matches)) {
             $path = $matches[1];
             $path = preg_replace('/^\//', '', $path);
             $path = preg_replace('/\/$/', '', $path);
             $pathPrefix = '/' . $path; // Which is: /my/path
         }
         $matchCaps = '$1/$2~$3~$4~$5~$6';
-        if(preg_match('/^https?:\/\/[^\/]+\/(.+)$/i', $homeURL, $matches)){
+        if (preg_match('/^https?:\/\/[^\/]+\/(.+)$/i', $homeURL, $matches)) {
             $path = $matches[1];
             $path = preg_replace('/^\//', '', $path);
             $path = preg_replace('/\/$/', '', $path);
             $pieces = explode('/', $path);
-            if(count($pieces) == 1){
+            if (count($pieces) == 1) {
                 # No path:       "/wp-content/wfcache/%{HTTP_HOST}_$1/$2~$3~$4~$5~$6_wfcache%{ENV:WRDFNC_HTTPS}.html%{ENV:WRDFNC_ENC}" [L]
                 # One path:  "/mdm/wp-content/wfcache/%{HTTP_HOST}_mdm/$1~$2~$3~$4~$5_wfcache%{ENV:WRDFNC_HTTPS}.html%{ENV:WRDFNC_ENC}" [L]
                 $matchCaps = $pieces[0] . '/$1~$2~$3~$4~$5';
-            } else if(count($pieces) == 2){
+            } else if (count($pieces) == 2) {
                 $matchCaps = $pieces[0] . '/' . $pieces[1] . '/$1~$2~$3~$4';
             } else {
                 $matchCaps = '$1/$2~$3~$4~$5~$6'; #defaults to the regular setting but this won't work. However user should already have gotten a warning that we don't support sites more than 2 dirs deep with falcon.
             }
         }
         $sslString = "RewriteCond %{HTTPS} off";
-        if( self::get_vwc_cache_settings()->get_do_cache_https_urls() )
+        if (self::get_vwc_cache_settings()->get_do_cache_https_urls())
         {
             $sslString = "";
         }
         $otherRewriteConds = "";
         $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
-        if( $ex && count( $ex ) > 0 )
+        if ($ex && count($ex) > 0)
         {
-            foreach($ex as $v){
-                if($v['pt'] == 'uac'){
+            foreach ($ex as $v) {
+                if ($v['pt'] == 'uac') {
                     $otherRewriteConds .= "\n\tRewriteCond %{HTTP_USER_AGENT} !" . self::regexSpaceFix(preg_quote($v['p'])) . " [NC]";
                 }
-                if($v['pt'] == 'uaeq'){
+                if ($v['pt'] == 'uaeq') {
                     $otherRewriteConds .= "\n\tRewriteCond %{HTTP_USER_AGENT} !^" . self::regexSpaceFix(preg_quote($v['p'])) . "$ [NC]";
                 }
-                if($v['pt'] == 'cc'){
+                if ($v['pt'] == 'cc') {
                     $otherRewriteConds .= "\n\tRewriteCond %{HTTP_COOKIE} !" . self::regexSpaceFix(preg_quote($v['p'])) . " [NC]";
                 }
             }
@@ -553,6 +571,10 @@ class wfCache {
 EOT;
         return $code;
     }
+
+    /**
+     * @param string $str
+     */
     private static function regexSpaceFix($str){
         return str_replace(' ', '\\s', $str);
     }

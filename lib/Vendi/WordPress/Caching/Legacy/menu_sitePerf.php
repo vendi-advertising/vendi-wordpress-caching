@@ -10,11 +10,11 @@ $vwc_settings = \Vendi\WordPress\Caching\cache_settings::get_instance( );
 <div class="wordfenceModeElem" id="wordfenceMode_caching"></div>
 <div class="wrap">
 	<?php
-	if( cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode() )
-	{
-	    echo '<div title="Wordfence Falcon Engine Enabled for Maximum Site Performance" class="wfFalcon"></div>';
-	}
-	?>
+    if( cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode() )
+    {
+        echo '<div title="Wordfence Falcon Engine Enabled for Maximum Site Performance" class="wfFalcon"></div>';
+    }
+    ?>
 	<div class="wordfence-lock-icon wordfence-icon32"><br /></div>
 	<h2 id="wfHeading">Vendi - Site Performance</h2>
 	<div class="wordfenceWrap" style="margin: 20px 20px 20px 30px; max-width: 800px;">
@@ -25,17 +25,17 @@ $vwc_settings = \Vendi\WordPress\Caching\cache_settings::get_instance( );
 		</div>
 		<h2>Caching</h2>
 		<table border="0">
-		<tr><td>Disable all performance enhancements:</td><td><input type="radio" name="cacheType" id="cacheType_disable" value="<?php echo cache_settings::CACHE_MODE_OFF; ?>" <?php if( cache_settings::CACHE_MODE_OFF === $vwc_settings->get_cache_mode() ){ echo 'checked="checked"'; } ?> /></td><td>No performance improvement</td></tr>
-		<tr><td>Enable Basic Caching:</td><td><input type="radio" name="cacheType" id="cacheType_php" value="php" <?php if( cache_settings::CACHE_MODE_PHP === $vwc_settings->get_cache_mode() ){ echo 'checked="checked"'; } ?> /></td><td>2 to 3 Times speed increase</td></tr>
-		<tr><td>Enable Wordfence Falcon Engine:<div class="wfSmallFalcon"></div></td><td><input type="radio" name="cacheType" id="cacheType_falcon" value="<?php echo cache_settings::CACHE_MODE_ENHANCED; ?>" <?php if( cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode() ){ echo 'checked="checked"'; } ?> /></td><td>30 to 50 Times speed increase</td></tr>
+		<tr><td>Disable all performance enhancements:</td><td><input type="radio" name="cacheType" id="cacheType_disable" value="<?php echo cache_settings::CACHE_MODE_OFF; ?>" <?php if (cache_settings::CACHE_MODE_OFF === $vwc_settings->get_cache_mode()) { echo 'checked="checked"'; } ?> /></td><td>No performance improvement</td></tr>
+		<tr><td>Enable Basic Caching:</td><td><input type="radio" name="cacheType" id="cacheType_php" value="php" <?php if (cache_settings::CACHE_MODE_PHP === $vwc_settings->get_cache_mode()) { echo 'checked="checked"'; } ?> /></td><td>2 to 3 Times speed increase</td></tr>
+		<tr><td>Enable Wordfence Falcon Engine:<div class="wfSmallFalcon"></div></td><td><input type="radio" name="cacheType" id="cacheType_falcon" value="<?php echo cache_settings::CACHE_MODE_ENHANCED; ?>" <?php if (cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode()) { echo 'checked="checked"'; } ?> /></td><td>30 to 50 Times speed increase</td></tr>
 		</table>
 		<br />
 		<input type="button" id="button1" name="button1" class="button-primary" value="Save Changes to the type of caching enabled above" onclick="WFAD.saveCacheConfig();" />
 		<h2>Cache Options</h2>
 		<table border="0">
-		<tr><td>Allow SSL (secure HTTPS pages) to be cached:</td><td><input type="checkbox" id="wfallowHTTPSCaching" value="1" <?php if( $vwc_settings->get_do_cache_https_urls() ){ echo 'checked="checked"'; } ?> />We recommend you leave this disabled unless your<br />site uses HTTPS but does not receive/send sensitive user info.</td></tr>
-		<tr><td>Add hidden debugging data to the bottom of the HTML source of cached pages:</td><td><input type="checkbox" id="wfaddCacheComment" value="1" <?php if( $vwc_settings->get_do_append_debug_message() ){ echo 'checked="checked"'; } ?> />Message appears as an HTML comment below the closing HTML tag.</td></tr>
-		<tr><td>Clear cache when a scheduled post is published</td><td><input type="checkbox" id="wfclearCacheSched" value="1" <?php if( $vwc_settings->get_do_clear_on_save() ){ echo 'checked="checked"'; } ?> />The entire Falcon cache will be cleared when WordPress publishes a post you've scheduled to be published in future.</td></tr>
+		<tr><td>Allow SSL (secure HTTPS pages) to be cached:</td><td><input type="checkbox" id="wfallowHTTPSCaching" value="1" <?php if ($vwc_settings->get_do_cache_https_urls()) { echo 'checked="checked"'; } ?> />We recommend you leave this disabled unless your<br />site uses HTTPS but does not receive/send sensitive user info.</td></tr>
+		<tr><td>Add hidden debugging data to the bottom of the HTML source of cached pages:</td><td><input type="checkbox" id="wfaddCacheComment" value="1" <?php if ($vwc_settings->get_do_append_debug_message()) { echo 'checked="checked"'; } ?> />Message appears as an HTML comment below the closing HTML tag.</td></tr>
+		<tr><td>Clear cache when a scheduled post is published</td><td><input type="checkbox" id="wfclearCacheSched" value="1" <?php if ($vwc_settings->get_do_clear_on_save()) { echo 'checked="checked"'; } ?> />The entire Falcon cache will be cleared when WordPress publishes a post you've scheduled to be published in future.</td></tr>
 		</table>
 		<br />
 		<input type="button" id="button1" name="button1" class="button-primary" value="Save Changes to the the caching options above" onclick="WFAD.saveCacheOptions();" />
