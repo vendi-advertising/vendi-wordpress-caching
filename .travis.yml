@@ -30,7 +30,8 @@ env:
 #      env: WP_VERSION=latest WP_MULTISITE=1
 
 before_script:
-    - wget https://raw.github.com/benbalter/wordpress-plugin-tests/setup/setup.sh
-    - source setup.sh
+    - bash bin/install-wp-tests.sh wordpress_test travis '' localhost $WP_VERSION
+    #- wget https://raw.github.com/benbalter/wordpress-plugin-tests/setup/setup.sh
+    #- source setup.sh
 
-script: phpunit --coverage-html ./tests/logs/coverage/
+script: phpunit
