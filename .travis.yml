@@ -14,15 +14,10 @@ php:
   - nightly
 
 env:
- - WP_VERSION=latest WP_MULTISITE=0
-
-#matrix:
-#  include:
-#    - php: 5.3
-#      env: WP_VERSION=latest WP_MULTISITE=1
+  - WP_VERSION=latest WP_MULTISITE=0
 
 before_script:
-    - bash bin/install-wp-tests.sh wordpress_test travis '' localhost $WP_VERSION
+  - bash bin/install-wp-tests.sh wordpress_test travis '' localhost $WP_VERSION
 
 script:
   - cd $TRAVIS_BUILD_DIR
