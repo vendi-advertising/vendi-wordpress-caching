@@ -10,7 +10,7 @@ $vwc_settings = \Vendi\WordPress\Caching\cache_settings::get_instance( );
 <div class="wordfenceModeElem" id="wordfenceMode_caching"></div>
 <div class="wrap">
 	<?php
-    if( cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode() )
+    if (cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode())
     {
         echo '<div title="Wordfence Falcon Engine Enabled for Maximum Site Performance" class="wfFalcon"></div>';
     }
