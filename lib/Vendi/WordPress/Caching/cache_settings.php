@@ -77,8 +77,7 @@ class cache_settings
         if ( ! $tmp)
         {
             $tmp = array();
-        }
-        elseif (is_serialized($tmp))
+        } elseif (is_serialized($tmp))
         {
             $tmp = unserialize($tmp);
         }

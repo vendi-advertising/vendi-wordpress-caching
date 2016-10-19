@@ -8,7 +8,7 @@ Author: Vendi
 
 namespace Vendi\Shared;
 
-if( class_exists( '\Vendi\Shared\utils' ) )
+if (class_exists('\Vendi\Shared\utils'))
 {
     return;
 }
@@ -48,9 +48,9 @@ class utils
      * @param  integer|mixed $default_value Optional. If the $key cannot be found the value to return. Default null.
      * @return integer|mixed                The value of the HTTP POST for the given $key or the $default.
      */
-    public static function get_post_value( $key, $default_value = '' )
+    public static function get_post_value($key, $default_value = '')
     {
-        return self::get_request_value( 'POST', $key, $default_value );
+        return self::get_request_value('POST', $key, $default_value);
     }
 
     /**
@@ -59,9 +59,9 @@ class utils
      * @param  integer|mixed $default_value Optional. If the $key cannot be found the value to return. Default null.
      * @return integer|mixed                The value of the HTTP GET for the given $key or the $default.
      */
-    public static function get_get_value( $key, $default_value = '' )
+    public static function get_get_value($key, $default_value = '')
     {
-        return self::get_request_value( 'GET', $key, $default_value );
+        return self::get_request_value('GET', $key, $default_value);
     }
 
     /**
@@ -70,9 +70,9 @@ class utils
      * @param  integer|mixed $default_value Optional. If the $key cannot be found the value to return. Default null.
      * @return integer|mixed                The value of the HTTP COOKIE for the given $key or the $default.
      */
-    public static function get_cookie_value( $key, $default_value = '' )
+    public static function get_cookie_value($key, $default_value = '')
     {
-        return self::get_request_value( 'COOKIE', $key, $default_value );
+        return self::get_request_value('COOKIE', $key, $default_value);
     }
 
     /**
@@ -81,9 +81,9 @@ class utils
      * @param  integer|mixed $default_value Optional. If the $key cannot be found the value to return. Default null.
      * @return integer|mixed                The value of the HTTP SERVER for the given $key or the $default.
      */
-    public static function get_server_value( $key, $default_value = '' )
+    public static function get_server_value($key, $default_value = '')
     {
-        return self::get_request_value( 'SERVER', $key, $default_value );
+        return self::get_request_value('SERVER', $key, $default_value);
     }
 
     /**
@@ -92,9 +92,9 @@ class utils
      * @param  integer|mixed $default_value Optional. If the $key cannot be found the value to return. Default null.
      * @return integer|mixed                The value of the HTTP POST for the given $key or the $default.
      */
-    public static function get_post_value_int( $key, $default_value = null )
+    public static function get_post_value_int($key, $default_value = null)
     {
-        return self::get_request_value_int( 'POST', $key, $default_value );
+        return self::get_request_value_int('POST', $key, $default_value);
     }
 
     /**
@@ -103,9 +103,9 @@ class utils
      * @param  integer|mixed $default_value Optional. If the $key cannot be found the value to return. Default null.
      * @return integer|mixed                The value of the HTTP GET for the given $key or the $default.
      */
-    public static function get_get_value_int( $key, $default_value = null )
+    public static function get_get_value_int($key, $default_value = null)
     {
-        return self::get_request_value_int( 'GET', $key, $default_value );
+        return self::get_request_value_int('GET', $key, $default_value);
     }
 
     /**
@@ -114,9 +114,9 @@ class utils
      * @param  integer|mixed $default_value Optional. If the $key cannot be found the value to return. Default null.
      * @return integer|mixed                The value of the HTTP COOKIE for the given $key or the $default.
      */
-    public static function get_cookie_value_int( $key, $default_value = null )
+    public static function get_cookie_value_int($key, $default_value = null)
     {
-        return self::get_request_value_int( 'COOKIE', $key, $default_value );
+        return self::get_request_value_int('COOKIE', $key, $default_value);
     }
 
     /**
@@ -130,6 +130,10 @@ class utils
         return self::get_request_value_int( 'SERVER', $key, $default_value );
     }
 
+    /**
+     * @param string $request_method
+     * @param string $key
+     */
     public static function get_request_value_int( $request_method, $key, $default_value = null )
     {
         $value = self::get_request_value( $request_method, $key, null );
@@ -176,9 +180,9 @@ class utils
      * @param  string  $method The server method to test for. Generally one of GET, POST, HEAD, PUT, DELETE.
      * @return boolean         Returns true if the REQUEST_METHOD server variable is set to the supplied $method, otherwise false.
      */
-    public static function is_request_method( $method )
+    public static function is_request_method($method)
     {
-        return $method === self::get_server_value( 'REQUEST_METHOD' );
+        return $method === self::get_server_value('REQUEST_METHOD');
     }
 
     /**
@@ -193,7 +197,7 @@ class utils
      */
     public static function is_post()
     {
-        return self::is_request_method( 'POST' );
+        return self::is_request_method('POST');
     }
 
     /**
@@ -204,28 +208,28 @@ class utils
      * @param  mixed  $input The value to test.
      * @return boolean       True if $input is an integer or a string that contains only digits possibly starting with a dash.
      */
-    public static function is_integer_like( $input )
+    public static function is_integer_like($input)
     {
         return
-                is_int( $input )
+                is_int($input)
                 ||
                 (
-                    is_string( $input )
+                    is_string($input)
                     &&
-                    preg_match( '/^-?([0-9])+$/', $input )
+                    preg_match('/^-?([0-9])+$/', $input)
                 );
     }
 
     public static function get_all_headers()
     {
         $headers = array();
-        foreach( array( '_SERVER', '_GET', '_POST', '_COOKIE', '_ENV' ) as $key )
+        foreach (array('_SERVER', '_GET', '_POST', '_COOKIE', '_ENV') as $key)
         {
-            if( array_key_exists( $key, $GLOBALS ) )
+            if (array_key_exists($key, $GLOBALS))
             {
 
             }
-            $headers[ $key ] = $GLOBALS[ $key ];
+            $headers[$key] = $GLOBALS[$key];
         }
         return $headers;
     }
@@ -238,17 +242,17 @@ class utils
      * @param  array $parsed_url An array created by urlpieces.
      * @return string            A URL string.
      */
-    public static function unparse_url( $parsed_url ) {
+    public static function unparse_url($parsed_url) {
         //I don't know what you gave me so you can just have it back
-        if( ! is_array( $parsed_url ) ) {
+        if ( ! is_array($parsed_url)) {
             return $parsed_url;
         }
-        $scheme   = isset( $parsed_url['scheme'])    ?       $parsed_url['scheme'] . '://' : '';
-        $host     = isset( $parsed_url['host'] )     ?       $parsed_url['host']           : '';
-        $port     = isset( $parsed_url['port'] )     ? ':' . $parsed_url['port']           : '';
-        $path     = isset( $parsed_url['path'] )     ?       $parsed_url['path']           : '';
-        $query    = isset( $parsed_url['query'] )    ? '?' . $parsed_url['query']          : '';
-        $fragment = isset( $parsed_url['fragment'] ) ? '#' . $parsed_url['fragment']       : '';
+        $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+        $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+        $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
 
         //NOTE: user and pass were explicitly removed.
 
