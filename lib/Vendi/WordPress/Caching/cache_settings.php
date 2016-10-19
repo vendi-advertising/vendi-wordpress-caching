@@ -5,18 +5,6 @@ namespace Vendi\WordPress\Caching;
 class cache_settings
 {
 /*Fields*/
-    private $cache_mode = self::DEFAULT_VALUE_CACHE_MODE;
-
-    private $do_cache_https_urls = self::DEFAULT_VALUE_DO_CACHE_HTTPS_URLS;
-
-    private $do_append_debug_message = self::DEFAULT_VALUE_DO_APPEND_DEBUG_MESSAGE;
-
-    private $do_clear_on_save = self::DEFAULT_VALUE_DO_CLEAR_ON_SAVE;
-
-    private $cache_exclusions = self::DEFAULT_VALUE_CACHE_EXCLUSIONS;
-
-    private $_settings_loaded_from = 'class';
-
     private static $instance;
 
 /*Constants*/
@@ -106,20 +94,20 @@ class cache_settings
         update_option( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS, $cache_exclusions );
     }
 
-    // public function add_single_cache_exclusion( $cache_exclusion )
-    // {
-    //     if( ! $cache_exclusion )
-    //     {
-    //         throw new cache_setting_exception( __( 'Empty value passed to add_single_cache_exclusion.', 'Vendi Caching' ) );
-    //     }
+    public function add_single_cache_exclusion( $cache_exclusion )
+    {
+        if( ! $cache_exclusion )
+        {
+            throw new cache_setting_exception( __( 'Empty value passed to add_single_cache_exclusion.', 'Vendi Caching' ) );
+        }
 
-    //     if( ! $cache_exclusion instanceof cache_exclusion )
-    //     {
-    //         throw new cache_setting_exception( __( 'Method add_single_cache_exclusion must be provided with type cache_exclusion.', 'Vendi Caching' ) );
-    //     }
+        if( ! $cache_exclusion instanceof cache_exclusion )
+        {
+            throw new cache_setting_exception( __( 'Method add_single_cache_exclusion must be provided with type cache_exclusion.', 'Vendi Caching' ) );
+        }
 
-    //     $this->cache_exclusions[] = $cache_exclusion;
-    // }
+        $this->cache_exclusions[] = $cache_exclusion;
+    }
 
 /*Database loading/saving/uninstall*/
 
