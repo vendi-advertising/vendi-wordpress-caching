@@ -196,20 +196,20 @@ class wfCache {
      *
      * @return string
      */
-    public static function fileFromURI($host, $URI, $isHTTPS){
+    public static function fileFromURI($host, $URI, $isHTTPS) {
         $key = $host . $URI . ($isHTTPS ? '_HTTPS' : '');
-        if(isset(self::$fileCache[$key])){ return self::$fileCache[$key]; }
+        if (isset(self::$fileCache[$key])) { return self::$fileCache[$key]; }
         $host = preg_replace('/[^a-zA-Z0-9\-\.]+/', '', $host);
         $URI = preg_replace('/(?:[^a-zA-Z0-9\-\_\.\~\/]+|\.{2,})/', '', $URI); //Strip out bad chars and multiple dots
-        if(preg_match('/\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)(.*)$/', $URI, $matches)){
+        if (preg_match('/\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)(.*)$/', $URI, $matches)) {
             $URI = $matches[1] . '/';
-            for($i = 2; $i <= 6; $i++){
+            for ($i = 2; $i <= 6; $i++) {
                 $URI .= strlen($matches[$i]) > 0 ? $matches[$i] : '';
                 $URI .= $i < 6 ? '~' : '';
             }
         }
         $ext = '';
-        if($isHTTPS){ $ext = '_https'; }
+        if ($isHTTPS) { $ext = '_https'; }
         $file = WP_CONTENT_DIR . '/wfcache/' . $host . '_' . $URI . '_wfcache' . $ext . '.html';
         self::$fileCache[$key] = $file;
         return $file;
@@ -218,28 +218,28 @@ class wfCache {
     /**
      * @param string $file
      */
-    public static function makeDirIfNeeded($file){
+    public static function makeDirIfNeeded($file) {
         $file = preg_replace('/\/[^\/]*$/', '', $file);
-        if(! is_dir($file)){
+        if ( ! is_dir($file)) {
             @mkdir($file, 0755, true);
         }
     }
-    public static function cacheDirectoryTest(){
+    public static function cacheDirectoryTest() {
         $cacheDir = WP_CONTENT_DIR . '/wfcache/';
-        if(! is_dir($cacheDir)){
-            if(! @mkdir($cacheDir, 0755, true)){
+        if ( ! is_dir($cacheDir)) {
+            if ( ! @mkdir($cacheDir, 0755, true)) {
                 $err = error_get_last();
                 $msg = "The directory $cacheDir does not exist and we could not create it.";
-                if($err){
+                if ($err) {
                     $msg .= ' The error we received was: ' . $err['message'];
                 }
                 return $msg;
             }
         }
-        if(! @file_put_contents($cacheDir . 'test.php', 'test')){
+        if ( ! @file_put_contents($cacheDir . 'test.php', 'test')) {
             $err = error_get_last();
             $msg = "We could not write to the file $cacheDir" . "test.php when testing if the cache directory is writable.";
-            if($err){
+            if ($err) {
                 $msg .= " The error was: " . $err['message'];
             }
             return $msg;
