@@ -95,8 +95,7 @@ class wordfence
         if( defined( 'MULTISITE' ) && MULTISITE === true )
         {
             //Because the plugin is active once installed, even before it's network activated, for site 1 (WordPress team, why?!)
-            global $blog_id;
-            if( $blog_id == 1 && get_option( 'wordfenceActivated' ) != 1 )
+            if( 1 === get_current_blog_id() && get_option( 'wordfenceActivated' ) != 1 )
             {
                 return;
             }
