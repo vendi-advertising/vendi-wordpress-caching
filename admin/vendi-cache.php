@@ -6,8 +6,8 @@ use Vendi\Cache\cache_settings;
 
 if( ! VENDI_CACHE_SUPPORT_MU && defined( 'MULTISITE' ) && MULTISITE )
 {
-	echo '<div class="wrap"><h1>Multisite is not currently supported in this release.</h1></div>';
-	return;
+    echo '<div class="wrap"><h1>Multisite is not currently supported in this release.</h1></div>';
+    return;
 }
 
 $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
