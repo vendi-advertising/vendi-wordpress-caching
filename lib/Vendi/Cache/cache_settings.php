@@ -8,21 +8,21 @@ class cache_settings
     private static $instance;
 
 /*Constants*/
-    const CACHE_MODE_OFF                            = 'off';
-    const CACHE_MODE_PHP                            = 'php';
-    const CACHE_MODE_ENHANCED                       = 'enhanced';
+    const CACHE_MODE_OFF      = 'off';
+    const CACHE_MODE_PHP      = 'php';
+    const CACHE_MODE_ENHANCED = 'enhanced';
 
-    const DEFAULT_VALUE_CACHE_MODE                  = self::CACHE_MODE_OFF;
-    const DEFAULT_VALUE_DO_CACHE_HTTPS_URLS         = false;
-    const DEFAULT_VALUE_DO_APPEND_DEBUG_MESSAGE     = false;
-    const DEFAULT_VALUE_DO_CLEAR_ON_SAVE            = false;
-    const DEFAULT_VALUE_CACHE_EXCLUSIONS            = null;
+    const DEFAULT_VALUE_CACHE_MODE              = self::CACHE_MODE_OFF;
+    const DEFAULT_VALUE_DO_CACHE_HTTPS_URLS     = false;
+    const DEFAULT_VALUE_DO_APPEND_DEBUG_MESSAGE = false;
+    const DEFAULT_VALUE_DO_CLEAR_ON_SAVE        = false;
+    const DEFAULT_VALUE_CACHE_EXCLUSIONS        = null;
 
-    const OPTION_KEY_NAME_CACHE_MODE                = 'vwc_cache_mode';
-    const OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS       = 'vwc_do_cache_https_urls';
-    const OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE   = 'vwc_do_append_debug_message';
-    const OPTION_KEY_NAME_DO_CLEAR_ON_SAVE          = 'vwc_do_clear_on_save';
-    const OPTION_KEY_NAME_CACHE_EXCLUSIONS          = 'vwc_cache_exclusions';
+    const OPTION_KEY_NAME_CACHE_MODE              = 'vwc_cache_mode';
+    const OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS     = 'vwc_do_cache_https_urls';
+    const OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE = 'vwc_do_append_debug_message';
+    const OPTION_KEY_NAME_DO_CLEAR_ON_SAVE        = 'vwc_do_clear_on_save';
+    const OPTION_KEY_NAME_CACHE_EXCLUSIONS        = 'vwc_cache_exclusions';
 
 /*Property Access*/
     public function get_cache_mode()
