@@ -161,12 +161,18 @@ class wfCache
 
             if( $v[ 'pt' ] == 'cc' )
             {
-                foreach( $_COOKIE as $cookieName )
+
+                $cookies = utils::get_request_object( 'COOKIE' );
+
+                if( is_array( $cookies ) )
                 {
-                    //Cookie name contains pattern
-                    if( stripos( $cookieName, $v[ 'p' ] ) !== false )
+                    foreach( $cookies as $cookieName )
                     {
-                        return false;
+                        //Cookie name contains pattern
+                        if( stripos( $cookieName, $v[ 'p' ] ) !== false )
+                        {
+                            return false;
+                        }
                     }
                 }
             }
