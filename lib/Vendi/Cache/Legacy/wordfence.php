@@ -66,32 +66,44 @@ class wordfence
 
         //Must be the final line
     }
-    public static function install_actions() {
+    public static function install_actions()
+    {
         register_activation_hook( VENDI_CACHE_FCPATH, array( __CLASS__, 'install_plugin' ) );
         register_deactivation_hook( VENDI_CACHE_FCPATH, array( __CLASS__, 'uninstall_plugin' ) );
 
         $versionInOptions = get_option( 'vendi_cache_version', false );
-        if( ( ! $versionInOptions ) || version_compare( VENDI_CACHE_VERSION, $versionInOptions, '>' ) ) {
+        if( ( ! $versionInOptions ) || version_compare( VENDI_CACHE_VERSION, $versionInOptions, '>' ) )
+        {
             //Either there is no version in options or the version in options is greater and we need to run the upgrade
             self::runInstall();
         }
 
         wfCache::setup_caching();
 
-        if( defined( 'MULTISITE' ) && MULTISITE === true ) {
+        if( defined( 'MULTISITE' ) && MULTISITE === true )
+        {
+            //Because the plugin is active once installed, even before it's network activated, for site 1 (WordPress team, why?!)
             global $blog_id;
-            if( $blog_id == 1 && get_option( 'wordfenceActivated' ) != 1 ) { return; } //Because the plugin is active once installed, even before it's network activated, for site 1 (WordPress team, why?!)
+            if( $blog_id == 1 && get_option( 'wordfenceActivated' ) != 1 )
+            {
+                return;
+            }
         }
 
         wordpress_actions::install_all_actions( self::get_vwc_cache_settings() );
 
-        if( is_admin() ) {
+        if( is_admin() )
+        {
             add_action( 'admin_init', array( __CLASS__, 'admin_init' ) );
-            if( VENDI_CACHE_SUPPORT_MU && is_multisite() ) {
-                if( wfUtils::isAdminPageMU() ) {
+            if( VENDI_CACHE_SUPPORT_MU && is_multisite() )
+            {
+                if( wfUtils::isAdminPageMU() )
+                {
                     add_action( 'network_admin_menu', array( __CLASS__, 'admin_menus' ) );
-                } //else don't show menu
-            } else {
+                }
+            }
+            else
+            {
                 add_action( 'admin_menu', array( __CLASS__, 'admin_menus' ) );
             }
         }
@@ -433,7 +445,7 @@ class wordfence
             wp_enqueue_script('json2');
             wp_enqueue_script('jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array('jquery'), VENDI_CACHE_VERSION);
             wp_enqueue_script('jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array('jquery'), VENDI_CACHE_VERSION);
-            
+
             wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), VENDI_CACHE_VERSION);
             wp_enqueue_script('wordfenceAdminExtjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), VENDI_CACHE_VERSION);
         }
