@@ -16,10 +16,6 @@ build:
         variables:
             WP_VERSION: '4.6.1'
             WP_MULTISITE: '0'
-            WEB_BASE_DIR: '/home/scrutinizer/web/'
-            WP_CORE_DIR: '/home/scrutinizer/web/wordpress'
-            PLUGIN_BASE_DIR: '/home/scrutinizer/web/wordpress/wp-content/plugins/'
-            GD_PLUGIN_DIR: '/home/scrutinizer/web/wordpress/wp-content/plugins/geodirectory/'
 
     dependencies:
         before:
