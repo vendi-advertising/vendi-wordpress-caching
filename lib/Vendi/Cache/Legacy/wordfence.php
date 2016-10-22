@@ -60,7 +60,9 @@ class wordfence
     {
         if( self::$runInstallCalled )
         {
-return; }
+            return;
+        }
+
         self::$runInstallCalled = true;
         if( function_exists( 'ignore_user_abort' ) )
         {
@@ -74,9 +76,8 @@ return; }
         {
             wfCache::remove_cache_directory_htaccess();
         }
-
-        //Must be the final line
     }
+
     public static function install_actions()
     {
         register_activation_hook( VENDI_CACHE_FCPATH, array( __CLASS__, 'install_plugin' ) );
@@ -120,9 +121,6 @@ return; }
         }
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
     public static function ajax_receiver()
     {
         if( ! wfUtils::isAdmin() )
@@ -161,10 +159,6 @@ return; }
         die( json_encode( $returnArr ) );
     }
 
-
-    /**
-     * @vendi_flag  KEEP
-     */
     public static function ajax_removeFromCache_callback()
     {
         $id = utils::get_post_value( 'id' );
@@ -187,9 +181,6 @@ return; }
         return array( 'ok' => 1 );
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
     public static function ajax_saveCacheOptions_callback()
     {
         $changed = false;
@@ -212,9 +203,6 @@ return; }
         return array( 'ok' => 1 );
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
     public static function ajax_saveCacheConfig_callback()
     {
         $cacheType = utils::get_post_value( 'cacheType' );
@@ -320,9 +308,6 @@ return; }
         return array( 'errorMsg' => "An error occurred. Probably an unknown cacheType: $cacheType" );
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
     public static function ajax_getCacheStats_callback()
     {
         $s = wfCache::get_cache_stats();
@@ -372,9 +357,6 @@ return; }
         return array( 'ok' => 1, 'heading' => 'Cache Stats', 'body' => $body );
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
     public static function ajax_clearPageCache_callback()
     {
         $stats = wfCache::clear_page_cache();
@@ -391,9 +373,6 @@ return; }
         return array( 'ok' => 1, 'heading' => 'Page Cache Cleared', 'body' => $body );
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
     public static function ajax_checkFalconHtaccess_callback()
     {
         if( wfUtils::isNginx() )
@@ -414,9 +393,6 @@ return; }
         return array( 'ok' => 1 );
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
     public static function ajax_downloadHtaccess_callback()
     {
         $url = site_url();
@@ -453,9 +429,6 @@ return; }
         return array( 'ok' => 1 );
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
     public static function ajax_removeCacheExclusion_callback()
     {
         $id = utils::get_post_value( 'id' );
@@ -480,15 +453,12 @@ return; }
         self::get_vwc_cache_settings()->set_cache_exclusions( $ex );
         if( $rewriteHtaccess && wfCache::add_htaccess_code( 'add' ) )
         {
-//rewrites htaccess rules
+            //rewrites htaccess rules
             return array( 'errorMsg', "We removed that rule but could not rewrite your .htaccess file. You're going to have to manually remove this rule from your .htaccess file. Please reload this page now." );
         }
         return array( 'ok' => 1 );
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
     public static function ajax_loadCacheExclusions_callback()
     {
         $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
@@ -535,6 +505,7 @@ return; }
         }
         self::setupAdminVars();
     }
+
     private static function setupAdminVars()
     {
         $nonce = wp_create_nonce( 'wp-ajax' );
@@ -595,6 +566,7 @@ return; }
                                                         )
                         );
     }
+
     public static function activation_warning()
     {
         $activationError = get_option( 'wf_plugin_act_error', '' );
@@ -608,11 +580,14 @@ return; }
         }
         delete_option( 'wf_plugin_act_error' );
     }
+
     public static function admin_menus()
     {
         if( ! wfUtils::isAdmin() )
         {
-return; }
+            return;
+        }
+
         $warningAdded = false;
         if( get_option( 'wf_plugin_act_error', false ) )
         {
@@ -627,10 +602,9 @@ return; }
             $warningAdded = true;
         }
 
-        add_submenu_page( 'options-general.php', 'Vendi Cache', 'Vendi Cache', 'activate_plugins', 'VendiWPCaching', function()
-        {
-require VENDI_CACHE_PATH . '/admin/vendi-cache.php'; } );
+        add_submenu_page( 'options-general.php', 'Vendi Cache', 'Vendi Cache', 'activate_plugins', 'VendiWPCaching', function() { require VENDI_CACHE_PATH . '/admin/vendi-cache.php'; } );
     }
+
     public static function _retargetWordfenceSubmenuCallout()
     {
         echo <<<JQUERY
@@ -642,6 +616,7 @@ jQuery(document).ready(function($) {
 JQUERY;
 
     }
+
     public static function getMyOptionsURL()
     {
         return network_admin_url( 'admin.php?page=WordfenceSecOpt', 'http' );
@@ -674,9 +649,8 @@ JQUERY;
         global $wp_filesystem;
 
         ! $output && ob_start();
-        if( false === ( $credentials = request_filesystem_credentials( $adminURL, '', false, $homePath,
-                array( 'version', 'locale' ), $relaxedFileOwnership ) )
-        ) {
+        if( false === ( $credentials = request_filesystem_credentials( $adminURL, '', false, $homePath, array( 'version', 'locale' ), $relaxedFileOwnership ) ) )
+        {
             ! $output && ob_end_clean();
             return false;
         }
