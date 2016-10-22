@@ -51,8 +51,8 @@ class wordfence
         if (function_exists('ignore_user_abort')) {
             ignore_user_abort(true);
         }
-        $previous_version = get_option('wordfence_version', '0.0.0');
-        update_option('wordfence_version', VENDI_CACHE_VERSION); //In case we have a fatal error we don't want to keep running install.
+        $previous_version = get_option('vendi_cache_version', '0.0.0');
+        update_option('vendi_cache_version', VENDI_CACHE_VERSION); //In case we have a fatal error we don't want to keep running install.
         //EVERYTHING HERE MUST BE IDEMPOTENT
 
         if (self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_PHP || self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED) {
@@ -65,7 +65,7 @@ class wordfence
         register_activation_hook(VENDI_CACHE_FCPATH, array(__CLASS__, 'installPlugin'));
         register_deactivation_hook(VENDI_CACHE_FCPATH, array(__CLASS__, 'uninstallPlugin'));
 
-        $versionInOptions = get_option('wordfence_version', false);
+        $versionInOptions = get_option('vendi_cache_version', false);
         if (( ! $versionInOptions) || version_compare(VENDI_CACHE_VERSION, $versionInOptions, '>')) {
             //Either there is no version in options or the version in options is greater and we need to run the upgrade
             self::runInstall();
@@ -83,8 +83,7 @@ class wordfence
 
         if (is_admin()) {
             add_action('admin_init', array(__CLASS__, 'admin_init'));
-            // add_action('admin_head', array( __CLASS__, '_retargetWordfenceSubmenuCallout' ) );
-            if (is_multisite()) {
+            if ( VENDI_CACHE_SUPPORT_MU && is_multisite()) {
                 if (wfUtils::isAdminPageMU()) {
                     add_action('network_admin_menu', array(__CLASS__, 'admin_menus'));
                 } //else don't show menu
@@ -774,15 +773,13 @@ class wordfence
             wp_enqueue_script('jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array('jquery'), VENDI_CACHE_VERSION);
             wp_enqueue_script('jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array('jquery'), VENDI_CACHE_VERSION);
             wp_enqueue_script('jquery.wfdataTables', wfUtils::getBaseURL() . 'js/jquery.dataTables.min.js', array('jquery'), VENDI_CACHE_VERSION);
-            wp_enqueue_script('jquery.qrcode', wfUtils::getBaseURL() . 'js/jquery.qrcode.min.js', array('jquery'), VENDI_CACHE_VERSION);
+            // wp_enqueue_script('jquery.qrcode', wfUtils::getBaseURL() . 'js/jquery.qrcode.min.js', array('jquery'), VENDI_CACHE_VERSION);
             //wp_enqueue_script('jquery.tools', wfUtils::getBaseURL() . 'js/jquery.tools.min.js', array('jquery'));
             wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), VENDI_CACHE_VERSION);
-            wp_enqueue_script('wordfenceAdminExtjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), VENDI_CACHE_VERSION);
             self::setupAdminVars();
         } else {
             wp_enqueue_style('wp-pointer');
             wp_enqueue_script('wp-pointer');
-            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), VENDI_CACHE_VERSION);
             self::setupAdminVars();
         }
     }
@@ -831,10 +828,7 @@ class wordfence
             $warningAdded = true;
         }
 
-        add_submenu_page( 'options-general.php', 'Vendi Cache', 'Vendi Cache', 'activate_plugins', 'VendiWPCaching', array(__CLASS__, 'menu_sitePerf') );
-    }
-    public static function menu_sitePerf() {
-        require VENDI_CACHE_PATH . '/admin/vendi-cache.php';
+        add_submenu_page( 'options-general.php', 'Vendi Cache', 'Vendi Cache', 'activate_plugins', 'VendiWPCaching', function(){ require VENDI_CACHE_PATH . '/admin/vendi-cache.php'; } );
     }
     public static function _retargetWordfenceSubmenuCallout() {
         echo <<<JQUERY
@@ -846,9 +840,6 @@ jQuery(document).ready(function($) {
 JQUERY;
 
     }
-    public static function getMyHomeURL() {
-        return network_admin_url('admin.php?page=Wordfence', 'http');
-    }
     public static function getMyOptionsURL() {
         return network_admin_url('admin.php?page=WordfenceSecOpt', 'http');
     }
@@ -856,22 +847,6 @@ JQUERY;
     public static function doNotCache() { //Call this to prevent Wordfence from caching the current page.
         wfCache::doNotCache();
         return true;
-    }
-
-    /**
-     * @return string|false
-     */
-    private static function getCurrentUserRole() {
-        if (current_user_can('administrator') || is_super_admin()) {
-            return 'administrator';
-        }
-        $roles = array('editor', 'author', 'contributor', 'subscriber');
-        foreach ($roles as $role) {
-            if (current_user_can($role)) {
-                return $role;
-            }
-        }
-        return false;
     }
 
     /**
