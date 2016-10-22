@@ -2,7 +2,7 @@
 
 namespace Vendi\Cache;
 
-use Vendi\Shared\utils;
+use Vendi\Cache\utils;
 
 class cache_exclusion
 {
