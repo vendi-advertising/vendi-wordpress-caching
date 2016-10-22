@@ -21,8 +21,8 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
         echo '<div title="Vendi Cache Disk-based cache enabled"></div>';
     }
     ?>
-	<h2>Vendi Cache</h2>
-	<div style="margin: 20px 20px 20px 30px; max-width: 800px;">
+	<h1>Vendi Cache</h1>
+	<div>
 
 		<div class="section">
 
@@ -89,7 +89,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 				Publishing a post, creating a new page, updating general settings, creating a new category, updating menus, updating widgets and installing a new plugin.
 			</p>
 
-			<h2>You can add items like URLs, cookies and browsers (user-agents) to exclude from caching</h2>
+			<h3>You can add items like URLs, cookies and browsers (user-agents) to exclude from caching</h3>
 
 			<p style="width: 500px; white-space:nowrap;">
 				If a 
