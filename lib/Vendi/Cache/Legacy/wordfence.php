@@ -3,6 +3,7 @@
 namespace Vendi\Cache\Legacy;
 
 use Vendi\Cache\cache_settings;
+use Vendi\Cache\wordpress_actions;
 use Vendi\Cache\utils;
 
 class wordfence
@@ -82,8 +83,7 @@ class wordfence
             if( $blog_id == 1 && get_option( 'wordfenceActivated' ) != 1 ) { return; } //Because the plugin is active once installed, even before it's network activated, for site 1 (WordPress team, why?!)
         }
 
-        add_action( 'publish_future_post', array( __CLASS__, 'publishFuturePost' ) );
-        add_action( 'mobile_setup', array( __CLASS__, 'jetpackMobileSetup' ) ); //Action called in Jetpack Mobile Theme: modules/minileven/minileven.php
+        wordpress_actions::install_all_actions( self::get_vwc_cache_settings() );
 
         if( is_admin() ) {
             add_action( 'admin_init', array( __CLASS__, 'admin_init' ) );
@@ -94,20 +94,7 @@ class wordfence
             } else {
                 add_action( 'admin_menu', array( __CLASS__, 'admin_menus' ) );
             }
-            add_filter( 'pre_update_option_permalink_structure', array( __CLASS__, 'disablePermalinksFilter' ), 10, 2 );
-            if( preg_match( '/^(?:' . cache_settings::CACHE_MODE_ENHANCED . '|' . cache_settings::CACHE_MODE_PHP . ')$/', self::get_vwc_cache_settings()->get_cache_mode() ) ) {
-                add_filter( 'post_row_actions', array( __CLASS__, 'postRowActions' ), 0, 2 );
-                add_filter( 'page_row_actions', array( __CLASS__, 'pageRowActions' ), 0, 2 );
-                add_action( 'post_submitbox_start', array( __CLASS__, 'postSubmitboxStart' ) );
-            }
         }
-    }
-
-    /**
-     * @vendi_flag  KEEP
-     */
-    public static function jetpackMobileSetup() {
-        define('WFDONOTCACHE', true); //Don't cache jetpack mobile theme pages.
     }
 
     /**
@@ -145,61 +132,6 @@ class wordfence
         die(json_encode($returnArr));
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
-    public static function publishFuturePost($id)
-    {
-        if (self::get_vwc_cache_settings()->get_do_clear_on_save())
-        {
-            wfCache::schedule_cache_clear();
-        }
-    }
-
-    /**
-     * @vendi_flag  KEEP
-     */
-    public static function postRowActions( $actions, $post ) {
-        if( wfUtils::isAdmin() ) {
-            $actions = array_merge( $actions, array(
-                'wfCachePurge' => '<a href="#" onclick="wordfenceExt.removeFromCache(\'' . $post->ID . '\'); return false;">Remove from Wordfence cache</a>'
-                ) );
-        }
-        return $actions;
-    }
-
-    /**
-     * @vendi_flag  KEEP
-     */
-    public static function pageRowActions( $actions, $post ) {
-        if( wfUtils::isAdmin() ) {
-            $actions = array_merge( $actions, array(
-                'wfCachePurge' => '<a href="#" onclick="wordfenceExt.removeFromCache(\'' . $post->ID . '\'); return false;">Remove from Wordfence cache</a>'
-                ) );
-        }
-        return $actions;
-    }
-
-    /**
-     * @vendi_flag  KEEP
-     */
-    public static function postSubmitboxStart() {
-        if( wfUtils::isAdmin() ) {
-            global $post;
-            echo '<div><a href="#" onclick="wordfenceExt.removeFromCache(\'' . $post->ID . '\'); return false;">Remove from Wordfence cache</a></div>';
-        }
-    }
-
-    /**
-     * @vendi_flag  KEEP
-     */
-    public static function disablePermalinksFilter( $newVal, $oldVal ) {
-        if( self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED && $oldVal && ( ! $newVal ) ) { //Falcon is enabled and admin is disabling permalinks
-            wfCache::add_htaccess_code( 'remove' );
-            self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
-        }
-        return $newVal;
-    }
 
     /**
      * @vendi_flag  KEEP
@@ -501,9 +433,14 @@ class wordfence
             wp_enqueue_script('json2');
             wp_enqueue_script('jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array('jquery'), VENDI_CACHE_VERSION);
             wp_enqueue_script('jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array('jquery'), VENDI_CACHE_VERSION);
-            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), VENDI_CACHE_VERSION);
-            self::setupAdminVars();
+
+            wp_enqueue_script('wordfenceAdminExtjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), VENDI_CACHE_VERSION);
         }
+        else
+        {
+            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), VENDI_CACHE_VERSION);
+        }
+        self::setupAdminVars();
     }
     private static function setupAdminVars() {
         $nonce = wp_create_nonce('wp-ajax');
