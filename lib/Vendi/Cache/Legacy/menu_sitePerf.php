@@ -1,10 +1,10 @@
 <?php
 
-namespace Vendi\WordPress\Caching\Legacy;
+namespace Vendi\Cache\Legacy;
 
-use Vendi\WordPress\Caching\cache_settings;
+use Vendi\Cache\cache_settings;
 
-$vwc_settings = \Vendi\WordPress\Caching\cache_settings::get_instance( );
+$vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 
 ?>
 <div class="wordfenceModeElem" id="wordfenceMode_caching"></div>

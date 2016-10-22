@@ -1,6 +1,6 @@
 <?php
 
-use Vendi\WordPress\Caching\cache_exclusion;
+use Vendi\Cache\cache_exclusion;
 
 class test_cache_exclusion extends WP_UnitTestCase
 {
@@ -8,7 +8,7 @@ class test_cache_exclusion extends WP_UnitTestCase
     /**
      * @dataProvider provider_for_static_factories
      *  
-     * @covers Vendi\WordPress\Caching\cache_exclusion
+     * @covers Vendi\Cache\cache_exclusion
      */
     public function test_static_factories( $method, $property, $comparison, array $tests )
     {
@@ -32,7 +32,7 @@ class test_cache_exclusion extends WP_UnitTestCase
     /**
      * @dataProvider provider_for_create_from_legacy
      *  
-     * @covers Vendi\WordPress\Caching\cache_exclusion::create_from_legacy
+     * @covers Vendi\Cache\cache_exclusion::create_from_legacy
      */
     public function test_create_from_legacy( $pt, $property, $comparison )
     {
@@ -45,9 +45,9 @@ class test_cache_exclusion extends WP_UnitTestCase
     }
 
     /**
-     * @expectedException \Vendi\WordPress\Caching\cache_setting_exception
+     * @expectedException \Vendi\Cache\cache_setting_exception
      *  
-     * @covers Vendi\WordPress\Caching\cache_exclusion::create_from_legacy
+     * @covers Vendi\Cache\cache_exclusion::create_from_legacy
      */
     public function test_create_from_legacy_unknown_property( )
     {
@@ -55,9 +55,9 @@ class test_cache_exclusion extends WP_UnitTestCase
     }
 
     /**
-     * @expectedException \Vendi\WordPress\Caching\cache_setting_exception
+     * @expectedException \Vendi\Cache\cache_setting_exception
      *  
-     * @covers Vendi\WordPress\Caching\cache_exclusion::set_property
+     * @covers Vendi\Cache\cache_exclusion::set_property
      */
     public function test_set_property_invalid( )
     {
@@ -65,9 +65,9 @@ class test_cache_exclusion extends WP_UnitTestCase
     }
 
     /**
-     * @expectedException \Vendi\WordPress\Caching\cache_setting_exception
+     * @expectedException \Vendi\Cache\cache_setting_exception
      *  
-     * @covers Vendi\WordPress\Caching\cache_exclusion::set_comparison
+     * @covers Vendi\Cache\cache_exclusion::set_comparison
      */
     public function test_set_comparison_invalid()
     {
@@ -75,9 +75,9 @@ class test_cache_exclusion extends WP_UnitTestCase
     }
 
     /**
-     * @expectedException \Vendi\WordPress\Caching\cache_setting_exception
+     * @expectedException \Vendi\Cache\cache_setting_exception
      *  
-     * @covers Vendi\WordPress\Caching\cache_exclusion::create_from_legacy
+     * @covers Vendi\Cache\cache_exclusion::create_from_legacy
      */
     public function test_create_from_legacy_not_array()
     {
@@ -85,9 +85,9 @@ class test_cache_exclusion extends WP_UnitTestCase
     }
 
     /**
-     * @expectedException \Vendi\WordPress\Caching\cache_setting_exception
+     * @expectedException \Vendi\Cache\cache_setting_exception
      *  
-     * @covers Vendi\WordPress\Caching\cache_exclusion::create_from_legacy
+     * @covers Vendi\Cache\cache_exclusion::create_from_legacy
      */
     public function test_create_from_legacy_missing_key()
     {
@@ -95,9 +95,9 @@ class test_cache_exclusion extends WP_UnitTestCase
     }
 
     /**
-     * @expectedException \Vendi\WordPress\Caching\cache_setting_exception
+     * @expectedException \Vendi\Cache\cache_setting_exception
      *  
-     * @covers Vendi\WordPress\Caching\cache_exclusion::create_from_legacy
+     * @covers Vendi\Cache\cache_exclusion::create_from_legacy
      */
     public function test_create_from_legacy_missing_key_other()
     {
@@ -123,7 +123,7 @@ class test_cache_exclusion extends WP_UnitTestCase
     {
         return array(
                     array(
-                        array( 'Vendi\WordPress\Caching\cache_exclusion', 'create_url_exact' ),
+                        array( 'Vendi\Cache\cache_exclusion', 'create_url_exact' ),
                         cache_exclusion::PROPERTY_URL,
                         cache_exclusion::COMPARISON_EXACT,
                         array(
@@ -131,7 +131,7 @@ class test_cache_exclusion extends WP_UnitTestCase
                         ),
                     ),
                     array(
-                        array( 'Vendi\WordPress\Caching\cache_exclusion', 'create_url_contains' ),
+                        array( 'Vendi\Cache\cache_exclusion', 'create_url_contains' ),
                         cache_exclusion::PROPERTY_URL,
                         cache_exclusion::COMPARISON_CONTAINS,
                         array(
@@ -139,7 +139,7 @@ class test_cache_exclusion extends WP_UnitTestCase
                         ),
                     ),
                     array(
-                        array( 'Vendi\WordPress\Caching\cache_exclusion', 'create_url_ends_with' ),
+                        array( 'Vendi\Cache\cache_exclusion', 'create_url_ends_with' ),
                         cache_exclusion::PROPERTY_URL,
                         cache_exclusion::COMPARISON_ENDS_WITH,
                         array(
@@ -147,7 +147,7 @@ class test_cache_exclusion extends WP_UnitTestCase
                         ),
                     ),
                     array(
-                        array( 'Vendi\WordPress\Caching\cache_exclusion', 'create_url_starts_with' ),
+                        array( 'Vendi\Cache\cache_exclusion', 'create_url_starts_with' ),
                         cache_exclusion::PROPERTY_URL,
                         cache_exclusion::COMPARISON_STARTS_WITH,
                         array(
@@ -158,7 +158,7 @@ class test_cache_exclusion extends WP_UnitTestCase
 
 
                     array(
-                        array( 'Vendi\WordPress\Caching\cache_exclusion', 'create_user_agent_contains' ),
+                        array( 'Vendi\Cache\cache_exclusion', 'create_user_agent_contains' ),
                         cache_exclusion::PROPERTY_USER_AGENT,
                         cache_exclusion::COMPARISON_CONTAINS,
                         array(
@@ -166,7 +166,7 @@ class test_cache_exclusion extends WP_UnitTestCase
                         ),
                     ),
                     array(
-                        array( 'Vendi\WordPress\Caching\cache_exclusion', 'create_user_agent_exact' ),
+                        array( 'Vendi\Cache\cache_exclusion', 'create_user_agent_exact' ),
                         cache_exclusion::PROPERTY_USER_AGENT,
                         cache_exclusion::COMPARISON_EXACT,
                         array(
@@ -177,7 +177,7 @@ class test_cache_exclusion extends WP_UnitTestCase
 
 
                     array(
-                        array( 'Vendi\WordPress\Caching\cache_exclusion', 'create_cookie_contains' ),
+                        array( 'Vendi\Cache\cache_exclusion', 'create_cookie_contains' ),
                         cache_exclusion::PROPERTY_COOKIE_NAME,
                         cache_exclusion::COMPARISON_CONTAINS,
                         array(

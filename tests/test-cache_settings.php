@@ -1,6 +1,6 @@
 <?php
 
-use Vendi\WordPress\Caching;
+use Vendi\Cache;
 
 class test_cache_settings extends WP_UnitTestCase
 {

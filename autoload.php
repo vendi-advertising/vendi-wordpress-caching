@@ -7,8 +7,8 @@ spl_autoload_register(
                             //PSR-4 compliant autoloader
                             //See http://www.php-fig.org/psr/psr-4/
                             $prefixes = array(
-                                                'Vendi\\WordPress\\Caching\\' => VENDI_WORDPRESS_CACHING_PATH . '/lib/Vendi/WordPress/Caching/',
-                                                'Vendi\\Shared\\'             => VENDI_WORDPRESS_CACHING_PATH . '/lib/Vendi/Shared/',
+                                                'Vendi\\Cache\\'  => VENDI_CACHE_PATH . '/lib/Vendi/Cache/',
+                                                'Vendi\\Shared\\' => VENDI_CACHE_PATH . '/lib/Vendi/Shared/',
                                             );
 
                             foreach ($prefixes as $prefix => $base_dir)
