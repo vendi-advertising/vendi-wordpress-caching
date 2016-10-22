@@ -21,8 +21,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
         echo '<div title="Vendi Cache Disk-based cache enabled" class="wfFalcon"></div>';
     }
     ?>
-	<div class="wordfence-lock-icon wordfence-icon32"><br /></div>
-	<h2 id="wfHeading">Vendi Cache</h2>
+	<h2>Vendi Cache</h2>
 	<div class="wordfenceWrap" style="margin: 20px 20px 20px 30px; max-width: 800px;">
 		<div id="wordfenceFalconDeprecationWarning">
 			<p>

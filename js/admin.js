@@ -270,10 +270,5 @@
 	}
 	jQuery(function() {
 		window.wordfenceAdmin.init();
-		jQuery(window).on('focus', function() {
-			if (jQuery('body').hasClass('wordfenceLiveActivityPaused')) {
-				jQuery('body').removeClass('wordfenceLiveActivityPaused');
-			}
-		});
 	});
 })(jQuery);
