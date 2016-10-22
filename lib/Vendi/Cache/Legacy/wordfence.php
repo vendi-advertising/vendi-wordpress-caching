@@ -602,7 +602,9 @@ class wordfence
             $warningAdded = true;
         }
 
-        add_submenu_page( 'options-general.php', 'Vendi Cache', 'Vendi Cache', 'activate_plugins', 'VendiWPCaching', function() { require VENDI_CACHE_PATH . '/admin/vendi-cache.php'; } );
+        add_submenu_page( 'options-general.php', 'Vendi Cache', 'Vendi Cache', 'activate_plugins', 'VendiWPCaching', function()
+        {
+require VENDI_CACHE_PATH . '/admin/vendi-cache.php'; } );
     }
 
     public static function _retargetWordfenceSubmenuCallout()
