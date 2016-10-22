@@ -380,12 +380,6 @@ class wordfence
         }
         return array('ok' => 1, 'heading' => 'Page Cache Cleared', 'body' => $body);
     }
-    public static function ajax_updateConfig_callback() {
-        $key = $_POST['key'];
-        $val = $_POST['val'];
-        wfConfig::set($key, $val);
-        return array('ok' => 1);
-    }
 
     /**
      * @vendi_flag  KEEP
@@ -490,29 +484,14 @@ class wordfence
     public static function admin_init() {
         if ( ! wfUtils::isAdmin()) { return; }
         foreach (array(
-            'activate', 'startPasswdAudit',
-            'exportSettings', 'importSettings', 'bulkOperation', 'removeExclusion',
-            'ticker', 'loadIssues', 'updateIssueStatus', 'updateAllIssues',
-            'loadBlockRanges', 'unblockRange', 'whois',
-            'loadStaticPanel', 'downloadHtaccess', 'checkFalconHtaccess',
-            'updateConfig', 'saveCacheConfig', 'removeFromCache', 'adminEmailChoice', 'suPHPWAFUpdateChoice', 'saveCacheOptions', 'clearPageCache',
-            'getCacheStats', 'clearAllBlocked', 'killScan', 'saveCountryBlocking', 'saveScanSchedule',
-            'startTourAgain', 'downgradeLicense', 'addTwoFactor', 'twoFacActivate', 'twoFacDel',
-            'loadTwoFactor', 'loadAvgSitePerf', 'sendTestEmail', 'addCacheExclusion', 'removeCacheExclusion',
-            'loadCacheExclusions',
-            'sendDiagnostic', 'whitelistWAFParamKey',
-            'hideFileHtaccess', 'wafConfigureAutoPrepend',
-            'whitelistBulkDelete', 'whitelistBulkEnable', 'whitelistBulkDisable',
+            'removeExclusion', 'downloadHtaccess', 'checkFalconHtaccess',
+            'saveCacheConfig', 'removeFromCache', 'saveCacheOptions', 'clearPageCache', 'getCacheStats',
+            'addCacheExclusion', 'removeCacheExclusion', 'loadCacheExclusions',
         ) as $func) {
-            // if( is_callable( array( __CLASS__, 'ajaxReceiver' )  ) )
-            // {
-                add_action('wp_ajax_wordfence_' . $func, array(__CLASS__, 'ajaxReceiver'));
-            // }
+            add_action('wp_ajax_wordfence_' . $func, array(__CLASS__, 'ajaxReceiver'));
         }
 
         if (isset($_GET['page']) && preg_match('/^VendiWPCaching/', @$_GET['page'])) {
-            wp_enqueue_style('wp-pointer');
-            wp_enqueue_script('wp-pointer');
             wp_enqueue_style('wordfence-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_CACHE_VERSION);
             wp_enqueue_style('wordfence-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', VENDI_CACHE_VERSION);
 
@@ -520,7 +499,7 @@ class wordfence
             wp_enqueue_script('json2');
             wp_enqueue_script('jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array('jquery'), VENDI_CACHE_VERSION);
             wp_enqueue_script('jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array('jquery'), VENDI_CACHE_VERSION);
-            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), VENDI_CACHE_VERSION);
+            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), VENDI_CACHE_VERSION + uniqid());
             self::setupAdminVars();
         } else {
             wp_enqueue_style('wp-pointer');
@@ -529,11 +508,62 @@ class wordfence
         }
     }
     private static function setupAdminVars() {
-        wp_localize_script('wordfenceAdminjs', 'WordfenceAdminVars', array(
-            'ajaxURL' => admin_url('admin-ajax.php'),
-            'firstNonce' => wp_create_nonce('wp-ajax'),
-            'cacheType' => self::get_vwc_cache_settings()->get_cache_mode(),
-            ));
+        $nonce = wp_create_nonce('wp-ajax');
+        wp_localize_script(
+                            'wordfenceAdminjs',
+                            'WordfenceAdminVars', array(
+                                                            'ajaxURL' => admin_url('admin-ajax.php'),
+                                                            'firstNonce' => $nonce,
+                                                            'cacheType' => self::get_vwc_cache_settings()->get_cache_mode(),
+
+                                                            'msg_loading' => __( 'Wordfence is working...', 'Vendi Cache' ),
+                                                            'msg_general_error' => __( 'An error occurred', 'Vendi Cache' ),
+
+                                                            'msg_heading_enable_enhanced' => __( 'Enabling Disk-Based Cache Engine', 'Vendi Cache' ),
+                                                            'msg_heading_error' => __( 'We encountered a problem', 'Vendi Cache' ),
+                                                            'msg_heading_invalid_pattern' => __( 'Incorrect pattern for exclusion', 'Vendi Cache' ),
+                                                            'msg_heading_cache_exclusions' => __( 'Cache Exclusions', 'Vendi Cache' ),
+
+                                                            'msg_switch_apache' => 'Disk-based cache modifies your website configuration file which is called your .htaccess file.
+                                                                                    To enable disk-based cache we ask that you make a backup of this file.
+                                                                                    This is a safety precaution in case for some reason disk-based Cache is not compatible with your site.<br /><br />
+                                                                                    <a
+                                                                                       href="' . admin_url( 'admin-ajax.php' ) . '?action=wordfence_downloadHtaccess&amp;nonce=' . $nonce . '"
+                                                                                       onclick="jQuery(\'#wfNextBut\').prop(\'disabled\', false); return true;">Click here to download a backup copy of your .htaccess file now</a><br /><br />
+                                                                                    <input type="button" name="but1" id="wfNextBut" value="Click to Enable Disk-based cache Engine" disabled="disabled" onclick="WFAD.confirmSwitchToFalcon(0);" />
+                                                                                    ',
+                                                            'msg_switch_nginx'  => '
+                                                                                    You are using an Nginx web server and using a FastCGI processor like PHP5-FPM.
+                                                                                    To use disk-based cache you will need to manually modify your nginx.conf configuration file and reload your Nginx server for the changes to take effect.
+                                                                                    You can find the <a href="http://www.wordfence.com/blog/2014/05/nginx-wordfence-falcon-engine-php-fpm-fastcgi-fast-cgi/" target="_blank">rules you need to make these changes to nginx.conf on this page on wordfence.com</a>.
+                                                                                    Once you have made these changes, compressed cached files will be served to your visitors directly from Nginx making your site extremely fast.
+                                                                                    When you have made the changes and reloaded your Nginx server, you can click the button below to enable Disk-based cache.<br /><br />
+                                                                                    <input type="button" name="but1" id="wfNextBut" value="Click to Enable Disk-based cache Engine" onclick="WFAD.confirmSwitchToFalcon(1);" />
+                                                                                ',
+
+                                                            'msg_switch_error'  => '
+                                                                                    We can\'t modify your .htaccess file for you because: @@1@@<br /><br />
+                                                                                    Advanced users: If you would like to manually enable disk-based cache yourself by editing your .htaccess, you can add the rules below to the beginning of your .htaccess file.
+                                                                                    Then click the button below to enable disk-based cache. Don\'t do this unless you understand website configuration.<br />
+                                                                                    <textarea style="width: 300px; height:100px;" readonly>@@2@@</textarea><br />
+                                                                                    <input type="button" value="Enable disk-based cache after manually editing .htaccess" onclick="WFAD.confirmSwitchToFalcon(1);" />
+                                                                                ',
+                                                            'msg_manual_update' => '
+                                                                                    You need to manually update your .htaccess,  @@1@@<br />
+                                                                                    Your option was updated but you need to change the Wordfence code in your .htaccess to the following:<br />
+                                                                                    <textarea style="width: 300px; height: 120px;">@@2@@</textarea>
+                                                                                ',
+
+                                                            'msg_invalid_pattern' => '
+                                                                                        You can not enter full URL\'s for exclusion from caching.
+                                                                                        You entered a full URL that started with http:// or https://.
+                                                                                        You must enter relative URL\'s e.g. /exclude/this/page/.
+                                                                                        You can also enter text that might be contained in the path part of a URL or at the end of the path part of a URL.
+                                                                                ',
+
+                                                            'msg_no_exclusions' => __( 'There are not currently any exclusions. If you have a site that does not change often, it is perfectly normal to not have any pages you want to exclude from the cache.', 'Vendi Cache' ),
+                                                        )
+                        );
     }
     public static function activation_warning() {
         $activationError = get_option('wf_plugin_act_error', '');
@@ -544,13 +574,6 @@ class wordfence
             echo '<div id="wordfenceConfigWarning" class="updated fade"><p><strong>Wordfence generated an error on activation. The output we received during activation was:</strong> ' . wp_kses($activationError, array()) . '</p></div>';
         }
         delete_option('wf_plugin_act_error');
-    }
-    public static function adminEmailWarning() {
-        $url = network_admin_url('admin.php?page=WordfenceSecOpt&wafAction=useMineForAdminEmailAlerts');
-        $dismissURL = network_admin_url('admin.php?page=WordfenceSecOpt&wafAction=dismissAdminEmailNotice&nonce=' .
-            rawurlencode(wp_create_nonce('wfDismissAdminEmailWarning')));
-        echo '<div id="wordfenceAdminEmailWarning" class="fade error"><p><strong>You have not set an administrator email address to receive alerts for Wordfence.</strong> Please <a href="' . self::getMyOptionsURL() . '">click here to go to the Wordfence Options Page</a> and set an email address where you will receive security alerts from this site.</p><p><a class="button button-small" href="#" onclick="wordfenceExt.adminEmailChoice(\'mine\'); return false;"">Use My Email Address</a>
-        <a class="button button-small wf-dismiss-link" href="#" onclick="wordfenceExt.adminEmailChoice(\'no\'); return false;">Dismiss</a></p></div>';
     }
     public static function admin_menus() {
         if ( ! wfUtils::isAdmin()) { return; }
