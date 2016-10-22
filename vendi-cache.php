@@ -18,6 +18,8 @@ if (defined('WP_INSTALLING') && WP_INSTALLING)
 define('VENDI_CACHE_FILE', __FILE__);
 define('VENDI_CACHE_URL', plugin_dir_url(__FILE__));
 
+//For launch we can't support MU however we're not going to remove the code for it.
+define('VENDI_CACHE_SUPPORT_MU', false );
 
 define('VENDI_CACHE_VERSION', '1.0.2');
 

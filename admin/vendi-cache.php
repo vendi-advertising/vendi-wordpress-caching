@@ -4,6 +4,12 @@ namespace Vendi\Cache\Legacy;
 
 use Vendi\Cache\cache_settings;
 
+if( ! VENDI_CACHE_SUPPORT_MU && defined( 'MULTISITE' ) && MULTISITE )
+{
+	echo '<div class="wrap"><h1>Multisite is not currently supported in this release.</h1></div>';
+	return;
+}
+
 $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 
 ?>
@@ -12,11 +18,11 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 	<?php
     if (cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode())
     {
-        echo '<div title="Wordfence Falcon Engine Enabled for Maximum Site Performance" class="wfFalcon"></div>';
+        echo '<div title="Vendi Cache Disk-based cache enabled" class="wfFalcon"></div>';
     }
     ?>
 	<div class="wordfence-lock-icon wordfence-icon32"><br /></div>
-	<h2 id="wfHeading">Vendi - Site Performance</h2>
+	<h2 id="wfHeading">Vendi Cache</h2>
 	<div class="wordfenceWrap" style="margin: 20px 20px 20px 30px; max-width: 800px;">
 		<div id="wordfenceFalconDeprecationWarning">
 			<p>
