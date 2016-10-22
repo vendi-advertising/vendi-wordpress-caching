@@ -487,272 +487,21 @@ class wordfence
         return array('ex' => $ex);
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
-    public static function ajax_saveConfig_callback() {
-        $reload = '';
-        // $opts = wfConfig::parseOptions();
-        $opts = array();
-
-        $opts['scan_exclude'] = wfUtils::cleanupOneEntryPerLine($opts['scan_exclude']);
-
-        foreach ($opts as $key => $val) {
-            wfConfig::set($key, $val);
-        }
-
-        $paidKeyMsg = false;
-
-        return array('ok' => 1, 'reload' => $reload, 'paidKeyMsg' => $paidKeyMsg);
-    }
-
-    public static function ajax_saveDebuggingConfig_callback() {
-        return array('ok' => 1, 'reload' => false, 'paidKeyMsg' => '');
-    }
-    public static function ajax_bulkOperation_callback() {
-        $op = sanitize_text_field($_POST['op']);
-        if ($op == 'del' || $op == 'repair') {
-            $ids = $_POST['ids'];
-            $filesWorkedOn = 0;
-            $errors = array();
-            $issues = new wfIssues();
-            foreach ($ids as $id) {
-                $id = intval($id); //Make sure input is a number.
-                $issue = $issues->getIssueByID($id);
-                if ( ! $issue) {
-                    $errors[] = "Could not delete one of the files because we could not find the issue. Perhaps it's been resolved?";
-                    continue;
-                }
-                $file = $issue['data']['file'];
-                $localFile = ABSPATH . '/' . $file;
-                $localFile = realpath($localFile);
-                if (strpos($localFile, ABSPATH) !== 0) {
-                    $errors[] = "An invalid file was requested: " . wp_kses($file, array());
-                    continue;
-                }
-                if ($op == 'del') {
-                    if (@unlink($localFile)) {
-                        $issues->updateIssue($id, 'delete');
-                        $filesWorkedOn++;
-                    } else {
-                        $err = error_get_last();
-                        $errors[] = "Could not delete file " . wp_kses($file, array()) . ". Error was: " . wp_kses($err['message'], array());
-                    }
-                } else if ($op == 'repair') {
-                    $dat = $issue['data'];
-                    if ($result['cerrorMsg']) {
-                        $errors[] = $result['cerrorMsg'];
-                        continue;
-                    } else if ( ! $result['fileContent']) {
-                        $errors[] = "We could not get the original file of " . wp_kses($file, array()) . " to do a repair.";
-                        continue;
-                    }
-
-                    if (preg_match('/\.\./', $file)) {
-                        $errors[] = "An invalid file " . wp_kses($file, array()) . " was specified for repair.";
-                        continue;
-                    }
-                    $fh = fopen($localFile, 'w');
-                    if ( ! $fh) {
-                        $err = error_get_last();
-                        if (preg_match('/Permission denied/i', $err['message'])) {
-                            $errMsg = "You don't have permission to repair " . wp_kses($file, array()) . ". You need to either fix the file manually using FTP or change the file permissions and ownership so that your web server has write access to repair the file.";
-                        } else {
-                            $errMsg = "We could not write to " . wp_kses($file, array()) . ". The error was: " . $err['message'];
-                        }
-                        $errors[] = $errMsg;
-                        continue;
-                    }
-                    flock($fh, LOCK_EX);
-                    $bytes = fwrite($fh, $result['fileContent']);
-                    flock($fh, LOCK_UN);
-                    fclose($fh);
-                    if ($bytes < 1) {
-                        $errors[] = "We could not write to " . wp_kses($file, array()) . ". ($bytes bytes written) You may not have permission to modify files on your WordPress server.";
-                        continue;
-                    }
-                    $filesWorkedOn++;
-                    $issues->updateIssue($id, 'delete');
-                }
-            }
-            $verb = $op == 'del' ? 'Deleted' : 'Repaired';
-            $verb2 = $op == 'del' ? 'delete' : 'repair';
-            if ($filesWorkedOn > 0 && sizeof($errors) > 0) {
-                $headMsg = "$verb some files with errors";
-                $bodyMsg = "$verb $filesWorkedOn files but we encountered the following errors with other files: " . implode('<br />', $errors);
-            } else if ($filesWorkedOn > 0) {
-                $headMsg = "$verb $filesWorkedOn files successfully";
-                $bodyMsg = "$verb $filesWorkedOn files successfully. No errors were encountered.";
-            } else if (sizeof($errors) > 0) {
-                $headMsg = "Could not $verb2 files";
-                $bodyMsg = "We could not $verb2 any of the files you selected. We encountered the following errors: " . implode('<br />', $errors);
-            } else {
-                $headMsg = "Nothing done";
-                $bodyMsg = "We didn't $verb2 anything and no errors were found.";
-            }
-
-            return array('ok' => 1, 'bulkHeading' => $headMsg, 'bulkBody' => $bodyMsg);
-        } else {
-            return array('errorMsg' => "Invalid bulk operation selected");
-        }
-    }
-
-    /**
-     * @vendi_flag  KEEP
-     */
-    public static function ajax_deleteFile_callback($issueID = null) {
-        if ($issueID === null) {
-            $issueID = intval($_POST['issueID']);
-        }
-        $wfIssues = new wfIssues();
-        $issue = $wfIssues->getIssueByID($issueID);
-        if ( ! $issue) {
-            return array('errorMsg' => "Could not delete file because we could not find that issue.");
-        }
-        if ( ! $issue['data']['file']) {
-            return array('errorMsg' => "Could not delete file because that issue does not appear to be a file related issue.");
-        }
-        $file = $issue['data']['file'];
-        $localFile = ABSPATH . '/' . $file;
-        $localFile = realpath($localFile);
-        if (strpos($localFile, ABSPATH) !== 0) {
-            return array('errorMsg' => "An invalid file was requested for deletion.");
-        }
-        if ($localFile === ABSPATH . 'wp-config.php' && file_exists(ABSPATH . 'wp-config.php') && empty($_POST['forceDelete'])) {
-            return array(
-                'errorMsg' => "You must first download a backup copy of your <code>wp-config.php</code> prior to deleting the infected file.
-                The <code>wp-config.php</code> file contains your database credentials which you will need to restore normal site operations.
-                Your site will <b>NOT</b> function once the <code>wp-config.php</code> has been deleted.
-                <p>
-                    <a class='button' href='/?_wfsf=download&nonce=" . wp_create_nonce('wp-ajax') . "&file=" . rawurlencode($file) . "' target='_blank' onclick=\"jQuery('#wp-config-force-delete').show();\">Download a backup copy</a>
-                    <a style='display:none' id='wp-config-force-delete' class='button' href='#' target='_blank' onclick='WFAD.deleteFile($issueID, true); return false;'>Delete wp-config.php</a>
-                </p>",
-            );
-        }
-
-        /** @var WP_Filesystem_Base $wp_filesystem */
-        global $wp_filesystem;
-
-        $adminURL = network_admin_url('admin.php?' . http_build_query(array(
-                'page'               => 'Wordfence',
-                'wfScanAction'       => 'promptForCredentials',
-                'wfFilesystemAction' => 'deleteFile',
-                'issueID'            => $issueID,
-                'nonce'              => wp_create_nonce('wp-ajax'),
-            )));
-
-        if ( ! self::requestFilesystemCredentials($adminURL, null, true, false)) {
-            return array(
-                'ok'               => 1,
-                'needsCredentials' => true,
-                'redirect'         => $adminURL,
-            );
-        }
-
-        if ($wp_filesystem->delete($localFile)) {
-            $wfIssues->updateIssue($issueID, 'delete');
-            return array(
-                'ok' => 1,
-                'localFile' => $localFile,
-                'file' => $file
-                );
-        } else {
-            $err = error_get_last();
-            return array('errorMsg' => "Could not delete file " . wp_kses($file, array()) . ". The error was: " . wp_kses($err['message'], array()));
-        }
-    }
-    public static function ajax_deleteDatabaseOption_callback() {
-        /** @var wpdb $wpdb */
-        global $wpdb;
-        $issueID = intval($_POST['issueID']);
-        $wfIssues = new wfIssues();
-        $issue = $wfIssues->getIssueByID($issueID);
-        if ( ! $issue) {
-            return array('errorMsg' => "Could not remove the option because we could not find that issue.");
-        }
-        if (empty($issue['data']['option_name'])) {
-            return array('errorMsg' => "Could not remove the option because that issue does not appear to be a database related issue.");
-        }
-        $prefix = $wpdb->get_blog_prefix($issue['data']['site_id']);
-        if ($wpdb->query($wpdb->prepare("DELETE FROM {$prefix}options WHERE option_name = %s", $issue['data']['option_name']))) {
-            $wfIssues->updateIssue($issueID, 'delete');
-            return array(
-                'ok'          => 1,
-                'option_name' => $issue['data']['option_name'],
-            );
-        } else {
-            return array('errorMsg' => "Could not remove the option " . esc_html($issue['data']['option_name']) . ". The error was: " . esc_html($wpdb->last_error));
-        }
-    }
-    public static function ajax_restoreFile_callback($issueID = null) {
-        if ($issueID === null) {
-            $issueID = intval($_POST['issueID']);
-        }
-        $wfIssues = new wfIssues();
-        $issue = $wfIssues->getIssueByID($issueID);
-        if ( ! $issue) {
-            return array('cerrorMsg' => "We could not find that issue in our database.");
-        }
-
-        /** @var WP_Filesystem_Base $wp_filesystem */
-        global $wp_filesystem;
-
-        $adminURL = network_admin_url('admin.php?' . http_build_query(array(
-                'page'               => 'Wordfence',
-                'wfScanAction'       => 'promptForCredentials',
-                'wfFilesystemAction' => 'restoreFile',
-                'issueID'            => $issueID,
-                'nonce'              => wp_create_nonce('wp-ajax'),
-            )));
-
-        if ( ! self::requestFilesystemCredentials($adminURL, null, true, false)) {
-            return array(
-                'ok'               => 1,
-                'needsCredentials' => true,
-                'redirect'         => $adminURL,
-            );
-        }
-
-        $dat = $issue['data'];
-        $result = self::getWPFileContent($dat['file'], $dat['cType'], (isset($dat['cName']) ? $dat['cName'] : ''), (isset($dat['cVersion']) ? $dat['cVersion'] : ''));
-        $file = $dat['file'];
-        if (isset($result['cerrorMsg']) && $result['cerrorMsg']) {
-            return $result;
-        } else if ( ! $result['fileContent']) {
-            return array('cerrorMsg' => "We could not get the original file to do a repair.");
-        }
-
-        if (preg_match('/\.\./', $file)) {
-            return array('cerrorMsg' => "An invalid file was specified for repair.");
-        }
-        $localFile = rtrim(ABSPATH, '/') . '/' . preg_replace('/^[\.\/]+/', '', $file);
-        if ($wp_filesystem->put_contents($localFile, $result['fileContent'])) {
-            $wfIssues->updateIssue($issueID, 'delete');
-            return array(
-                'ok'   => 1,
-                'file' => $localFile,
-            );
-        }
-        return array(
-            'cerrorMsg' => "We could not write to that file. You may not have permission to modify files on your WordPress server.",
-        );
-    }
     public static function admin_init() {
         if ( ! wfUtils::isAdmin()) { return; }
         foreach (array(
-            'activate', 'restoreFile', 'startPasswdAudit',
-            'exportSettings', 'importSettings', 'bulkOperation', 'deleteFile', 'deleteDatabaseOption', 'removeExclusion',
+            'activate', 'startPasswdAudit',
+            'exportSettings', 'importSettings', 'bulkOperation', 'removeExclusion',
             'ticker', 'loadIssues', 'updateIssueStatus', 'updateAllIssues',
             'loadBlockRanges', 'unblockRange', 'whois',
-            'loadStaticPanel', 'saveConfig', 'downloadHtaccess', 'checkFalconHtaccess',
+            'loadStaticPanel', 'downloadHtaccess', 'checkFalconHtaccess',
             'updateConfig', 'saveCacheConfig', 'removeFromCache', 'adminEmailChoice', 'suPHPWAFUpdateChoice', 'saveCacheOptions', 'clearPageCache',
             'getCacheStats', 'clearAllBlocked', 'killScan', 'saveCountryBlocking', 'saveScanSchedule',
             'startTourAgain', 'downgradeLicense', 'addTwoFactor', 'twoFacActivate', 'twoFacDel',
             'loadTwoFactor', 'loadAvgSitePerf', 'sendTestEmail', 'addCacheExclusion', 'removeCacheExclusion',
             'loadCacheExclusions',
             'sendDiagnostic', 'whitelistWAFParamKey',
-            'fixFPD',
-            'hideFileHtaccess', 'saveDebuggingConfig', 'wafConfigureAutoPrepend',
+            'hideFileHtaccess', 'wafConfigureAutoPrepend',
             'whitelistBulkDelete', 'whitelistBulkEnable', 'whitelistBulkDisable',
         ) as $func) {
             // if( is_callable( array( __CLASS__, 'ajaxReceiver' )  ) )
@@ -772,9 +521,6 @@ class wordfence
             wp_enqueue_script('json2');
             wp_enqueue_script('jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array('jquery'), VENDI_CACHE_VERSION);
             wp_enqueue_script('jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array('jquery'), VENDI_CACHE_VERSION);
-            wp_enqueue_script('jquery.wfdataTables', wfUtils::getBaseURL() . 'js/jquery.dataTables.min.js', array('jquery'), VENDI_CACHE_VERSION);
-            // wp_enqueue_script('jquery.qrcode', wfUtils::getBaseURL() . 'js/jquery.qrcode.min.js', array('jquery'), VENDI_CACHE_VERSION);
-            //wp_enqueue_script('jquery.tools', wfUtils::getBaseURL() . 'js/jquery.tools.min.js', array('jquery'));
             wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), VENDI_CACHE_VERSION);
             self::setupAdminVars();
         } else {
@@ -784,19 +530,10 @@ class wordfence
         }
     }
     private static function setupAdminVars() {
-        $updateInt = 2;
-        $updateInt *= 1000;
-
         wp_localize_script('wordfenceAdminjs', 'WordfenceAdminVars', array(
             'ajaxURL' => admin_url('admin-ajax.php'),
             'firstNonce' => wp_create_nonce('wp-ajax'),
-            'siteBaseURL' => wfUtils::getSiteBaseURL(),
-            'debugOn' => 0,
-            'actUpdateInterval' => $updateInt,
-            'tourClosed' => 1,
-            'welcomeClosed' => 1,
             'cacheType' => self::get_vwc_cache_settings()->get_cache_mode(),
-            'liveTrafficEnabled' => 0
             ));
     }
     public static function activation_warning() {
