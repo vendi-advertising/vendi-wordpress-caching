@@ -123,7 +123,6 @@ class utils
 
     public static function get_request_object( $request_method )
     {
-        $obj = null;
         switch( $request_method )
         {
             case 'GET':
