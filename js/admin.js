@@ -34,6 +34,7 @@
 				this.msgs.msg_heading_error = WordfenceAdminVars.msg_heading_error;
 				this.msgs.msg_heading_invalid_pattern = WordfenceAdminVars.msg_heading_invalid_pattern;
 				this.msgs.msg_heading_cache_exclusions = WordfenceAdminVars.msg_heading_cache_exclusions;
+				this.msgs.msg_heading_manual_update = WordfenceAdminVars.msg_heading_manual_update;
 
 				this.msgs.msg_switch_apache = WordfenceAdminVars.msg_switch_apache;
 				this.msgs.msg_switch_nginx = WordfenceAdminVars.msg_switch_nginx;
@@ -146,7 +147,7 @@
 			//KEEP
 			getCacheStats: function() {
 				var self = this;
-				this.ajax('wordfence_getCacheStats', {}, function(res) {
+				this.ajax('vendi_cache_getCacheStats', {}, function(res) {
 					if (res.ok) {
 						self.colorbox('400px', res.heading, res.body);
 					}
@@ -155,7 +156,7 @@
 			//KEEP
 			clearPageCache: function() {
 				var self = this;
-				this.ajax('wordfence_clearPageCache', {}, function(res) {
+				this.ajax('vendi_cache_clearPageCache', {}, function(res) {
 					if (res.ok) {
 						self.colorbox('400px', res.heading, res.body);
 					}
@@ -164,7 +165,7 @@
 			//KEEP
 			switchToFalcon: function() {
 				var self = this;
-				this.ajax('wordfence_checkFalconHtaccess', {}, function(res) {
+				this.ajax('vendi_cache_checkFalconHtaccess', {}, function(res) {
 					if (res.ok) {
 						self.colorbox('400px', self.msgs.msg_heading_enable_enhanced, self.msgs.msg_switch_apache );
 					} else if (res.nginx) {
@@ -182,7 +183,7 @@
 				jQuery.colorbox.close();
 				var cacheType = 'enhanced';
 				var self = this;
-				this.ajax('wordfence_saveCacheConfig', {
+				this.ajax('vendi_cache_saveCacheConfig', {
 						cacheType: cacheType,
 						noEditHtaccess: noEditHtaccess
 					}, function(res) {
@@ -199,7 +200,7 @@
 					return this.switchToFalcon();
 				}
 				var self = this;
-				this.ajax('wordfence_saveCacheConfig', {
+				this.ajax('vendi_cache_saveCacheConfig', {
 						cacheType: cacheType
 					}, function(res) {
 						if (res.ok) {
@@ -211,7 +212,7 @@
 			//KEEP
 			saveCacheOptions: function() {
 				var self = this;
-				this.ajax('wordfence_saveCacheOptions', {
+				this.ajax('vendi_cache_saveCacheOptions', {
 						allowHTTPSCaching: (jQuery('#wfallowHTTPSCaching').is(':checked') ? 1 : 0),
 						addCacheComment: (jQuery('#wfaddCacheComment').is(':checked') ? 1 : 0),
 						clearCacheSched: (jQuery('#wfclearCacheSched').is(':checked') ? 1 : 0)
@@ -220,14 +221,14 @@
 							var p1 = res.updateErr;
 							var p2 = jQuery('<div/>').text(res.code).html();
 							var msg = self.msgs.msg_manual_update.replace( '@@1@@', p1 ).replace( '@@2@@', p2 );
-							self.colorbox('400px', msg );
+							self.colorbox('400px', self.msgs.msg_heading_manual_update, msg );
 						}
 					}
 				);
 			},
 			//KEEP
 			removeCacheExclusion: function(id) {
-				this.ajax('wordfence_removeCacheExclusion', {id: id}, function(res) {
+				this.ajax('vendi_cache_removeCacheExclusion', {id: id}, function(res) {
 					window.location.reload(true);
 				});
 			},
@@ -238,7 +239,7 @@
 					return;
 				}
 
-				this.ajax('wordfence_addCacheExclusion', {
+				this.ajax('vendi_cache_addCacheExclusion', {
 					patternType: patternType,
 					pattern: pattern
 				}, function(res) {
@@ -250,7 +251,7 @@
 			//KEEP
 			loadCacheExclusions: function() {
 				var self = this;
-				this.ajax('wordfence_loadCacheExclusions', {}, function(res) {
+				this.ajax('vendi_cache_loadCacheExclusions', {}, function(res) {
 					if (res.ex instanceof Array && res.ex.length > 0) {
 						for (var i = 0; i < res.ex.length; i++) {
 							var newElem = jQuery('#wfCacheExclusionTmpl').tmpl(res.ex[i]);

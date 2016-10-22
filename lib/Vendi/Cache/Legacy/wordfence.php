@@ -3,6 +3,7 @@
 namespace Vendi\Cache\Legacy;
 
 use Vendi\Cache\cache_settings;
+use Vendi\Cache\utils;
 
 class wordfence
 {
@@ -113,13 +114,13 @@ class wordfence
         if ( ! wfUtils::isAdmin()) {
             die(json_encode(array('errorMsg' => "You appear to have logged out or you are not an admin. Please sign-out and sign-in again.")));
         }
-        $func = (isset($_POST['action']) && $_POST['action']) ? $_POST['action'] : $_GET['action'];
+        $func = utils::get_post_value( 'action', utils::get_get_value( 'action' ) );
         $nonce = (isset($_POST['nonce']) && $_POST['nonce']) ? $_POST['nonce'] : $_GET['nonce'];
         if ( ! wp_verify_nonce($nonce, 'wp-ajax')) {
             die(json_encode(array('errorMsg' => "Your browser sent an invalid security token to Wordfence. Please try reloading this page or signing out and in again.")));
         }
         //func is e.g. wordfence_ticker so need to munge it
-        $func = str_replace('wordfence_', '', $func);
+        $func = str_replace('vendi_cache_', '', $func);
         $fq_func = array(__CLASS__, 'ajax_' . $func . '_callback');
         if ( ! is_callable($fq_func))
         {
@@ -488,13 +489,13 @@ class wordfence
             'saveCacheConfig', 'removeFromCache', 'saveCacheOptions', 'clearPageCache', 'getCacheStats',
             'addCacheExclusion', 'removeCacheExclusion', 'loadCacheExclusions',
         ) as $func) {
-            add_action('wp_ajax_wordfence_' . $func, array(__CLASS__, 'ajaxReceiver'));
+            add_action('wp_ajax_vendi_cache_' . $func, array(__CLASS__, 'ajaxReceiver'));
         }
 
-        if (isset($_GET['page']) && preg_match('/^VendiWPCaching/', @$_GET['page'])) {
+        if( 'VendiWPCaching' === utils::get_get_value( 'page' ) )
+        {
             wp_enqueue_style('wordfence-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_CACHE_VERSION);
             wp_enqueue_style('wordfence-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', VENDI_CACHE_VERSION);
-
 
             wp_enqueue_script('json2');
             wp_enqueue_script('jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array('jquery'), VENDI_CACHE_VERSION);
@@ -523,6 +524,7 @@ class wordfence
                                                             'msg_heading_error' => __( 'We encountered a problem', 'Vendi Cache' ),
                                                             'msg_heading_invalid_pattern' => __( 'Incorrect pattern for exclusion', 'Vendi Cache' ),
                                                             'msg_heading_cache_exclusions' => __( 'Cache Exclusions', 'Vendi Cache' ),
+                                                            'msg_heading_manual_update' => __( 'You need to manually update your .htaccess', 'Vendi Cache' ),
 
                                                             'msg_switch_apache' => 'Disk-based cache modifies your website configuration file which is called your .htaccess file.
                                                                                     To enable disk-based cache we ask that you make a backup of this file.
@@ -549,7 +551,7 @@ class wordfence
                                                                                     <input type="button" value="Enable disk-based cache after manually editing .htaccess" onclick="WFAD.confirmSwitchToFalcon(1);" />
                                                                                 ',
                                                             'msg_manual_update' => '
-                                                                                    You need to manually update your .htaccess,  @@1@@<br />
+                                                                                    @@1@@<br />
                                                                                     Your option was updated but you need to change the Wordfence code in your .htaccess to the following:<br />
                                                                                     <textarea style="width: 300px; height: 120px;">@@2@@</textarea>
                                                                                 ',
