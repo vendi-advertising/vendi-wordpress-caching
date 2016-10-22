@@ -433,7 +433,8 @@ class wordfence
             wp_enqueue_script('json2');
             wp_enqueue_script('jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array('jquery'), VENDI_CACHE_VERSION);
             wp_enqueue_script('jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array('jquery'), VENDI_CACHE_VERSION);
-
+            
+            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), VENDI_CACHE_VERSION);
             wp_enqueue_script('wordfenceAdminExtjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), VENDI_CACHE_VERSION);
         }
         else
