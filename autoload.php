@@ -8,7 +8,6 @@ spl_autoload_register(
                             //See http://www.php-fig.org/psr/psr-4/
                             $prefixes = array(
                                                 'Vendi\\Cache\\'  => VENDI_CACHE_PATH . '/lib/Vendi/Cache/',
-                                                'Vendi\\Shared\\' => VENDI_CACHE_PATH . '/lib/Vendi/Shared/',
                                             );
 
                             foreach ($prefixes as $prefix => $base_dir)
