@@ -123,13 +123,16 @@ return; }
     /**
      * @vendi_flag  KEEP
      */
-    public static function ajax_receiver() {
-        if( ! wfUtils::isAdmin() ) {
+    public static function ajax_receiver()
+    {
+        if( ! wfUtils::isAdmin() )
+        {
             die( json_encode( array( 'errorMsg' => "You appear to have logged out or you are not an admin. Please sign-out and sign-in again." ) ) );
         }
         $func = utils::get_post_value( 'action', utils::get_get_value( 'action' ) );
         $nonce = utils::get_post_value( 'nonce', utils::get_get_value( 'nonce' ) );
-        if( ! wp_verify_nonce( $nonce, 'wp-ajax' ) ) {
+        if( ! wp_verify_nonce( $nonce, 'wp-ajax' ) )
+        {
             die( json_encode( array( 'errorMsg' => "Your browser sent an invalid security token to Wordfence. Please try reloading this page or signing out and in again." ) ) );
         }
         //func is e.g. wordfence_ticker so need to munge it
@@ -140,15 +143,18 @@ return; }
             die( json_encode( array( 'errorMsg' => "Could not find AJAX func $func" ) ) );
         }
         $returnArr = call_user_func( $fq_func );
-        if( $returnArr === false ) {
+        if( $returnArr === false )
+        {
             $returnArr = array( 'errorMsg' => "Wordfence encountered an internal error executing that request." );
         }
 
-        if( ! is_array( $returnArr ) ) {
+        if( ! is_array( $returnArr ) )
+        {
             error_log( "Function " . wp_kses( $func, array() ) . " did not return an array and did not generate an error." );
             $returnArr = array();
         }
-        if( isset( $returnArr[ 'nonce' ] ) ) {
+        if( isset( $returnArr[ 'nonce' ] ) )
+        {
             error_log( "Wordfence ajax function return an array with 'nonce' already set. This could be a bug." );
         }
         $returnArr[ 'nonce' ] = wp_create_nonce( 'wp-ajax' );
@@ -483,7 +489,8 @@ return; }
     /**
      * @vendi_flag  KEEP
      */
-    public static function ajax_loadCacheExclusions_callback() {
+    public static function ajax_loadCacheExclusions_callback()
+    {
         $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
         if( ! $ex || 0 === count( $ex ) )
         {
@@ -528,7 +535,8 @@ return; }
         }
         self::setupAdminVars();
     }
-    private static function setupAdminVars() {
+    private static function setupAdminVars()
+    {
         $nonce = wp_create_nonce( 'wp-ajax' );
         wp_localize_script(
                             'wordfenceAdminjs',
