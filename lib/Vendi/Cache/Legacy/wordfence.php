@@ -515,7 +515,6 @@ class wordfence
             wp_enqueue_script('wp-pointer');
             wp_enqueue_style('wordfence-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_CACHE_VERSION);
             wp_enqueue_style('wordfence-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', VENDI_CACHE_VERSION);
-            wp_enqueue_style('wordfence-dttable-style', wfUtils::getBaseURL() . 'css/dt_table.css', '', VENDI_CACHE_VERSION);
 
 
             wp_enqueue_script('json2');
