@@ -13,7 +13,7 @@ if( ! VENDI_CACHE_SUPPORT_MU && defined( 'MULTISITE' ) && MULTISITE )
 $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 
 ?>
-<div class="wordfenceModeElem" id="wordfenceMode_caching"></div>
+<div id="vendi_caching" style="display: none;"></div>
 <div class="wrap">
 	<?php
     if (cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode())

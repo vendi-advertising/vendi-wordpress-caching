@@ -313,7 +313,6 @@ div.wfIssue table.wfIssueLinks td { border-width: 0; text-align: left; padding-r
 .wfResolved { background-image: url(../images/icons/tick128.png); }
 .wfAjaxLight128 { background-image: url(../images/icons/ajax3.gif); }
 .wfStrong { font-weight: bold; }
-.wordfenceModeElem { display: none; }
 .wfIssuesContainer { width: 800px; display: none; }
 .wfIssuesContainer p { width: 550px; }
 .wfWarn { color: #F00; }

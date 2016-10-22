@@ -15,7 +15,7 @@
 
 				$(document).focus();
 
-				if (jQuery('#wordfenceMode_caching').length > 0) {
+				if (jQuery('#vendi_caching').length > 0) {
 					this.loadCacheExclusions();
 					jQuery(document).bind('cbox_closed', function() {
 						self.colorboxIsOpen = false;
