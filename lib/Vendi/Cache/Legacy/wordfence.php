@@ -110,7 +110,7 @@ class wordfence
     /**
      * @vendi_flag  KEEP
      */
-    public static function ajaxReceiver() {
+    public static function ajax_receiver() {
         if ( ! wfUtils::isAdmin()) {
             die(json_encode(array('errorMsg' => "You appear to have logged out or you are not an admin. Please sign-out and sign-in again.")));
         }
@@ -469,29 +469,33 @@ class wordfence
         return array('ex' => $ex);
     }
 
-    public static function admin_init() {
-        if ( ! wfUtils::isAdmin()) { return; }
-        foreach (array(
-            'removeExclusion', 'downloadHtaccess', 'checkFalconHtaccess',
-            'saveCacheConfig', 'removeFromCache', 'saveCacheOptions', 'clearPageCache', 'getCacheStats',
-            'addCacheExclusion', 'removeCacheExclusion', 'loadCacheExclusions',
-        ) as $func) {
-            add_action('wp_ajax_vendi_cache_' . $func, array(__CLASS__, 'ajaxReceiver'));
+    public static function admin_init()
+    {
+        if ( ! wfUtils::isAdmin() )
+        {
+            return;
+        }
+
+        $ajaxEndpoints = array(
+                                'removeExclusion', 'downloadHtaccess', 'checkFalconHtaccess',
+                                'saveCacheConfig', 'removeFromCache', 'saveCacheOptions', 'clearPageCache', 'getCacheStats',
+                                'addCacheExclusion', 'removeCacheExclusion', 'loadCacheExclusions',
+                            );
+
+        foreach( $ajaxEndpoints as $func )
+        {
+            add_action( 'wp_ajax_vendi_cache_' . $func, array( __CLASS__, 'ajax_receiver' ) );
         }
 
         if( 'VendiWPCaching' === utils::get_get_value( 'page' ) )
         {
-            wp_enqueue_style('wordfence-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_CACHE_VERSION);
-            wp_enqueue_style('wordfence-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', VENDI_CACHE_VERSION);
+            wp_enqueue_style( 'wordfence-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_CACHE_VERSION);
+            wp_enqueue_style( 'wordfence-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', VENDI_CACHE_VERSION);
 
             wp_enqueue_script('json2');
             wp_enqueue_script('jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array('jquery'), VENDI_CACHE_VERSION);
             wp_enqueue_script('jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array('jquery'), VENDI_CACHE_VERSION);
-            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), VENDI_CACHE_VERSION + uniqid());
-            self::setupAdminVars();
-        } else {
-            wp_enqueue_style('wp-pointer');
-            wp_enqueue_script('wp-pointer');
+            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), VENDI_CACHE_VERSION);
             self::setupAdminVars();
         }
     }
