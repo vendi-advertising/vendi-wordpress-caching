@@ -3,8 +3,8 @@
 namespace Vendi\Cache\Legacy;
 
 use Vendi\Cache\cache_settings;
-use Vendi\Cache\wordpress_actions;
 use Vendi\Cache\utils;
+use Vendi\Cache\wordpress_actions;
 
 class wordfence
 {
@@ -12,6 +12,9 @@ class wordfence
 
     private static $vwc_cache_settings;
 
+    /**
+     * @return null|cache_settings
+     */
     public static function get_vwc_cache_settings()
     {
         if( ! self::$vwc_cache_settings )
@@ -34,13 +37,16 @@ class wordfence
     {
         //Check if caching is enabled and if it is, disable it and fix the .htaccess file.
         $cacheType = self::get_vwc_cache_settings()->get_cache_mode();
-        if( $cacheType == cache_settings::CACHE_MODE_ENHANCED ) {
+        if( $cacheType == cache_settings::CACHE_MODE_ENHANCED )
+        {
             wfCache::add_htaccess_code( 'remove' );
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
 
             //We currently don't clear the cache when plugin is disabled because it will take too long if done synchronously and won't work because plugin is disabled if done asynchronously.
             //wfCache::schedule_cache_clear();
-        } else if( $cacheType == cache_settings::CACHE_MODE_PHP ) {
+        }
+        else if( $cacheType == cache_settings::CACHE_MODE_PHP )
+        {
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
         }
 
@@ -50,17 +56,22 @@ class wordfence
         cache_settings::uninstall();
     }
 
-    public static function runInstall() {
-        if( self::$runInstallCalled ) { return; }
+    public static function runInstall()
+    {
+        if( self::$runInstallCalled )
+        {
+return; }
         self::$runInstallCalled = true;
-        if( function_exists( 'ignore_user_abort' ) ) {
+        if( function_exists( 'ignore_user_abort' ) )
+        {
             ignore_user_abort( true );
         }
         $previous_version = get_option( 'vendi_cache_version', '0.0.0' );
         update_option( 'vendi_cache_version', VENDI_CACHE_VERSION ); //In case we have a fatal error we don't want to keep running install.
         //EVERYTHING HERE MUST BE IDEMPOTENT
 
-        if( self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_PHP || self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED ) {
+        if( self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_PHP || self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED )
+        {
             wfCache::remove_cache_directory_htaccess();
         }
 
@@ -113,48 +124,51 @@ class wordfence
      * @vendi_flag  KEEP
      */
     public static function ajax_receiver() {
-        if ( ! wfUtils::isAdmin()) {
-            die(json_encode(array('errorMsg' => "You appear to have logged out or you are not an admin. Please sign-out and sign-in again.")));
+        if( ! wfUtils::isAdmin() ) {
+            die( json_encode( array( 'errorMsg' => "You appear to have logged out or you are not an admin. Please sign-out and sign-in again." ) ) );
         }
         $func = utils::get_post_value( 'action', utils::get_get_value( 'action' ) );
         $nonce = utils::get_post_value( 'nonce', utils::get_get_value( 'nonce' ) );
-        if ( ! wp_verify_nonce($nonce, 'wp-ajax')) {
-            die(json_encode(array('errorMsg' => "Your browser sent an invalid security token to Wordfence. Please try reloading this page or signing out and in again.")));
+        if( ! wp_verify_nonce( $nonce, 'wp-ajax' ) ) {
+            die( json_encode( array( 'errorMsg' => "Your browser sent an invalid security token to Wordfence. Please try reloading this page or signing out and in again." ) ) );
         }
         //func is e.g. wordfence_ticker so need to munge it
-        $func = str_replace('vendi_cache_', '', $func);
-        $fq_func = array(__CLASS__, 'ajax_' . $func . '_callback');
-        if ( ! is_callable($fq_func))
+        $func = str_replace( 'vendi_cache_', '', $func );
+        $fq_func = array( __CLASS__, 'ajax_' . $func . '_callback' );
+        if( ! is_callable( $fq_func ) )
         {
-            die(json_encode(array('errorMsg' => "Could not find AJAX func $func")));
+            die( json_encode( array( 'errorMsg' => "Could not find AJAX func $func" ) ) );
         }
-        $returnArr = call_user_func($fq_func);
-        if ($returnArr === false) {
-            $returnArr = array('errorMsg' => "Wordfence encountered an internal error executing that request.");
+        $returnArr = call_user_func( $fq_func );
+        if( $returnArr === false ) {
+            $returnArr = array( 'errorMsg' => "Wordfence encountered an internal error executing that request." );
         }
 
-        if ( ! is_array($returnArr)) {
-            error_log("Function " . wp_kses($func, array()) . " did not return an array and did not generate an error.");
+        if( ! is_array( $returnArr ) ) {
+            error_log( "Function " . wp_kses( $func, array() ) . " did not return an array and did not generate an error." );
             $returnArr = array();
         }
-        if (isset($returnArr['nonce'])) {
-            error_log("Wordfence ajax function return an array with 'nonce' already set. This could be a bug.");
+        if( isset( $returnArr[ 'nonce' ] ) ) {
+            error_log( "Wordfence ajax function return an array with 'nonce' already set. This could be a bug." );
         }
-        $returnArr['nonce'] = wp_create_nonce('wp-ajax');
-        die(json_encode($returnArr));
+        $returnArr[ 'nonce' ] = wp_create_nonce( 'wp-ajax' );
+        die( json_encode( $returnArr ) );
     }
 
 
     /**
      * @vendi_flag  KEEP
      */
-    public static function ajax_removeFromCache_callback() {
+    public static function ajax_removeFromCache_callback()
+    {
         $id = utils::get_post_value( 'id' );
         $link = get_permalink( $id );
-        if( preg_match( '/^https?:\/\/([^\/]+)(.*)$/i', $link, $matches ) ) {
+        if( preg_match( '/^https?:\/\/([^\/]+)(.*)$/i', $link, $matches ) )
+        {
             $host = $matches[ 1 ];
             $URI = $matches[ 2 ];
-            if( ! $URI ) {
+            if( ! $URI )
+            {
                 $URI = '/';
             }
             $sslFile = wfCache::file_from_uri( $host, $URI, true ); //SSL
@@ -170,17 +184,21 @@ class wordfence
     /**
      * @vendi_flag  KEEP
      */
-    public static function ajax_saveCacheOptions_callback() {
+    public static function ajax_saveCacheOptions_callback()
+    {
         $changed = false;
-        if( utils::get_post_value( 'allowHTTPSCaching' ) != self::get_vwc_cache_settings()->get_do_cache_https_urls() ) {
+        if( utils::get_post_value( 'allowHTTPSCaching' ) != self::get_vwc_cache_settings()->get_do_cache_https_urls() )
+        {
             $changed = true;
         }
         self::get_vwc_cache_settings()->set_do_cache_https_urls( utils::get_post_value( 'allowHTTPSCaching' ) == 1 );
         self::get_vwc_cache_settings()->set_do_append_debug_message( utils::get_post_value( 'addCacheComment' ) == 1 );
         self::get_vwc_cache_settings()->set_do_clear_on_save( utils::get_post_value( 'clearCacheSched' ) == 1 );
-        if( $changed && self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED ) {
+        if( $changed && self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED )
+        {
             $err = wfCache::add_htaccess_code( 'add' );
-            if( $err ) {
+            if( $err )
+            {
                 return array( 'updateErr' => "Wordfence could not edit your .htaccess file. The error was: " . $err, 'code' => wfCache::get_htaccess_code() );
             }
         }
@@ -191,71 +209,101 @@ class wordfence
     /**
      * @vendi_flag  KEEP
      */
-    public static function ajax_saveCacheConfig_callback() {
+    public static function ajax_saveCacheConfig_callback()
+    {
         $cacheType = utils::get_post_value( 'cacheType' );
-        if( $cacheType == cache_settings::CACHE_MODE_ENHANCED || $cacheType == cache_settings::CACHE_MODE_PHP ) {
+        if( $cacheType == cache_settings::CACHE_MODE_ENHANCED || $cacheType == cache_settings::CACHE_MODE_PHP )
+        {
             $plugins = get_plugins();
             $badPlugins = array();
-            foreach( $plugins as $pluginFile => $data ) {
-                if( is_plugin_active( $pluginFile ) ) {
-                    if( $pluginFile == 'w3-total-cache/w3-total-cache.php' ) {
+            foreach( $plugins as $pluginFile => $data )
+            {
+                if( is_plugin_active( $pluginFile ) )
+                {
+                    if( $pluginFile == 'w3-total-cache/w3-total-cache.php' )
+                    {
                         $badPlugins[ ] = "W3 Total Cache";
-                    } else if( $pluginFile == 'quick-cache/quick-cache.php' ) {
+                    }
+                    else if( $pluginFile == 'quick-cache/quick-cache.php' )
+                    {
                         $badPlugins[ ] = "Quick Cache";
-                    } else if( $pluginFile == "wp-super-cache/wp-cache.php" ) {
+                    }
+                    else if( $pluginFile == "wp-super-cache/wp-cache.php" )
+                    {
                         $badPlugins[ ] = "WP Super Cache";
-                    } else if( $pluginFile == "wp-fast-cache/wp-fast-cache.php" ) {
+                    }
+                    else if( $pluginFile == "wp-fast-cache/wp-fast-cache.php" )
+                    {
                         $badPlugins[ ] = "WP Fast Cache";
-                    } else if( $pluginFile == "wp-fastest-cache/wpFastestCache.php" ) {
+                    }
+                    else if( $pluginFile == "wp-fastest-cache/wpFastestCache.php" )
+                    {
                         $badPlugins[ ] = "WP Fastest Cache";
                     }
                 }
             }
-            if( count( $badPlugins ) > 0 ) {
+            if( count( $badPlugins ) > 0 )
+            {
                 return array( 'errorMsg' => "You can not enable caching in Wordfence with other caching plugins enabled. This may cause conflicts. You need to disable other caching plugins first. Wordfence caching is very fast and does not require other caching plugins to be active. The plugins you have that conflict are: " . implode( ', ', $badPlugins ) . ". Disable these plugins, then return to this page and enable Wordfence caching." );
             }
             $siteURL = site_url();
-            if( preg_match( '/^https?:\/\/[^\/]+\/[^\/]+\/[^\/]+\/.+/i', $siteURL ) ) {
+            if( preg_match( '/^https?:\/\/[^\/]+\/[^\/]+\/[^\/]+\/.+/i', $siteURL ) )
+            {
                 return array( 'errorMsg' => "Wordfence caching currently does not support sites that are installed in a subdirectory and have a home page that is more than 2 directory levels deep. e.g. we don't support sites who's home page is http://example.com/levelOne/levelTwo/levelThree" );
             }
         }
-        if( $cacheType == cache_settings::CACHE_MODE_ENHANCED ) {
-            if( ! get_option( 'permalink_structure', '' ) ) {
+        if( $cacheType == cache_settings::CACHE_MODE_ENHANCED )
+        {
+            if( ! get_option( 'permalink_structure', '' ) )
+            {
                 return array( 'errorMsg' => "You need to enable Permalinks for your site to use Falcon Engine. You can enable Permalinks in WordPress by going to the Settings - Permalinks menu and enabling it there. Permalinks change your site URL structure from something that looks like /p=123 to pretty URLs like /my-new-post-today/ that are generally more search engine friendly." );
             }
         }
         $warnHtaccess = false;
-        if( $cacheType == cache_settings::CACHE_MODE_OFF || $cacheType == cache_settings::CACHE_MODE_PHP ) {
+        if( $cacheType == cache_settings::CACHE_MODE_OFF || $cacheType == cache_settings::CACHE_MODE_PHP )
+        {
             $removeError = wfCache::add_htaccess_code( 'remove' );
-            if( $removeError || $removeError2 ) {
+            if( $removeError || $removeError2 )
+            {
                 $warnHtaccess = true;
             }
         }
-        if( $cacheType == cache_settings::CACHE_MODE_PHP || $cacheType == cache_settings::CACHE_MODE_ENHANCED ) {
+        if( $cacheType == cache_settings::CACHE_MODE_PHP || $cacheType == cache_settings::CACHE_MODE_ENHANCED )
+        {
             $err = wfCache::cache_directory_test();
-            if( $err ) {
+            if( $err )
+            {
                 return array( 'ok' => 1, 'heading' => "Could not write to cache directory", 'body' => "To enable caching, Wordfence needs to be able to create and write to the /wp-content/wfcache/ directory. We did some tests that indicate this is not possible. You need to manually create the /wp-content/wfcache/ directory and make it writable by Wordfence. The error we encountered was during our tests was: $err" );
             }
         }
 
         //Mainly we clear the cache here so that any footer cache diagnostic comments are rebuilt. We could just leave it intact unless caching is being disabled.
-        if( $cacheType != self::get_vwc_cache_settings()->get_cache_mode() ) {
+        if( $cacheType != self::get_vwc_cache_settings()->get_cache_mode() )
+        {
             wfCache::schedule_cache_clear();
         }
         $htMsg = "";
-        if( $warnHtaccess ) {
+        if( $warnHtaccess )
+        {
             $htMsg = " <strong style='color: #F00;'>Warning: We could not remove the caching code from your .htaccess file. you need to remove this manually yourself.</strong> ";
         }
-        if( $cacheType == cache_settings::CACHE_MODE_OFF ) {
+        if( $cacheType == cache_settings::CACHE_MODE_OFF )
+        {
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
             return array( 'ok' => 1, 'heading' => "Caching successfully disabled.", 'body' => "{$htMsg}Caching has been disabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
-        } else if( $cacheType == cache_settings::CACHE_MODE_PHP ) {
+        }
+        else if( $cacheType == cache_settings::CACHE_MODE_PHP )
+        {
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_PHP );
             return array( 'ok' => 1, 'heading' => "Wordfence Basic Caching Enabled", 'body' => "{$htMsg}Wordfence basic caching has been enabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
-        } else if( $cacheType == cache_settings::CACHE_MODE_ENHANCED ) {
-            if( utils::get_post_value( 'noEditHtaccess' ) != '1' ) {
+        }
+        else if( $cacheType == cache_settings::CACHE_MODE_ENHANCED )
+        {
+            if( utils::get_post_value( 'noEditHtaccess' ) != '1' )
+            {
                 $err = wfCache::add_htaccess_code( 'add' );
-                if( $err ) {
+                if( $err )
+                {
                     return array( 'ok' => 1, 'heading' => "Wordfence could not edit .htaccess", 'body' => "Wordfence could not edit your .htaccess code. The error was: " . $err );
                 }
             }
@@ -269,36 +317,48 @@ class wordfence
     /**
      * @vendi_flag  KEEP
      */
-    public static function ajax_getCacheStats_callback() {
+    public static function ajax_getCacheStats_callback()
+    {
         $s = wfCache::get_cache_stats();
-        if( $s[ 'files' ] == 0 ) {
+        if( $s[ 'files' ] == 0 )
+        {
             return array( 'ok' => 1, 'heading' => 'Cache Stats', 'body' => "The cache is currently empty. It may be disabled or it may have been recently cleared." );
         }
         $body = 'Total files in cache: ' . $s[ 'files' ] .
             '<br />Total directories in cache: ' . $s[ 'dirs' ] .
             '<br />Total data: ' . $s[ 'data' ] . 'KB';
-        if( $s[ 'compressedFiles' ] > 0 ) {
+        if( $s[ 'compressedFiles' ] > 0 )
+        {
             $body .= '<br />Files: ' . $s[ 'uncompressedFiles' ] .
                 '<br />Data: ' . $s[ 'uncompressedKBytes' ] . 'KB' .
                 '<br />Compressed files: ' . $s[ 'compressedFiles' ] .
                 '<br />Compressed data: ' . $s[ 'compressedKBytes' ] . 'KB';
         }
-        if( $s[ 'largestFile' ] > 0 ) {
+        if( $s[ 'largestFile' ] > 0 )
+        {
             $body .= '<br />Largest file: ' . $s[ 'largestFile' ] . 'KB';
         }
-        if( $s[ 'oldestFile' ] !== false ) {
+        if( $s[ 'oldestFile' ] !== false )
+        {
             $body .= '<br />Oldest file in cache created ';
-            if( time() - $s[ 'oldestFile' ] < 300 ) {
+            if( time() - $s[ 'oldestFile' ] < 300 )
+            {
                 $body .= ( time() - $s[ 'oldestFile' ] ) . ' seconds ago';
-            } else {
+            }
+            else
+            {
                 $body .= human_time_diff( $s[ 'oldestFile' ] ) . ' ago.';
             }
         }
-        if( $s[ 'newestFile' ] !== false ) {
+        if( $s[ 'newestFile' ] !== false )
+        {
             $body .= '<br />Newest file in cache created ';
-            if( time() - $s[ 'newestFile' ] < 300 ) {
+            if( time() - $s[ 'newestFile' ] < 300 )
+            {
                 $body .= ( time() - $s[ 'newestFile' ] ) . ' seconds ago';
-            } else {
+            }
+            else
+            {
                 $body .= human_time_diff( $s[ 'newestFile' ] ) . ' ago.';
             }
         }
@@ -309,14 +369,17 @@ class wordfence
     /**
      * @vendi_flag  KEEP
      */
-    public static function ajax_clearPageCache_callback() {
+    public static function ajax_clearPageCache_callback()
+    {
         $stats = wfCache::clear_page_cache();
-        if( $stats[ 'error' ] ) {
+        if( $stats[ 'error' ] )
+        {
             $body = "A total of " . $stats[ 'totalErrors' ] . " errors occurred while trying to clear your cache. The last error was: " . $stats[ 'error' ];
             return array( 'ok' => 1, 'heading' => 'Error occurred while clearing cache', 'body' => $body );
         }
         $body = "A total of " . $stats[ 'filesDeleted' ] . ' files were deleted and ' . $stats[ 'dirsDeleted' ] . ' directories were removed. We cleared a total of ' . $stats[ 'totalData' ] . 'KB of data in the cache.';
-        if( $stats[ 'totalErrors' ] > 0 ) {
+        if( $stats[ 'totalErrors' ] > 0 )
+        {
             $body .= ' A total of ' . $stats[ 'totalErrors' ] . ' errors were encountered. This probably means that we could not remove some of the files or directories in the cache. Please use your CPanel or file manager to remove the rest of the files in the directory: ' . WP_CONTENT_DIR . '/wfcache/';
         }
         return array( 'ok' => 1, 'heading' => 'Page Cache Cleared', 'body' => $body );
@@ -325,16 +388,20 @@ class wordfence
     /**
      * @vendi_flag  KEEP
      */
-    public static function ajax_checkFalconHtaccess_callback() {
-        if( wfUtils::isNginx() ) {
+    public static function ajax_checkFalconHtaccess_callback()
+    {
+        if( wfUtils::isNginx() )
+        {
             return array( 'nginx' => 1 );
         }
         $file = wfCache::get_htaccess_path();
-        if( ! $file ) {
+        if( ! $file )
+        {
             return array( 'err' => "We could not find your .htaccess file to modify it.", 'code' => wfCache::get_htaccess_code() );
         }
         $fh = @fopen( $file, 'r+' );
-        if( ! $fh ) {
+        if( ! $fh )
+        {
             $err = error_get_last();
             return array( 'err' => "We found your .htaccess file but could not open it for writing: " . $err[ 'message' ], 'code' => wfCache::get_htaccess_code() );
         }
@@ -383,7 +450,8 @@ class wordfence
     /**
      * @vendi_flag  KEEP
      */
-    public static function ajax_removeCacheExclusion_callback() {
+    public static function ajax_removeCacheExclusion_callback()
+    {
         $id = utils::get_post_value( 'id' );
         $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
         if( ! $ex || 0 === count( $ex ) )
@@ -391,9 +459,12 @@ class wordfence
             return array( 'ok' => 1 );
         }
         $rewriteHtaccess = false;
-        for( $i = 0; $i < sizeof( $ex ); $i++ ) {
-            if( (string)$ex[ $i ][ 'id' ] == (string)$id ) {
-                if( self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED && preg_match( '/^(?:uac|uaeq|cc)$/', $ex[ $i ][ 'pt' ] ) ) {
+        for( $i = 0; $i < sizeof( $ex ); $i++ )
+        {
+            if( (string)$ex[ $i ][ 'id' ] == (string)$id )
+            {
+                if( self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED && preg_match( '/^(?:uac|uaeq|cc)$/', $ex[ $i ][ 'pt' ] ) )
+                {
                     $rewriteHtaccess = true;
                 }
                 array_splice( $ex, $i, 1 );
@@ -401,7 +472,9 @@ class wordfence
             }
         }
         self::get_vwc_cache_settings()->set_cache_exclusions( $ex );
-        if( $rewriteHtaccess && wfCache::add_htaccess_code( 'add' ) ) { //rewrites htaccess rules
+        if( $rewriteHtaccess && wfCache::add_htaccess_code( 'add' ) )
+        {
+//rewrites htaccess rules
             return array( 'errorMsg', "We removed that rule but could not rewrite your .htaccess file. You're going to have to manually remove this rule from your .htaccess file. Please reload this page now." );
         }
         return array( 'ok' => 1 );
@@ -412,16 +485,16 @@ class wordfence
      */
     public static function ajax_loadCacheExclusions_callback() {
         $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
-        if ( ! $ex || 0 === count($ex))
+        if( ! $ex || 0 === count( $ex ) )
         {
-            return array('ex' => false);
+            return array( 'ex' => false );
         }
-        return array('ex' => $ex);
+        return array( 'ex' => $ex );
     }
 
     public static function admin_init()
     {
-        if ( ! wfUtils::isAdmin() )
+        if( ! wfUtils::isAdmin() )
         {
             return;
         }
@@ -439,28 +512,28 @@ class wordfence
 
         if( 'VendiWPCaching' === utils::get_get_value( 'page' ) )
         {
-            wp_enqueue_style( 'wordfence-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_CACHE_VERSION);
-            wp_enqueue_style( 'wordfence-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', VENDI_CACHE_VERSION);
+            wp_enqueue_style( 'wordfence-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_CACHE_VERSION );
+            wp_enqueue_style( 'wordfence-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', VENDI_CACHE_VERSION );
 
-            wp_enqueue_script('json2');
-            wp_enqueue_script('jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array('jquery'), VENDI_CACHE_VERSION);
-            wp_enqueue_script('jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array('jquery'), VENDI_CACHE_VERSION);
+            wp_enqueue_script( 'json2' );
+            wp_enqueue_script( 'jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array( 'jquery' ), VENDI_CACHE_VERSION );
+            wp_enqueue_script( 'jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array( 'jquery' ), VENDI_CACHE_VERSION );
 
-            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array('jquery'), VENDI_CACHE_VERSION);
-            wp_enqueue_script('wordfenceAdminExtjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), VENDI_CACHE_VERSION);
+            wp_enqueue_script( 'wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array( 'jquery' ), VENDI_CACHE_VERSION );
+            wp_enqueue_script( 'wordfenceAdminExtjs', wfUtils::getBaseURL() . 'js/tourTip.js', array( 'jquery' ), VENDI_CACHE_VERSION );
         }
         else
         {
-            wp_enqueue_script('wordfenceAdminjs', wfUtils::getBaseURL() . 'js/tourTip.js', array('jquery'), VENDI_CACHE_VERSION);
+            wp_enqueue_script( 'wordfenceAdminjs', wfUtils::getBaseURL() . 'js/tourTip.js', array( 'jquery' ), VENDI_CACHE_VERSION );
         }
         self::setupAdminVars();
     }
     private static function setupAdminVars() {
-        $nonce = wp_create_nonce('wp-ajax');
+        $nonce = wp_create_nonce( 'wp-ajax' );
         wp_localize_script(
                             'wordfenceAdminjs',
                             'WordfenceAdminVars', array(
-                                                            'ajaxURL' => admin_url('admin-ajax.php'),
+                                                            'ajaxURL' => admin_url( 'admin-ajax.php' ),
                                                             'firstNonce' => $nonce,
                                                             'cacheType' => self::get_vwc_cache_settings()->get_cache_mode(),
 
@@ -514,31 +587,44 @@ class wordfence
                                                         )
                         );
     }
-    public static function activation_warning() {
+    public static function activation_warning()
+    {
         $activationError = get_option( 'wf_plugin_act_error', '' );
-        if( strlen( $activationError ) > 400 ) {
+        if( strlen( $activationError ) > 400 )
+        {
             $activationError = substr( $activationError, 0, 400 ) . '...[output truncated]';
         }
-        if( $activationError ) {
+        if( $activationError )
+        {
             echo '<div id="wordfenceConfigWarning" class="updated fade"><p><strong>Wordfence generated an error on activation. The output we received during activation was:</strong> ' . wp_kses( $activationError, array() ) . '</p></div>';
         }
         delete_option( 'wf_plugin_act_error' );
     }
-    public static function admin_menus() {
-        if( ! wfUtils::isAdmin() ) { return; }
+    public static function admin_menus()
+    {
+        if( ! wfUtils::isAdmin() )
+        {
+return; }
         $warningAdded = false;
-        if( get_option( 'wf_plugin_act_error', false ) ) {
-            if( wfUtils::isAdminPageMU() ) {
+        if( get_option( 'wf_plugin_act_error', false ) )
+        {
+            if( wfUtils::isAdminPageMU() )
+            {
                 add_action( 'network_admin_notices', array( __CLASS__, 'activation_warning' ) );
-            } else {
+            }
+            else
+            {
                 add_action( 'admin_notices', array( __CLASS__, 'activation_warning' ) );
             }
             $warningAdded = true;
         }
 
-        add_submenu_page( 'options-general.php', 'Vendi Cache', 'Vendi Cache', 'activate_plugins', 'VendiWPCaching', function() { require VENDI_CACHE_PATH . '/admin/vendi-cache.php'; } );
+        add_submenu_page( 'options-general.php', 'Vendi Cache', 'Vendi Cache', 'activate_plugins', 'VendiWPCaching', function()
+        {
+require VENDI_CACHE_PATH . '/admin/vendi-cache.php'; } );
     }
-    public static function _retargetWordfenceSubmenuCallout() {
+    public static function _retargetWordfenceSubmenuCallout()
+    {
         echo <<<JQUERY
 <script type="text/javascript">
 jQuery(document).ready(function($) {
@@ -548,13 +634,14 @@ jQuery(document).ready(function($) {
 JQUERY;
 
     }
-    public static function getMyOptionsURL() {
+    public static function getMyOptionsURL()
+    {
         return network_admin_url( 'admin.php?page=WordfenceSecOpt', 'http' );
     }
     
     /**
      * Call this to prevent Wordfence from caching the current page.
-     * @return true
+     * @return boolean
      */
     public static function do_not_cache()
     {
@@ -569,8 +656,10 @@ JQUERY;
      * @param bool $output
      * @return bool
      */
-    public static function requestFilesystemCredentials( $adminURL, $homePath = null, $relaxedFileOwnership = true, $output = true ) {
-        if( $homePath === null ) {
+    public static function requestFilesystemCredentials( $adminURL, $homePath = null, $relaxedFileOwnership = true, $output = true )
+    {
+        if( $homePath === null )
+        {
             $homePath = get_home_path();
         }
 
@@ -584,7 +673,8 @@ JQUERY;
             return false;
         }
 
-        if( ! WP_Filesystem( $credentials, $homePath, $relaxedFileOwnership ) ) {
+        if( ! WP_Filesystem( $credentials, $homePath, $relaxedFileOwnership ) )
+        {
             // Failed to connect, Error and request again
             request_filesystem_credentials( $adminURL, '', true, ABSPATH, array( 'version', 'locale' ),
                 $relaxedFileOwnership );
@@ -592,7 +682,8 @@ JQUERY;
             return false;
         }
 
-        if( $wp_filesystem->errors->get_error_code() ) {
+        if( $wp_filesystem->errors->get_error_code() )
+        {
             ! $output && ob_end_clean();
             return false;
         }
