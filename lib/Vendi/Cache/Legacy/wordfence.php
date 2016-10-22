@@ -831,10 +831,10 @@ class wordfence
             $warningAdded = true;
         }
 
-        add_menu_page('Vendi Caching', 'Performance Setup', 'activate_plugins', 'VendiWPCaching', array(__CLASS__, 'menu_sitePerf'), wfUtils::getBaseURL() . 'images/wordfence-logo-16x16.png');
+        add_submenu_page( 'options-general.php', 'Vendi Cache', 'Vendi Cache', 'activate_plugins', 'VendiWPCaching', array(__CLASS__, 'menu_sitePerf') );
     }
     public static function menu_sitePerf() {
-        require 'menu_sitePerf.php';
+        require VENDI_CACHE_PATH . '/admin/vendi-cache.php';
     }
     public static function _retargetWordfenceSubmenuCallout() {
         echo <<<JQUERY
