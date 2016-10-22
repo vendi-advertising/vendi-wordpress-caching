@@ -46,6 +46,9 @@ class cache_settings
         return true == get_option( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS, self::DEFAULT_VALUE_DO_CACHE_HTTPS_URLS );
     }
 
+    /**
+     * @param boolean $do_cache_https_urls
+     */
     public function set_do_cache_https_urls( $do_cache_https_urls )
     {
         update_option( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS, $do_cache_https_urls );
@@ -56,6 +59,9 @@ class cache_settings
         return true == get_option( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE, self::DEFAULT_VALUE_DO_APPEND_DEBUG_MESSAGE );
     }
 
+    /**
+     * @param boolean $do_append_debug_message
+     */
     public function set_do_append_debug_message( $do_append_debug_message )
     {
         update_option( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE, $do_append_debug_message );
@@ -66,6 +72,9 @@ class cache_settings
         return true == get_option( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE, self::DEFAULT_VALUE_DO_CLEAR_ON_SAVE );
     }
 
+    /**
+     * @param boolean $do_clear_on_save
+     */
     public function set_do_clear_on_save( $do_clear_on_save )
     {
         update_option( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE, $do_clear_on_save );
