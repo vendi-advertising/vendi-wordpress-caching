@@ -5,7 +5,6 @@ namespace Vendi\Cache;
 use Vendi\Cache\Legacy\wfCache;
 use Vendi\Cache\Legacy\wfUtils;
 use Vendi\Cache\cache_settings;
-use Vendi\Cache\utils;
 
 class wordpress_actions
 {
