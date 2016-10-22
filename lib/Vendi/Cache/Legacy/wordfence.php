@@ -115,7 +115,7 @@ class wordfence
             die(json_encode(array('errorMsg' => "You appear to have logged out or you are not an admin. Please sign-out and sign-in again.")));
         }
         $func = utils::get_post_value( 'action', utils::get_get_value( 'action' ) );
-        $nonce = (isset($_POST['nonce']) && $_POST['nonce']) ? $_POST['nonce'] : $_GET['nonce'];
+        $nonce = utils::get_post_value( 'nonce', utils::get_get_value( 'nonce' ) );
         if ( ! wp_verify_nonce($nonce, 'wp-ajax')) {
             die(json_encode(array('errorMsg' => "Your browser sent an invalid security token to Wordfence. Please try reloading this page or signing out and in again.")));
         }
@@ -199,17 +199,8 @@ class wordfence
     /**
      * @vendi_flag  KEEP
      */
-    public static function ajax_suPHPWAFUpdateChoice_callback() {
-        $choice = $_POST['choice'];
-        wfConfig::set('suPHPWAFUpdateChoice', '1');
-        return array('ok' => 1);
-    }
-
-    /**
-     * @vendi_flag  KEEP
-     */
     public static function ajax_removeFromCache_callback() {
-        $id = $_POST['id'];
+        $id = utils::get_post_value( 'id' );
         $link = get_permalink($id);
         if (preg_match('/^https?:\/\/([^\/]+)(.*)$/i', $link, $matches)) {
             $host = $matches[1];
@@ -232,12 +223,12 @@ class wordfence
      */
     public static function ajax_saveCacheOptions_callback() {
         $changed = false;
-        if ($_POST['allowHTTPSCaching'] != self::get_vwc_cache_settings()->get_do_cache_https_urls()) {
+        if ( utils::get_post_value( 'allowHTTPSCaching' ) != self::get_vwc_cache_settings()->get_do_cache_https_urls()) {
             $changed = true;
         }
-        self::get_vwc_cache_settings()->set_do_cache_https_urls($_POST['allowHTTPSCaching'] == 1);
-        self::get_vwc_cache_settings()->set_do_append_debug_message($_POST['addCacheComment'] == 1);
-        self::get_vwc_cache_settings()->set_do_clear_on_save($_POST['clearCacheSched'] == 1);
+        self::get_vwc_cache_settings()->set_do_cache_https_urls( utils::get_post_value( 'allowHTTPSCaching' )  == 1);
+        self::get_vwc_cache_settings()->set_do_append_debug_message( utils::get_post_value( 'addCacheComment' ) == 1);
+        self::get_vwc_cache_settings()->set_do_clear_on_save( utils::get_post_value( 'clearCacheSched' ) == 1);
         if ($changed && self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED) {
             $err = wfCache::addHtaccessCode('add');
             if ($err) {
@@ -252,7 +243,7 @@ class wordfence
      * @vendi_flag  KEEP
      */
     public static function ajax_saveCacheConfig_callback() {
-        $cacheType = $_POST['cacheType'];
+        $cacheType = utils::get_post_value( 'cacheType' );
         if ($cacheType == cache_settings::CACHE_MODE_ENHANCED || $cacheType == cache_settings::CACHE_MODE_PHP) {
             $plugins = get_plugins();
             $badPlugins = array();
@@ -313,7 +304,7 @@ class wordfence
             self::get_vwc_cache_settings()->set_cache_mode(cache_settings::CACHE_MODE_PHP);
             return array('ok' => 1, 'heading' => "Wordfence Basic Caching Enabled", 'body' => "{$htMsg}Wordfence basic caching has been enabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>");
         } else if ($cacheType == cache_settings::CACHE_MODE_ENHANCED) {
-            if ($_POST['noEditHtaccess'] != '1') {
+            if ( utils::get_post_value( 'noEditHtaccess' ) != '1') {
                 $err = wfCache::addHtaccessCode('add');
                 if ($err) {
                     return array('ok' => 1, 'heading' => "Wordfence could not edit .htaccess", 'body' => "Wordfence could not edit your .htaccess code. The error was: " . $err);
@@ -417,27 +408,23 @@ class wordfence
         die();
     }
 
-    /**
-     * @vendi_flag  KEEP
-     */
-    public static function ajax_addCacheExclusion_callback() {
+    public static function ajax_addCacheExclusion_callback()
+    {
         $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
-
-        // if($ex){
-        //     $ex = unserialize($ex);
-        // } else {
-        //     $ex = array();
-        // }
         $ex[] = array(
-            'pt' => $_POST['patternType'],
-            'p' => $_POST['pattern'],
-            'id' => microtime(true)
+            'pt' => utils::get_post_value( 'patternType' ),
+            'p' => utils::get_post_value( 'pattern' ),
+            'id' => microtime( true ),
             );
-        self::get_vwc_cache_settings()->set_cache_exclusions($ex);
+
+        self::get_vwc_cache_settings()->set_cache_exclusions( $ex );
         wfCache::scheduleCacheClear();
-        if (self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED && preg_match('/^(?:uac|uaeq|cc)$/', $_POST['patternType'])) {
-            if (wfCache::addHtaccessCode('add')) { //rewrites htaccess rules
-                return array('errorMsg' => "We added the rule you requested but could not modify your .htaccess file. Please delete this rule, check the permissions on your .htaccess file and then try again.");
+        if( self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED && preg_match('/^(?:uac|uaeq|cc)$/', utils::get_post_value( 'patternType' ) ) )
+        {
+            //rewrites htaccess rules
+            if( wfCache::addHtaccessCode( 'add' ) )
+            {
+                return array( 'errorMsg' => "We added the rule you requested but could not modify your .htaccess file. Please delete this rule, check the permissions on your .htaccess file and then try again." );
             }
         }
         return array('ok' => 1);
@@ -447,7 +434,7 @@ class wordfence
      * @vendi_flag  KEEP
      */
     public static function ajax_removeCacheExclusion_callback() {
-        $id = $_POST['id'];
+        $id = utils::get_post_value( 'id' );
         $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
         if ( ! $ex || 0 === count($ex))
         {
