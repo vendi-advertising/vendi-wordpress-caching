@@ -15,38 +15,32 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 ?>
 <div id="vendi_caching" style="display: none;"></div>
 <div class="wrap">
-	<?php
-    if (cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode())
-    {
-        echo '<div title="Vendi Cache Disk-based cache enabled"></div>';
-    }
-    ?>
 	<h1>Vendi Cache</h1>
 	<div>
 
 		<div class="section">
 
-			<h2>Caching</h2>
+			<h2><?php esc_html_e( 'Cache Mode', 'Vendi Cache' ); ?></h2>
 
 			<table border="0">
 				<tr>
-					<td>Disable all performance enhancements:</td>
+					<td><?php esc_html_e( 'Disable all performance enhancements:', 'Vendi Cache' ); ?></td>
 					<td><input type="radio" name="cacheType" value="<?php echo cache_settings::CACHE_MODE_OFF; ?>" <?php if (cache_settings::CACHE_MODE_OFF === $vwc_settings->get_cache_mode()) { echo 'checked="checked"'; } ?> /></td>
-					<td>No performance improvement</td>
+					<td><?php esc_html_e( 'No performance improvement', 'Vendi Cache' ); ?></td>
 				</tr>
 				<tr>
-					<td>Enable Basic Caching:</td>
+					<td><?php esc_html_e( 'Enable Basic Caching:', 'Vendi Cache' ); ?></td>
 					<td><input type="radio" name="cacheType" value="php" <?php if (cache_settings::CACHE_MODE_PHP === $vwc_settings->get_cache_mode()) { echo 'checked="checked"'; } ?> /></td>
-					<td>2 to 3 Times speed increase</td>
+					<td><?php esc_html_e( '2 to 3 Times speed increase', 'Vendi Cache' ); ?></td>
 				</tr>
 				<tr>
-					<td>Enable Disk-Based Caching Engine:</td>
+					<td><?php esc_html_e( 'Enable Disk-Based Caching Engine:', 'Vendi Cache' ); ?></td>
 					<td><input type="radio" name="cacheType" value="<?php echo cache_settings::CACHE_MODE_ENHANCED; ?>" <?php if (cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode()) { echo 'checked="checked"'; } ?> /></td>
-					<td>30 to 50 Times speed increase</td>
+					<td><?php esc_html_e( '30 to 50 Times speed increase', 'Vendi Cache' ); ?></td>
 				</tr>
 			</table>
 
-			<input type="button" id="button1" name="button1" class="button-primary" value="Save Changes to the type of caching enabled above" onclick="WFAD.saveCacheConfig();" />
+			<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Save Changes to the type of caching enabled above', 'Vendi Cache' ); ?>" onclick="WFAD.saveCacheConfig();" />
 
 		</div>
 
@@ -56,41 +50,58 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 
 			<table border="0">
 				<tr>
-					<td>Allow SSL (secure HTTPS pages) to be cached:</td>
-					<td><input type="checkbox" id="wfallowHTTPSCaching" value="1" <?php if ($vwc_settings->get_do_cache_https_urls()) { echo 'checked="checked"'; } ?> />We recommend you leave this disabled unless your<br />site uses HTTPS but does not receive/send sensitive user info.</td>
+					<td><?php esc_html_e( 'Allow TLS (secure HTTPS pages) to be cached:', 'Vendi Cache' ); ?></td>
+					<td>
+						<input type="checkbox" id="wfallowHTTPSCaching" value="1" <?php if ($vwc_settings->get_do_cache_https_urls()) { echo 'checked="checked"'; } ?> />
+						<?php esc_html_e( 'We recommend you leave this disabled unless your site uses HTTPS but does not receive/send sensitive user info.', 'Vendi Cache' ); ?>
+					</td>
 				</tr>
 				<tr>
-					<td>Add hidden debugging data to the bottom of the HTML source of cached pages:</td>
-					<td><input type="checkbox" id="wfaddCacheComment" value="1" <?php if ($vwc_settings->get_do_append_debug_message()) { echo 'checked="checked"'; } ?> />Message appears as an HTML comment below the closing HTML tag.</td>
+					<td><?php esc_html_e( 'Add hidden debugging data to the bottom of the HTML source of cached pages:', 'Vendi Cache' ); ?></td>
+					<td>
+						<input type="checkbox" id="wfaddCacheComment" value="1" <?php if ($vwc_settings->get_do_append_debug_message()) { echo 'checked="checked"'; } ?> />
+						<?php esc_html_e( 'Message appears as an HTML comment below the closing HTML tag.', 'Vendi Cache' ); ?>
+					</td>
 				</tr>
 				<tr>
-					<td>Clear cache when a scheduled post is published</td>
-					<td><input type="checkbox" id="wfclearCacheSched" value="1" <?php if ($vwc_settings->get_do_clear_on_save()) { echo 'checked="checked"'; } ?> />The entire disk-based cache will be cleared when WordPress publishes a post you've scheduled to be published in future.</td>
+					<td><?php esc_html_e( 'Clear cache when a scheduled post is published:', 'Vendi Cache' ); ?></td>
+					<td>
+						<input type="checkbox" id="wfclearCacheSched" value="1" <?php if ($vwc_settings->get_do_clear_on_save()) { echo 'checked="checked"'; } ?> />
+						<?php esc_html_e( 'The entire disk-based cache will be cleared when WordPress publishes a post you\'ve scheduled to be published in future.', 'Vendi Cache' ); ?>
+					</td>
 				</tr>
 			</table>
 
 			<br />
 
-			<input type="button" id="button1" name="button1" class="button-primary" value="Save Changes to the the caching options above" onclick="WFAD.saveCacheOptions();" />
+			<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Save Changes to the the caching options above', 'Vendi Cache' ); ?>" onclick="WFAD.saveCacheOptions();" />
 
 		</div>
 
 		<div class="section">
 
-			<h2>Cache Management</h2>
+			<h2><?php esc_html_e( 'Cache Management', 'Vendi Cache' ); ?></h2>
 
 			<p style="width: 500px;">
-				<input type="button" id="button1" name="button1" class="button-primary" value="Clear the Cache" onclick="WFAD.clearPageCache();" />
+				<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Clear the Cache', 'Vendi Cache' ); ?>" onclick="WFAD.clearPageCache();" />
 				&nbsp;&nbsp;
-				<input type="button" id="button1" name="button1" class="button-primary" value="Get Cache Stats" onclick="WFAD.getCacheStats();" />
+				<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Get Cache Stats', 'Vendi Cache' ); ?>" onclick="WFAD.getCacheStats();" />
 				<br />
-				Note that the cache is automatically cleared when administrators make any site updates. Some
-				of the actions that will automatically clear the cache are:<br />
-				Publishing a post, creating a new page, updating general settings, creating a new category, updating menus, updating widgets and installing a new plugin.
+				<?php esc_html_e( 'Note that the cache is automatically cleared when administrators make any site updates. Some of the actions that will automatically clear the cache are:', 'Vendi Cache' ); ?>
+				<ul>
+					<li><?php esc_html_e( 'Publishing a post', 'Vendi Cache' ); ?></li>
+					<li><?php esc_html_e( 'Creating a new page', 'Vendi Cache' ); ?></li>
+					<li><?php esc_html_e( 'Updating general settings', 'Vendi Cache' ); ?></li>
+					<li><?php esc_html_e( 'Creating a new category', 'Vendi Cache' ); ?></li>
+					<li><?php esc_html_e( 'Updating menus', 'Vendi Cache' ); ?></li>
+					<li><?php esc_html_e( 'Updating widgets', 'Vendi Cache' ); ?></li>
+					<li><?php esc_html_e( 'Installing a new plugin.', 'Vendi Cache' ); ?></li>
+				</ul>
 			</p>
 
-			<h3>You can add items like URLs, cookies and browsers (user-agents) to exclude from caching</h3>
+			<h3><?php esc_html_e( 'You can add items like URLs, cookies and browsers (user-agents) to exclude from caching', 'Vendi Cache' ); ?></h3>
 
+			<!-- Not sure what the best way to get translators access to this -->
 			<p style="width: 500px; white-space:nowrap;">
 				If a 
 					<select id="wfPatternType">
@@ -102,9 +113,9 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 						<option value="uaeq">User-Agent Exactly Matches</option>
 						<option value="cc">Cookie Name Contains</option>
 					</select>
-				this value<br>then don't cache it:
+				this value<br />then don't cache it:
 				<input type="text" id="wfPattern" value="" size="20" maxlength="1000" />e.g. /my/dynamic/page/
-				<input type="button" class="button-primary" value="Add exclusion" onclick="WFAD.addCacheExclusion(jQuery('#wfPatternType').val(), jQuery('#wfPattern').val()); return false;" />
+				<input type="button" class="button-primary" value="<?php esc_attr_e( 'Add exclusion', 'Vendi Cache' ); ?>" onclick="WFAD.addCacheExclusion(jQuery('#wfPatternType').val(), jQuery('#wfPattern').val()); return false;" />
 			</p>
 
 			<div id="wfCacheExclusions">
@@ -115,6 +126,8 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 	</div>
 
 </div>
+
+<!-- Not sure what the best way to get translators access to this -->
 <script type="text/x-jquery-template" id="wfCacheExclusionTmpl">
 <div>
 	If the
