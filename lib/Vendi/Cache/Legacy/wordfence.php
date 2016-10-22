@@ -124,35 +124,35 @@ class wordfence
     {
         if( ! wfUtils::isAdmin() )
         {
-            die( json_encode( array( 'errorMsg' => "You appear to have logged out or you are not an admin. Please sign-out and sign-in again." ) ) );
+            die( json_encode( array( 'errorMsg' => 'You appear to have logged out or you are not an admin. Please sign-out and sign-in again.' ) ) );
         }
         $func = utils::get_post_value( 'action', utils::get_get_value( 'action' ) );
         $nonce = utils::get_post_value( 'nonce', utils::get_get_value( 'nonce' ) );
         if( ! wp_verify_nonce( $nonce, 'wp-ajax' ) )
         {
-            die( json_encode( array( 'errorMsg' => "Your browser sent an invalid security token to Wordfence. Please try reloading this page or signing out and in again." ) ) );
+            die( json_encode( array( 'errorMsg' => 'Your browser sent an invalid security token to Wordfence. Please try reloading this page or signing out and in again.' ) ) );
         }
         //func is e.g. wordfence_ticker so need to munge it
         $func = str_replace( 'vendi_cache_', '', $func );
         $fq_func = array( __CLASS__, 'ajax_' . $func . '_callback' );
         if( ! is_callable( $fq_func ) )
         {
-            die( json_encode( array( 'errorMsg' => "Could not find AJAX func $func" ) ) );
+            die( json_encode( array( 'errorMsg' => sprintf( 'Could not find AJAX func %1$s', esc_html( $func ) ) ) ) );
         }
         $returnArr = call_user_func( $fq_func );
         if( $returnArr === false )
         {
-            $returnArr = array( 'errorMsg' => "Wordfence encountered an internal error executing that request." );
+            $returnArr = array( 'errorMsg' => 'Wordfence encountered an internal error executing that request.' );
         }
 
         if( ! is_array( $returnArr ) )
         {
-            error_log( "Function " . wp_kses( $func, array() ) . " did not return an array and did not generate an error." );
+            error_log( sprintf( 'Function %1$s did not return an array and did not generate an error.', esc_html( $func ) ) );
             $returnArr = array();
         }
         if( isset( $returnArr[ 'nonce' ] ) )
         {
-            error_log( "Wordfence ajax function return an array with 'nonce' already set. This could be a bug." );
+            error_log( 'Wordfence ajax function return an array with \'nonce\' already set. This could be a bug.' );
         }
         $returnArr[ 'nonce' ] = wp_create_nonce( 'wp-ajax' );
         die( json_encode( $returnArr ) );
@@ -195,7 +195,7 @@ class wordfence
             $err = wfCache::add_htaccess_code( 'add' );
             if( $err )
             {
-                return array( 'updateErr' => "Wordfence could not edit your .htaccess file. The error was: " . $err, 'code' => wfCache::get_htaccess_code() );
+                return array( 'updateErr' => 'Wordfence could not edit your .htaccess file. The error was: ' . $err, 'code' => wfCache::get_htaccess_code() );
             }
         }
         wfCache::schedule_cache_clear();
@@ -242,14 +242,14 @@ class wordfence
             $siteURL = site_url();
             if( preg_match( '/^https?:\/\/[^\/]+\/[^\/]+\/[^\/]+\/.+/i', $siteURL ) )
             {
-                return array( 'errorMsg' => "Wordfence caching currently does not support sites that are installed in a subdirectory and have a home page that is more than 2 directory levels deep. e.g. we don't support sites who's home page is http://example.com/levelOne/levelTwo/levelThree" );
+                return array( 'errorMsg' => 'Wordfence caching currently does not support sites that are installed in a subdirectory and have a home page that is more than 2 directory levels deep. e.g. we don\'t support sites who\'s home page is http://example.com/levelOne/levelTwo/levelThree' );
             }
         }
         if( $cacheType == cache_settings::CACHE_MODE_ENHANCED )
         {
             if( ! get_option( 'permalink_structure', '' ) )
             {
-                return array( 'errorMsg' => "You need to enable Permalinks for your site to use Falcon Engine. You can enable Permalinks in WordPress by going to the Settings - Permalinks menu and enabling it there. Permalinks change your site URL structure from something that looks like /p=123 to pretty URLs like /my-new-post-today/ that are generally more search engine friendly." );
+                return array( 'errorMsg' => 'You need to enable Permalinks for your site to use Falcon Engine. You can enable Permalinks in WordPress by going to the Settings - Permalinks menu and enabling it there. Permalinks change your site URL structure from something that looks like /p=123 to pretty URLs like /my-new-post-today/ that are generally more search engine friendly.' );
             }
         }
         $warnHtaccess = false;
@@ -266,7 +266,11 @@ class wordfence
             $err = wfCache::cache_directory_test();
             if( $err )
             {
-                return array( 'ok' => 1, 'heading' => "Could not write to cache directory", 'body' => "To enable caching, Wordfence needs to be able to create and write to the /wp-content/wfcache/ directory. We did some tests that indicate this is not possible. You need to manually create the /wp-content/wfcache/ directory and make it writable by Wordfence. The error we encountered was during our tests was: $err" );
+                return array(
+                                'ok' => 1,
+                                'heading' => 'Could not write to cache directory',
+                                'body' => "To enable caching, Wordfence needs to be able to create and write to the /wp-content/wfcache/ directory. We did some tests that indicate this is not possible. You need to manually create the /wp-content/wfcache/ directory and make it writable by Wordfence. The error we encountered was during our tests was: $err"
+                            );
             }
         }
 
