@@ -86,8 +86,16 @@ class wfCache {
         }
         return $status;
     }
+
+    public static function is_a_no_cache_constant_defined()
+    {
+        //If you want to tell Wordfence not to cache something in another plugin, simply define one of these. 
+        return defined( 'WFDONOTCACHE' ) || defined( 'DONOTCACHEPAGE' ) || defined( 'DONOTCACHEDB' ) || defined( 'DONOTCACHEOBJECT' );
+    }
+
     public static function isCachable() {
-        if (defined('WFDONOTCACHE') || defined('DONOTCACHEPAGE') || defined('DONOTCACHEDB') || defined('DONOTCACHEOBJECT')) { //If you want to tell Wordfence not to cache something in another plugin, simply define one of these. 
+        if ( self::is_a_no_cache_constant_defined() )
+        {
             return false;
         }
         if ( ! self::get_vwc_cache_settings()->get_do_cache_https_urls()) {
@@ -148,10 +156,13 @@ class wfCache {
             return false;
         }
 
-        if (defined('WFDONOTCACHE') || defined('DONOTCACHEPAGE') || defined('DONOTCACHEDB') || defined('DONOTCACHEOBJECT')) {  
+        if( self::is_a_no_cache_constant_defined() )
+        {  
             //These constants may have been set after we did the initial isCachable check by e.g. wp_redirect filter. If they're set then just return the buffer and don't cache.
             return $buffer; 
         }
+
+        //TODO: Move to option
         if (strlen($buffer) < 1000) { //The average web page size is 1246,000 bytes. If web page is less than 1000 bytes, don't cache it. 
             return $buffer;
         }
