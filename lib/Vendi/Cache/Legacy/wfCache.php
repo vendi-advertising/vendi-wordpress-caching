@@ -3,6 +3,7 @@
 namespace Vendi\Cache\Legacy;
 
 use Vendi\Cache\cache_settings;
+use Vendi\Cache\utils;
 
 class wfCache {
     private static $cacheType = false;
@@ -93,64 +94,172 @@ class wfCache {
         return defined( 'WFDONOTCACHE' ) || defined( 'DONOTCACHEPAGE' ) || defined( 'DONOTCACHEDB' ) || defined( 'DONOTCACHEOBJECT' );
     }
 
-    public static function isCachable() {
-        if ( self::is_a_no_cache_constant_defined() )
+    public static function isCachableTestExclusions()
+    {
+        
+        $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
+        if ( ! $ex || ! is_array( $ex ) || 0 === count( $ex ) )
         {
-            return false;
+            return true;
         }
-        if ( ! self::get_vwc_cache_settings()->get_do_cache_https_urls()) {
-            if (self::isHTTPSPage()) {
-                return false;
-            }
-        }
+        
+        $user_agent = utils::get_server_value( 'HTTP_USER_AGENT', '' );
+        $uri = utils::get_server_value( 'REQUEST_URI', '' );
 
-        if (is_admin()) { return false; } //dont cache any admin pages.
-        $uri = $_SERVER['REQUEST_URI'];
-
-        if (strrpos($uri, '/') !== strlen($uri) - 1) { //must end with a '/' char.
-            return false;
-        }
-        if ($_SERVER['REQUEST_METHOD'] != 'GET') { return false; } //Only cache GET's
-        if (isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING']) > 0 && ( ! preg_match('/^\d+=\d+$/', $_SERVER['QUERY_STRING']))) { //Don't cache query strings unless they are /?123132423=123123234 DDoS style.
-            return false; 
-        } 
-        //wordpress_logged_in_[hash] cookies indicates logged in
-        if (is_array($_COOKIE)) {
-            foreach (array_keys($_COOKIE) as $c) {
-                foreach (array('comment_author', 'wp-postpass', 'wf_logout', 'wordpress_logged_in', 'wptouch_switch_toggle', 'wpmp_switcher') as $b) {
-                    if (strpos($c, $b) !== false) { return false; } //contains a cookie which indicates user must not be cached
+        foreach ($ex as $v)
+        {
+            if ($v['pt'] == 'eq')
+            {
+                if (strtolower($uri) == strtolower($v['p']))
+                {
+                    return false;
                 }
             }
-        }
-        $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
-        if ($ex) {
-            foreach ($ex as $v) {
-                if ($v['pt'] == 'eq') { if (strtolower($uri) == strtolower($v['p'])) { return false; } }
-                if ($v['pt'] == 's') { if (stripos($uri, $v['p']) === 0) { return false; } }
-                if ($v['pt'] == 'e') { if (stripos($uri, $v['p']) === (strlen($uri) - strlen($v['p']))) { return false; } }
-                if ($v['pt'] == 'c') { if (stripos($uri, $v['p']) !== false) { return false; } }
-                if ($v['pt'] == 'uac') { if (stripos($_SERVER['HTTP_USER_AGENT'], $v['p']) !== false) { return false; } } //User-agent contains
-                if ($v['pt'] == 'uaeq') { if (strtolower($_SERVER['HTTP_USER_AGENT']) == strtolower($v['p'])) { return false; } } //user-agent equals
-                if ($v['pt'] == 'cc') {
-                    foreach ($_COOKIE as $cookieName) {
-                        if (stripos($cookieName, $v['p']) !== false) { //Cookie name contains pattern
-                            return false;
-                        }
+
+            if ($v['pt'] == 's')
+            {
+                if (stripos($uri, $v['p']) === 0)
+                {
+                    return false;
+                }
+            }
+
+            if ($v['pt'] == 'e')
+            {
+                if (stripos($uri, $v['p']) === (strlen($uri) - strlen($v['p'])))
+                {
+                    return false;
+                }
+            }
+
+            if ($v['pt'] == 'c')
+            {
+                if (stripos($uri, $v['p']) !== false)
+                {
+                    return false;
+                }
+            }
+
+            //User-agent contains
+            if ($v['pt'] == 'uac')
+            {
+                if (stripos( $user_agent, $v['p']) !== false)
+                {
+                    return false;
+                }
+            }
+
+            //user-agent equals
+            if ($v['pt'] == 'uaeq')
+            {
+                if (strtolower( $user_agent ) == strtolower($v['p']))
+                {
+                    return false;
+                }
+            }
+
+            if ($v['pt'] == 'cc')
+            {
+                foreach ($_COOKIE as $cookieName)
+                {
+                    //Cookie name contains pattern
+                    if (stripos($cookieName, $v['p']) !== false)
+                    {
+                        return false;
                     }
                 }
             }
         }
+
         return true;
     }
-    public static function isHTTPSPage() {
-        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off') { 
+
+    public static function isCachable() {
+
+        if ( self::is_a_no_cache_constant_defined() )
+        {
+            return false;
+        }
+
+        if ( ! self::get_vwc_cache_settings()->get_do_cache_https_urls() && self::isHTTPSPage() )
+        {
+            return false;
+        }
+
+        //dont cache any admin pages.
+        if (is_admin())
+        {
+            return false;
+        }
+
+        $uri = utils::get_server_value( 'REQUEST_URI', '' );
+
+        //must end with a '/' char.
+        if ( strrpos( $uri, '/' ) !== strlen( $uri ) - 1 )
+        {
+            return false;
+        }
+
+        //Only cache GET's
+        if( ! utils::is_request_method( 'GET' ) )
+        {
+            return false;
+        }
+
+        $query_string = utils::get_server_value( 'QUERY_STRING', '' );
+
+        //TODO: Do we still need/want this?
+        //Don't cache query strings unless they are /?123132423=123123234 DDoS style.
+        if( strlen( $query_string ) > 0 && ( ! preg_match( '/^\d+=\d+$/', $query_string) ) )
+        {
+            return false; 
+        }
+
+        $cookies = utils::get_request_object( 'COOKIE' );
+
+        //wordpress_logged_in_[hash] cookies indicates logged in
+        if ( is_array( $cookies ) )
+        {
+            foreach ( array_keys( $cookies ) as $c )
+            {
+                foreach (array( 'comment_author', 'wp-postpass', 'wf_logout', 'wordpress_logged_in', 'wptouch_switch_toggle', 'wpmp_switcher' ) as $b )
+                {
+                    //contains a cookie which indicates user must not be cached
+                    if (strpos($c, $b) !== false)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        if( ! self::isCachableTestExclusions() )
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @return boolean True if the reqeusted page was an HTTPS page, otherwise false.
+     */
+    public static function isHTTPSPage()
+    {
+        //Prefer a core check since this is in flux right now
+        if( is_ssl() )
+        {
             return true;
         }
-        if ( ! empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') { //In case we're behind a proxy and user used HTTPS.
+
+        //In case we're behind a proxy and user used HTTPS.
+        if( 'https' === utils::get_server_value( 'HTTP_X_FORWARDED_PROTO' ) )
+        {
             return true;
         }
+
         return false;
     }
+
     public static function obComplete($buffer = '') {
         if (function_exists('is_404') && is_404()) {
             return false;
