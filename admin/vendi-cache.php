@@ -25,17 +25,17 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 			<table border="0">
 				<tr>
 					<td><?php esc_html_e( 'Disable all performance enhancements:', 'Vendi Cache' ); ?></td>
-					<td><input type="radio" name="cacheType" value="<?php echo cache_settings::CACHE_MODE_OFF; ?>" <?php if (cache_settings::CACHE_MODE_OFF === $vwc_settings->get_cache_mode()) { echo 'checked="checked"'; } ?> /></td>
+					<td><input type="radio" name="cacheType" value="<?php echo cache_settings::CACHE_MODE_OFF; ?>" <?php if( cache_settings::CACHE_MODE_OFF === $vwc_settings->get_cache_mode() ) { echo 'checked="checked"'; } ?> /></td>
 					<td><?php esc_html_e( 'No performance improvement', 'Vendi Cache' ); ?></td>
 				</tr>
 				<tr>
 					<td><?php esc_html_e( 'Enable Basic Caching:', 'Vendi Cache' ); ?></td>
-					<td><input type="radio" name="cacheType" value="php" <?php if (cache_settings::CACHE_MODE_PHP === $vwc_settings->get_cache_mode()) { echo 'checked="checked"'; } ?> /></td>
+					<td><input type="radio" name="cacheType" value="php" <?php if( cache_settings::CACHE_MODE_PHP === $vwc_settings->get_cache_mode() ) { echo 'checked="checked"'; } ?> /></td>
 					<td><?php esc_html_e( '2 to 3 Times speed increase', 'Vendi Cache' ); ?></td>
 				</tr>
 				<tr>
 					<td><?php esc_html_e( 'Enable Disk-Based Caching Engine:', 'Vendi Cache' ); ?></td>
-					<td><input type="radio" name="cacheType" value="<?php echo cache_settings::CACHE_MODE_ENHANCED; ?>" <?php if (cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode()) { echo 'checked="checked"'; } ?> /></td>
+					<td><input type="radio" name="cacheType" value="<?php echo cache_settings::CACHE_MODE_ENHANCED; ?>" <?php if( cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode() ) { echo 'checked="checked"'; } ?> /></td>
 					<td><?php esc_html_e( '30 to 50 Times speed increase', 'Vendi Cache' ); ?></td>
 				</tr>
 			</table>
@@ -52,21 +52,21 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 				<tr>
 					<td><?php esc_html_e( 'Allow TLS (secure HTTPS pages) to be cached:', 'Vendi Cache' ); ?></td>
 					<td>
-						<input type="checkbox" id="wfallowHTTPSCaching" value="1" <?php if ($vwc_settings->get_do_cache_https_urls()) { echo 'checked="checked"'; } ?> />
+						<input type="checkbox" id="wfallowHTTPSCaching" value="1" <?php if( $vwc_settings->get_do_cache_https_urls() ) { echo 'checked="checked"'; } ?> />
 						<?php esc_html_e( 'We recommend you leave this disabled unless your site uses HTTPS but does not receive/send sensitive user info.', 'Vendi Cache' ); ?>
 					</td>
 				</tr>
 				<tr>
 					<td><?php esc_html_e( 'Add hidden debugging data to the bottom of the HTML source of cached pages:', 'Vendi Cache' ); ?></td>
 					<td>
-						<input type="checkbox" id="wfaddCacheComment" value="1" <?php if ($vwc_settings->get_do_append_debug_message()) { echo 'checked="checked"'; } ?> />
+						<input type="checkbox" id="wfaddCacheComment" value="1" <?php if( $vwc_settings->get_do_append_debug_message() ) { echo 'checked="checked"'; } ?> />
 						<?php esc_html_e( 'Message appears as an HTML comment below the closing HTML tag.', 'Vendi Cache' ); ?>
 					</td>
 				</tr>
 				<tr>
 					<td><?php esc_html_e( 'Clear cache when a scheduled post is published:', 'Vendi Cache' ); ?></td>
 					<td>
-						<input type="checkbox" id="wfclearCacheSched" value="1" <?php if ($vwc_settings->get_do_clear_on_save()) { echo 'checked="checked"'; } ?> />
+						<input type="checkbox" id="wfclearCacheSched" value="1" <?php if( $vwc_settings->get_do_clear_on_save() ) { echo 'checked="checked"'; } ?> />
 						<?php esc_html_e( 'The entire disk-based cache will be cleared when WordPress publishes a post you\'ve scheduled to be published in future.', 'Vendi Cache' ); ?>
 					</td>
 				</tr>
