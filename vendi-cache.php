@@ -54,6 +54,14 @@ if( 1 != get_option( 'vendiWordPressCachingActivated' ) )
             );
 }
 
+add_action(
+            'plugins_loaded',
+            function()
+            {
+                load_plugin_textdomain( 'vendi-cache', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+            }
+        );
+
 //Load both the legacy code as well as the new code
 require_once VENDI_CACHE_PATH . '/autoload.php';
 
