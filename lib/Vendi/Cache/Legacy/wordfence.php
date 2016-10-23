@@ -535,7 +535,7 @@ class wordfence
                                                                                     To enable disk-based cache we ask that you make a backup of this file.
                                                                                     This is a safety precaution in case for some reason disk-based Cache is not compatible with your site.<br /><br />
                                                                                     <a
-                                                                                       href="' . admin_url( 'admin-ajax.php' ) . '?action=wordfence_downloadHtaccess&amp;nonce=' . $nonce . '"
+                                                                                       href="' . admin_url( 'admin-ajax.php' ) . '?action=vendi_cache_downloadHtaccess&amp;nonce=' . $nonce . '"
                                                                                        onclick="jQuery(\'#wfNextBut\').prop(\'disabled\', false); return true;">Click here to download a backup copy of your .htaccess file now</a><br /><br />
                                                                                     <input type="button" name="but1" id="wfNextBut" value="Click to Enable Disk-based cache Engine" disabled="disabled" onclick="WFAD.confirmSwitchToFalcon(0);" />
                                                                                     ',
