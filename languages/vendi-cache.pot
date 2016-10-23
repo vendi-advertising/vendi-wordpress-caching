@@ -1,0 +1,205 @@
+# Copyright (C) 2016 Vendi Cache
+# This file is distributed under the same license as the Vendi Cache package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Vendi Cache 1.0.2\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/vendi-cache\n"
+"POT-Creation-Date: 2016-10-23 10:32:28+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: admin/vendi-cache.php:23
+msgid "Cache Mode"
+msgstr ""
+
+#: admin/vendi-cache.php:27
+msgid "Disable all performance enhancements:"
+msgstr ""
+
+#: admin/vendi-cache.php:29
+msgid "No performance improvement"
+msgstr ""
+
+#: admin/vendi-cache.php:32
+msgid "Enable Basic Caching:"
+msgstr ""
+
+#: admin/vendi-cache.php:34
+msgid "2 to 3 Times speed increase"
+msgstr ""
+
+#: admin/vendi-cache.php:37
+msgid "Enable Disk-Based Caching Engine:"
+msgstr ""
+
+#: admin/vendi-cache.php:39
+msgid "30 to 50 Times speed increase"
+msgstr ""
+
+#: admin/vendi-cache.php:43
+msgid "Save Changes to the type of caching enabled above"
+msgstr ""
+
+#: admin/vendi-cache.php:53
+msgid "Allow TLS (secure HTTPS pages) to be cached:"
+msgstr ""
+
+#: admin/vendi-cache.php:56
+msgid ""
+"We recommend you leave this disabled unless your site uses HTTPS but does "
+"not receive/send sensitive user info."
+msgstr ""
+
+#: admin/vendi-cache.php:60
+msgid ""
+"Add hidden debugging data to the bottom of the HTML source of cached pages:"
+msgstr ""
+
+#: admin/vendi-cache.php:63
+msgid "Message appears as an HTML comment below the closing HTML tag."
+msgstr ""
+
+#: admin/vendi-cache.php:67
+msgid "Clear cache when a scheduled post is published:"
+msgstr ""
+
+#: admin/vendi-cache.php:70
+msgid ""
+"The entire disk-based cache will be cleared when WordPress publishes a post "
+"you've scheduled to be published in future."
+msgstr ""
+
+#: admin/vendi-cache.php:77
+msgid "Save Changes to the the caching options above"
+msgstr ""
+
+#: admin/vendi-cache.php:83
+msgid "Cache Management"
+msgstr ""
+
+#: admin/vendi-cache.php:86
+msgid "Clear the Cache"
+msgstr ""
+
+#: admin/vendi-cache.php:88
+msgid "Get Cache Stats"
+msgstr ""
+
+#: admin/vendi-cache.php:90
+msgid ""
+"Note that the cache is automatically cleared when administrators make any "
+"site updates. Some of the actions that will automatically clear the cache "
+"are:"
+msgstr ""
+
+#: admin/vendi-cache.php:92
+msgid "Publishing a post"
+msgstr ""
+
+#: admin/vendi-cache.php:93
+msgid "Creating a new page"
+msgstr ""
+
+#: admin/vendi-cache.php:94
+msgid "Updating general settings"
+msgstr ""
+
+#: admin/vendi-cache.php:95
+msgid "Creating a new category"
+msgstr ""
+
+#: admin/vendi-cache.php:96
+msgid "Updating menus"
+msgstr ""
+
+#: admin/vendi-cache.php:97
+msgid "Updating widgets"
+msgstr ""
+
+#: admin/vendi-cache.php:98
+msgid "Installing a new plugin."
+msgstr ""
+
+#: admin/vendi-cache.php:102
+msgid ""
+"You can add items like URLs, cookies and browsers (user-agents) to exclude "
+"from caching"
+msgstr ""
+
+#: admin/vendi-cache.php:118
+msgid "Add exclusion"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:522
+msgid "Wordfence is working..."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:523
+msgid "An error occurred"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:525
+msgid "Enabling Disk-Based Cache Engine"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:526
+msgid "We encountered a problem"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:527
+msgid "Incorrect pattern for exclusion"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:528
+msgid "Cache Exclusions"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:529
+msgid "You need to manually update your .htaccess"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:568
+msgid ""
+"There are not currently any exclusions. If you have a site that does not "
+"change often, it is perfectly normal to not have any pages you want to "
+"exclude from the cache."
+msgstr ""
+
+#: lib/Vendi/Cache/cache_settings.php:110
+msgid "Empty value passed to add_single_cache_exclusion."
+msgstr ""
+
+#: lib/Vendi/Cache/cache_settings.php:115
+msgid ""
+"Method add_single_cache_exclusion must be provided with type cache_exclusion."
+msgstr ""
+
+#: lib/Vendi/Cache/wordpress_actions.php:87
+#: lib/Vendi/Cache/wordpress_actions.php:104
+#: lib/Vendi/Cache/wordpress_actions.php:119
+msgctxt "Vendi Cache"
+msgid "Remove from Vendi Cache"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Vendi Cache"
+msgstr ""
+
+#. #-#-#-#-#  vendi-cache.pot (Vendi Cache 1.0.2)  #-#-#-#-#
+#. Plugin URI of the plugin/theme
+#. #-#-#-#-#  vendi-cache.pot (Vendi Cache 1.0.2)  #-#-#-#-#
+#. Author URI of the plugin/theme
+msgid "https://www.vendiadvertising.com/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Disk-based page and post cache. (Formerly Wordfence Falcon Cachine)"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Vendi Advertising (Chris Haas)"
+msgstr ""
