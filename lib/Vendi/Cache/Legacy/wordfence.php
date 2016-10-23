@@ -198,7 +198,7 @@ class wordfence
             $err = wfCache::add_htaccess_code( 'add' );
             if( $err )
             {
-                return array( 'updateErr' => 'Wordfence could not edit your .htaccess file. The error was: ' . $err, 'code' => wfCache::get_htaccess_code() );
+                return array( 'updateErr' => sprintf( esc_html__( 'Vendi Cache could not edit your .htaccess file. The error was: %1$s', 'Vendi Cache' ), esc_html( $err ) ), 'code' => wfCache::get_htaccess_code() );
             }
         }
         wfCache::schedule_cache_clear();
@@ -218,41 +218,71 @@ class wordfence
                 {
                     if( $pluginFile == 'w3-total-cache/w3-total-cache.php' )
                     {
-                        $badPlugins[ ] = "W3 Total Cache";
+                        $badPlugins[ ] = 'W3 Total Cache';
                     }
                     else if( $pluginFile == 'quick-cache/quick-cache.php' )
                     {
-                        $badPlugins[ ] = "Quick Cache";
+                        $badPlugins[ ] = 'Quick Cache';
                     }
-                    else if( $pluginFile == "wp-super-cache/wp-cache.php" )
+                    else if( $pluginFile == 'wp-super-cache/wp-cache.php' )
                     {
-                        $badPlugins[ ] = "WP Super Cache";
+                        $badPlugins[ ] = 'WP Super Cache';
                     }
-                    else if( $pluginFile == "wp-fast-cache/wp-fast-cache.php" )
+                    else if( $pluginFile == 'wp-fast-cache/wp-fast-cache.php' )
                     {
-                        $badPlugins[ ] = "WP Fast Cache";
+                        $badPlugins[ ] = 'WP Fast Cache';
                     }
-                    else if( $pluginFile == "wp-fastest-cache/wpFastestCache.php" )
+                    else if( $pluginFile == 'wp-fastest-cache/wpFastestCache.php' )
                     {
-                        $badPlugins[ ] = "WP Fastest Cache";
+                        $badPlugins[ ] = 'WP Fastest Cache';
                     }
                 }
             }
             if( count( $badPlugins ) > 0 )
             {
-                return array( 'errorMsg' => "You can not enable caching in Wordfence with other caching plugins enabled. This may cause conflicts. You need to disable other caching plugins first. Wordfence caching is very fast and does not require other caching plugins to be active. The plugins you have that conflict are: " . implode( ', ', $badPlugins ) . ". Disable these plugins, then return to this page and enable Wordfence caching." );
+                return array(
+                                'errorMsg' => sprintf(
+                                                        wp_kses(
+                                                                    __(
+                                                                        'You can not enable Vendi Cache with other caching plugins enabled as this may cause conflicts. The plugins you have that conflict are: <strong>1$s.</strong> Disable these plugins, then return to this page and enable Vendi Cache.',
+                                                                        'Vendi Cache'
+                                                                        ),
+                                                                    array(
+                                                                            'strong' => array(),
+                                                                    )
+                                                            ),
+                                                            implode( ', ', $badPlugins )
+                                                    )
+                            );
             }
+
+            //Make sure that Wordfence caching is not enabled
+            if( is_plugin_active( 'wordfence/wordfence.php' ) )
+            {
+                if( class_exists( '\wfConfig' ) )
+                {
+                    if( method_exists( '\wfConfig', 'get' ) )
+                    {
+                        $wf_cacheType = \wfConfig::get( 'cacheType' );
+                        if( 'php' == $wf_cacheType || 'falcon' == $wf_cacheType )
+                        {
+                            return array( 'errorMsg' => esc_html__( 'Please disable WordFence\s cache before enabling Vendi Cache.', 'Vendi Cache' ) );
+                        }
+                    }
+                }
+            }
+
             $siteURL = site_url();
             if( preg_match( '/^https?:\/\/[^\/]+\/[^\/]+\/[^\/]+\/.+/i', $siteURL ) )
             {
-                return array( 'errorMsg' => 'Wordfence caching currently does not support sites that are installed in a subdirectory and have a home page that is more than 2 directory levels deep. e.g. we don\'t support sites who\'s home page is http://example.com/levelOne/levelTwo/levelThree' );
+                return array( 'errorMsg' => 'Vendi Cache currently does not support sites that are installed in a subdirectory and have a home page that is more than 2 directory levels deep. e.g. we don\'t support sites who\'s home page is http://example.com/levelOne/levelTwo/levelThree' );
             }
         }
         if( $cacheType == cache_settings::CACHE_MODE_ENHANCED )
         {
             if( ! get_option( 'permalink_structure', '' ) )
             {
-                return array( 'errorMsg' => 'You need to enable Permalinks for your site to use Falcon Engine. You can enable Permalinks in WordPress by going to the Settings - Permalinks menu and enabling it there. Permalinks change your site URL structure from something that looks like /p=123 to pretty URLs like /my-new-post-today/ that are generally more search engine friendly.' );
+                return array( 'errorMsg' => 'You need to enable Permalinks for your site to use the disk-based cache. You can enable Permalinks in WordPress by going to the Settings - Permalinks menu and enabling it there. Permalinks change your site URL structure from something that looks like /p=123 to pretty URLs like /my-new-post-today/ that are generally more search engine friendly.' );
             }
         }
         $warnHtaccess = false;
@@ -272,7 +302,7 @@ class wordfence
                 return array(
                                 'ok' => 1,
                                 'heading' => 'Could not write to cache directory',
-                                'body' => "To enable caching, Wordfence needs to be able to create and write to the /wp-content/wfcache/ directory. We did some tests that indicate this is not possible. You need to manually create the /wp-content/wfcache/ directory and make it writable by Wordfence. The error we encountered was during our tests was: $err"
+                                'body' => "To enable caching, Vendi Cache needs to be able to create and write to the /wp-content/wfcache/ directory. We did some tests that indicate this is not possible. You need to manually create the /wp-content/wfcache/ directory and make it writable by Vendi Cache. The error we encountered was during our tests was: $err"
                             );
             }
         }
@@ -285,17 +315,17 @@ class wordfence
         $htMsg = "";
         if( $warnHtaccess )
         {
-            $htMsg = " <strong style='color: #F00;'>Warning: We could not remove the caching code from your .htaccess file. you need to remove this manually yourself.</strong> ";
+            $htMsg = ' <strong style="color: #F00;">' . esc_html__( 'Warning: We could not remove the caching code from your .htaccess file. You will need to manually remove this file.', 'Vendi Cache' ) . '</strong> ';
         }
         if( $cacheType == cache_settings::CACHE_MODE_OFF )
         {
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
-            return array( 'ok' => 1, 'heading' => "Caching successfully disabled.", 'body' => "{$htMsg}Caching has been disabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
+            return array( 'ok' => 1, 'heading' => esc_html__( 'Caching successfully disabled.', 'Vendi Cache' ), 'body' => "{$htMsg}Caching has been disabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
         }
         else if( $cacheType == cache_settings::CACHE_MODE_PHP )
         {
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_PHP );
-            return array( 'ok' => 1, 'heading' => "Wordfence Basic Caching Enabled", 'body' => "{$htMsg}Wordfence basic caching has been enabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
+            return array( 'ok' => 1, 'heading' => esc_html__( 'Vendi Cache Basic Caching Enabled', 'Vendi Cache' ), 'body' => "{$htMsg}Vendi Cache basic caching has been enabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
         }
         else if( $cacheType == cache_settings::CACHE_MODE_ENHANCED )
         {
@@ -304,12 +334,12 @@ class wordfence
                 $err = wfCache::add_htaccess_code( 'add' );
                 if( $err )
                 {
-                    return array( 'ok' => 1, 'heading' => "Wordfence could not edit .htaccess", 'body' => "Wordfence could not edit your .htaccess code. The error was: " . $err );
+                    return array( 'ok' => 1, 'heading' => "Vendi Cache could not edit .htaccess", 'body' => "Vendi Cache could not edit your .htaccess code. The error was: " . $err );
                 }
             }
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_ENHANCED );
             // wfCache::scheduleUpdateBlockedIPs(); //Runs every 5 mins until we change cachetype
-            return array( 'ok' => 1, 'heading' => "Wordfence Falcon Engine Activated!", 'body' => "Wordfence Falcon Engine has been activated on your system. You will see this icon appear on the Wordfence admin pages as long as Falcon is active indicating your site is running in high performance mode:<div class='wfFalconImage'></div><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
+            return array( 'ok' => 1, 'heading' => "Disk-based Cache Activated!", 'body' => "Disk-based cache has been activated on your system. <center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
         }
         return array( 'errorMsg' => "An error occurred. Probably an unknown cacheType: $cacheType" );
     }
@@ -533,12 +563,7 @@ class wordfence
                                                             'msg_heading_manual_update' => esc_html__( 'You need to manually update your .htaccess', 'Vendi Cache' ),
 
                                                             'msg_switch_apache' => esc_html__( 'Disk-based cache modifies your website configuration file which is called your .htaccess file. To enable disk-based cache we ask that you make a backup of this file. This is a safety precaution in case for some reason disk-based cache is not compatible with your site.', 'Vendi Cache' ) .
-                                                                                    '<br /><br />
-                                                                                    <a
-                                                                                       href="' . admin_url( 'admin-ajax.php' ) . '?action=vendi_cache_downloadHtaccess&amp;nonce=' . $nonce . '"
-                                                                                       onclick="jQuery(\'#wfNextBut\').prop(\'disabled\', false); return true;">' . esc_html__( 'Click here to download a backup copy of your .htaccess file now', 'Vendi Cache' ) . '</a><br /><br />
-                                                                                    <input type="button" name="but1" id="wfNextBut" value="' . esc_attr_x( 'Click to Enable Disk-based cache Engine' ,'Vendi Cache' ) . '" disabled="disabled" onclick="WFAD.confirmSwitchToFalcon(0);" />
-                                                                                    ',
+                                                                                    '<br /><br /><a href="' . admin_url( 'admin-ajax.php' ) . '?action=vendi_cache_downloadHtaccess&amp;nonce=' . $nonce . '" onclick="jQuery(\'#wfNextBut\').prop(\'disabled\', false); return true;">' . esc_html__( 'Click here to download a backup copy of your .htaccess file now', 'Vendi Cache' ) . '</a><br /><br /> <input type="button" name="but1" id="wfNextBut" value="' . esc_attr_x( 'Click to Enable Disk-based cache Engine' ,'Vendi Cache' ) . '" disabled="disabled" onclick="WFAD.confirmSwitchToFalcon(0);" />',
                                                             'msg_switch_nginx'  => sprintf(
                                                                                             wp_kses(
                                                                                                         __( 'You are using an Nginx web server and using a FastCGI processor like PHP5-FPM. To use disk-based cache you will need to manually modify your nginx.conf configuration file and reload your Nginx server for the changes to take effect. You can find the <a href="%s" target="_blank">rules you need to make these changes to nginx.conf on this page on wordfence.com</a>. Once you have made these changes, compressed cached files will be served to your visitors directly from Nginx making your site extremely fast. When you have made the changes and reloaded your Nginx server, you can click the button below to enable Disk-based cache.', 'Vendi Cache' ),
@@ -556,13 +581,11 @@ class wordfence
                                                             'msg_switch_error'  => esc_html__( 'We can\'t modify your .htaccess file for you because: @@1@@', 'Vendi Cache' ) .
                                                                                     '<br /><br />' .
                                                                                     esc_html__( 'Advanced users: If you would like to manually enable disk-based cache yourself by editing your .htaccess, you can add the rules below to the beginning of your .htaccess file. Then click the button below to enable disk-based cache. Don\'t do this unless you understand website configuration.', 'Vendi Cache' ) .
-                                                                                    '<br /><textarea style="width: 300px; height:100px;" readonly>@@2@@</textarea><br />
-                                                                                    <input type="button" value="' . esc_attr_x( 'Enable disk-based cache after manually editing .htaccess', 'Vendi Cache' ) . '" onclick="WFAD.confirmSwitchToFalcon(1);" />
-                                                                                ',
+                                                                                    '<br /><textarea style="width: 300px; height:100px;" readonly>@@2@@</textarea><br /><input type="button" value="' . esc_attr_x( 'Enable disk-based cache after manually editing .htaccess', 'Vendi Cache' ) . '" onclick="WFAD.confirmSwitchToFalcon(1);" />',
+
                                                             'msg_manual_update' => '@@1@@<br />' . 
                                                                                     esc_html__( 'Your option was updated but you need to change the disk-base cache code in your .htaccess to the following:', 'Vendi Cache' ) .
-                                                                                    '<br /><textarea style="width: 300px; height: 120px;">@@2@@</textarea>
-                                                                                ',
+                                                                                    '<br /><textarea style="width: 300px; height: 120px;">@@2@@</textarea>',
 
                                                             'msg_invalid_pattern' => esc_html__( 'You can not enter full URL\'s for exclusion from caching. You entered a full URL that started with http:// or https://. You must enter relative URL\'s e.g. /exclude/this/page/. You can also enter text that might be contained in the path part of a URL or at the end of the path part of a URL.', 'Vendi Cache' ) ,
 
@@ -614,18 +637,6 @@ class wordfence
         require VENDI_CACHE_PATH . '/admin/vendi-cache.php';
     }
 
-    public static function _retargetWordfenceSubmenuCallout()
-    {
-        echo <<<JQUERY
-<script type="text/javascript">
-jQuery(document).ready(function($) {
-    $('#wfMenuCallout').closest('a').attr('target', '_blank');
-});
-</script>
-JQUERY;
-
-    }
-    
     /**
      * Call this to prevent Wordfence from caching the current page.
      * @return boolean
