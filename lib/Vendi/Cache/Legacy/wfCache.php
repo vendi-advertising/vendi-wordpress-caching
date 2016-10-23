@@ -57,7 +57,7 @@ class wfCache
                 }
             }
         }
-        add_action( 'wordfence_cache_clear', array( __CLASS__, 'scheduled_cache_clear' ) );
+        add_action( VENDI_CACHE_ACTION_NAME_CACHE_CLEAR, array( __CLASS__, 'scheduled_cache_clear' ) );
         add_action( 'comment_post', array( __CLASS__, 'action_comment_post' ) ); //Might not be logged in
         add_filter( 'wp_redirect', array( __CLASS__, 'redirect_filter' ) );
 
@@ -67,7 +67,7 @@ class wfCache
         $doDelete = false;
         if( $_SERVER[ 'REQUEST_METHOD' ] != 'GET' )
         {
-//If our URL is hit with a POST, PUT, DELETE or any other non 'GET' request, then clear cache.
+            //If our URL is hit with a POST, PUT, DELETE or any other non 'GET' request, then clear cache.
             $doDelete = true;
         }
 
@@ -81,7 +81,7 @@ class wfCache
         {
             if( ( ! $fileDeleted ) && self::$cacheType == cache_settings::CACHE_MODE_PHP )
             {
-//Then serve the file if it's still valid
+                //Then serve the file if it's still valid
                 $stat = @stat( $file );
                 if( $stat )
                 {
@@ -107,7 +107,7 @@ class wfCache
 
     public static function is_a_no_cache_constant_defined()
     {
-        //If you want to tell Wordfence not to cache something in another plugin, simply define one of these. 
+        //If you want to tell ua not to cache something in another plugin, simply define one of these. 
         return defined( 'WFDONOTCACHE' ) || defined( 'DONOTCACHEPAGE' ) || defined( 'DONOTCACHEDB' ) || defined( 'DONOTCACHEOBJECT' );
     }
 
@@ -311,10 +311,10 @@ class wfCache
         $appendGzip = "";
         if( self::get_vwc_cache_settings()->get_do_append_debug_message() )
         {
-            $append = "\n<!-- Cached by Wordfence ";
+            $append = "\n<!-- Cached by Vendi Cache ";
             if( self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED )
             {
-                $append .= "Falcon Engine. ";
+                $append .= "Disk-Based Engine. ";
             }
             else
             {
@@ -456,7 +456,7 @@ $ext = '_https'; }
         {
 return; }
         self::$clearScheduledThisRequest = true;
-        wp_schedule_single_event( time() - 15, 'wordfence_cache_clear', array( rand( 0, 999999999 ) ) ); //rand makes sure this is called every time and isn't subject to the 10 minute window where the same event won't be run twice with wp_schedule_single_event
+        wp_schedule_single_event( time() - 15, VENDI_CACHE_ACTION_NAME_CACHE_CLEAR, array( rand( 0, 999999999 ) ) ); //rand makes sure this is called every time and isn't subject to the 10 minute window where the same event won't be run twice with wp_schedule_single_event
         $url = admin_url( 'admin-ajax.php' );
         wp_remote_get( $url );
     }
@@ -687,12 +687,12 @@ continue; } //Don't delete our lock file
     {
         if( $action != 'add' && $action != 'remove' )
         {
-            die( "Error: add_htaccess_code must be called with 'add' or 'remove' as param" );
+            die( __( 'Error: add_htaccess_code must be called with \'add\' or \'remove\' as param', 'Vendi Cache' ) );
         }
         $htaccessPath = self::get_htaccess_path();
         if( ! $htaccessPath )
         {
-            return "Wordfence could not find your .htaccess file.";
+            return __( 'Vendi Cache could not find your .htaccess file.', 'Vendi Cache' );
         }
         $fh = @fopen( $htaccessPath, 'r+' );
         if( ! $fh )
@@ -709,7 +709,7 @@ continue; } //Don't delete our lock file
             fclose( $fh );
             return "Could not read from $htaccessPath";
         }
-        $contents = preg_replace( '/#WFCACHECODE.*WFCACHECODE[\r\s\n\t]*/s', '', $contents );
+        $contents = preg_replace( '/#VENDI_CACHE_CACHE_CODE.*VENDI_CACHE_CACHE_CODE[\r\s\n\t]*/s', '', $contents );
         if( $action == 'add' )
         {
             $code = self::get_htaccess_code();
@@ -785,7 +785,7 @@ continue; } //Don't delete our lock file
         }
 
         $code = <<<EOT
-#WFCACHECODE - Do not remove this line. Disable Web Caching in Wordfence to remove this data.
+#VENDI_CACHE_CACHE_CODE - Do not remove this line. Disable Web Caching in Vendi Cache to remove this data.
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/css text/x-component application/x-javascript application/javascript text/javascript text/x-js text/html text/richtext image/svg+xml text/plain text/xsd text/xsl text/xml image/x-icon application/json
     <IfModule mod_headers.c>
@@ -829,7 +829,7 @@ continue; } //Don't delete our lock file
     RewriteCond "%{DOCUMENT_ROOT}{$pathPrefix}/wp-content/wfcache/%{HTTP_HOST}_%1/%2~%3~%4~%5~%6_wfcache%{ENV:WRDFNC_HTTPS}.html%{ENV:WRDFNC_ENC}" -f
     RewriteRule \/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)(.*)$ "{$pathPrefix}/wp-content/wfcache/%{HTTP_HOST}_{$matchCaps}_wfcache%{ENV:WRDFNC_HTTPS}.html%{ENV:WRDFNC_ENC}" [L]
 </IfModule>
-#Do not remove this line. Disable Web caching in Wordfence to remove this data - WFCACHECODE
+#Do not remove this line. Disable Web caching in Vendi Cache to remove this data - VENDI_CACHE_CACHE_CODE
 EOT;
         return $code;
     }

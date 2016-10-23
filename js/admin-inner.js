@@ -9,20 +9,20 @@ window.vendiCacheExt = {
 	showLoading: function(){
 		this.loadingCount++;
 		if(this.loadingCount == 1){
-			jQuery('<div style="padding: 2px 8px 2px 24px; z-index: 100000; position: fixed; right: 2px; bottom: 2px; border: 1px solid #000; background-color: #F00; color: #FFF; font-size: 12px; font-weight: bold; font-family: Arial; text-align: center;" id="wordfenceWorking">Wordfence is working...</div>').appendTo('body');
+			jQuery('<div style="padding: 2px 8px 2px 24px; z-index: 100000; position: fixed; right: 2px; bottom: 2px; border: 1px solid #000; background-color: #F00; color: #FFF; font-size: 12px; font-weight: bold; font-family: Arial; text-align: center;" id="backgroundWorking">Working...</div>').appendTo('body');
 		}
 	},
 	removeLoading: function(){
 		this.loadingCount--;
 		if( 0 === this.loadingCount){
-			jQuery('#wordfenceWorking').remove();
+			jQuery('#backgroundWorking').remove();
 		}
 	},
 	removeFromCache: function(postID){
-		this.ajax('wordfence_removeFromCache', {
+		this.ajax('vendi_cache_removeFromCache', {
 			id: postID
 			}, 
-			function(res){ if(res.ok){ alert("Item removed from the Wordfence cache."); } },
+			function(res){ if(res.ok){ alert("Item removed from the cache."); } },
 			function(){}
 			);
 	},

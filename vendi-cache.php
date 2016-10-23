@@ -25,6 +25,7 @@ define( 'VENDI_CACHE_VERSION', '1.0.2' );
 
 define( 'VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION', 'vendiWordPressCachingActivated' );
 define( 'VENDI_CACHE_OPTION_KEY_FOR_VERSION', 'vendi_cache_version' );
+define( 'VENDI_CACHE_ACTION_NAME_CACHE_CLEAR', 'vendi_cache_cache_clear');
 
 //This code is original to WF and I'm pretty sure it allows a
 //plugin to be hosted in a shared location on a server instead

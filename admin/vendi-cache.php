@@ -40,7 +40,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 				</tr>
 			</table>
 
-			<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Save Changes to the type of caching enabled above', 'Vendi Cache' ); ?>" onclick="WFAD.saveCacheConfig();" />
+			<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Save Changes to the type of caching enabled above', 'Vendi Cache' ); ?>" onclick="VCAD.saveCacheConfig();" />
 
 		</div>
 
@@ -74,7 +74,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 
 			<br />
 
-			<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Save Changes to the the caching options above', 'Vendi Cache' ); ?>" onclick="WFAD.saveCacheOptions();" />
+			<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Save Changes to the the caching options above', 'Vendi Cache' ); ?>" onclick="VCAD.saveCacheOptions();" />
 
 		</div>
 
@@ -83,9 +83,9 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 			<h2><?php esc_html_e( 'Cache Management', 'Vendi Cache' ); ?></h2>
 
 			<p style="width: 500px;">
-				<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Clear the Cache', 'Vendi Cache' ); ?>" onclick="WFAD.clearPageCache();" />
+				<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Clear the Cache', 'Vendi Cache' ); ?>" onclick="VCAD.clearPageCache();" />
 				&nbsp;&nbsp;
-				<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Get Cache Stats', 'Vendi Cache' ); ?>" onclick="WFAD.getCacheStats();" />
+				<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Get Cache Stats', 'Vendi Cache' ); ?>" onclick="VCAD.getCacheStats();" />
 				<br />
 				<?php esc_html_e( 'Note that the cache is automatically cleared when administrators make any site updates. Some of the actions that will automatically clear the cache are:', 'Vendi Cache' ); ?>
 				<ul>
@@ -115,7 +115,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 					</select>
 				this value<br />then don't cache it:
 				<input type="text" id="wfPattern" value="" size="20" maxlength="1000" />e.g. /my/dynamic/page/
-				<input type="button" class="button-primary" value="<?php esc_attr_e( 'Add exclusion', 'Vendi Cache' ); ?>" onclick="WFAD.addCacheExclusion(jQuery('#wfPatternType').val(), jQuery('#wfPattern').val()); return false;" />
+				<input type="button" class="button-primary" value="<?php esc_attr_e( 'Add exclusion', 'Vendi Cache' ); ?>" onclick="VCAD.addCacheExclusion(jQuery('#wfPatternType').val(), jQuery('#wfPattern').val()); return false;" />
 			</p>
 
 			<div id="wfCacheExclusions">
@@ -156,6 +156,6 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 	<strong style="color: #F00;">
 	"${p}"
 	</strong>
-	then don't cache it. [<a href="#" onclick="WFAD.removeCacheExclusion('${id}'); return false;">remove exclusion</a>]
+	then don't cache it. [<a href="#" onclick="VCAD.removeCacheExclusion('${id}'); return false;">remove exclusion</a>]
 </div>
 </script>
