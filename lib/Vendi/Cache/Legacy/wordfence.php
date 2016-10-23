@@ -596,7 +596,7 @@ class wordfence
 
     public static function activation_warning()
     {
-        $activationError = get_option( 'wf_plugin_act_error', '' );
+        $activationError = get_option( VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR, '' );
         if( strlen( $activationError ) > 400 )
         {
             $activationError = substr( $activationError, 0, 400 ) . '...[output truncated]';
@@ -616,7 +616,7 @@ class wordfence
         }
 
         $warningAdded = false;
-        if( get_option( 'wf_plugin_act_error', false ) )
+        if( get_option( VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR, false ) )
         {
             if( wfUtils::isAdminPageMU() )
             {

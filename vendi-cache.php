@@ -25,6 +25,7 @@ define( 'VENDI_CACHE_VERSION', '1.0.2' );
 
 define( 'VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION', 'vendiWordPressCachingActivated' );
 define( 'VENDI_CACHE_OPTION_KEY_FOR_VERSION', 'vendi_cache_version' );
+define( 'VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR', 'vwc_plugin_act_error' );
 define( 'VENDI_CACHE_ACTION_NAME_CACHE_CLEAR', 'vendi_cache_cache_clear');
 
 //This code is original to WF and I'm pretty sure it allows a
@@ -53,7 +54,7 @@ if( 1 != get_option( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION ) )
                 'activated_plugin',
                 function()
                 {
-                    update_option( 'vwc_plugin_act_error', ob_get_contents() );
+                    update_option( VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR, ob_get_contents() );
                 }
             );
 }
