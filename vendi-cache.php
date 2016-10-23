@@ -23,6 +23,9 @@ define( 'VENDI_CACHE_SUPPORT_MU', false );
 
 define( 'VENDI_CACHE_VERSION', '1.0.2' );
 
+define( 'VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION', 'vendiWordPressCachingActivated' );
+define( 'VENDI_CACHE_OPTION_KEY_FOR_VERSION', 'vendi_cache_version' );
+
 //This code is original to WF and I'm pretty sure it allows a
 //plugin to be hosted in a shared location on a server instead
 //of installing it on every single site.
@@ -43,7 +46,7 @@ if( ! defined( 'VENDI_CACHE_FCPATH' ) )
     define( 'VENDI_CACHE_PATH', trailingslashit( dirname( VENDI_CACHE_FCPATH ) ) );
 }
 
-if( 1 != get_option( 'vendiWordPressCachingActivated' ) )
+if( 1 != get_option( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION ) )
 {
     add_action(
                 'activated_plugin',

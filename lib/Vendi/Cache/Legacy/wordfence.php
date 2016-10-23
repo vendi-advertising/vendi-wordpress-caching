@@ -30,7 +30,7 @@ class wordfence
     {
         self::runInstall();
         //Used by MU code below
-        update_option( 'wordfenceActivated', 1 );
+        update_option( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION, 1 );
     }
 
     public static function uninstall_plugin()
@@ -43,6 +43,7 @@ class wordfence
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
 
             //We currently don't clear the cache when plugin is disabled because it will take too long if done synchronously and won't work because plugin is disabled if done asynchronously.
+            //TODO: A warning should be issued telling people that they need to manually clear their cache
             //wfCache::schedule_cache_clear();
         }
         else if( $cacheType == cache_settings::CACHE_MODE_PHP )
@@ -51,7 +52,7 @@ class wordfence
         }
 
         //Used by MU code below
-        update_option( 'wordfenceActivated', 0 );
+        update_option( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION, 0 );
 
         cache_settings::uninstall();
     }
@@ -68,8 +69,8 @@ class wordfence
         {
             ignore_user_abort( true );
         }
-        $previous_version = get_option( 'vendi_cache_version', '0.0.0' );
-        update_option( 'vendi_cache_version', VENDI_CACHE_VERSION ); //In case we have a fatal error we don't want to keep running install.
+        $previous_version = get_option( VENDI_CACHE_OPTION_KEY_FOR_VERSION, '0.0.0' );
+        update_option( VENDI_CACHE_OPTION_KEY_FOR_VERSION, VENDI_CACHE_VERSION ); //In case we have a fatal error we don't want to keep running install.
         //EVERYTHING HERE MUST BE IDEMPOTENT
 
         if( self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_PHP || self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED )
@@ -83,7 +84,7 @@ class wordfence
         register_activation_hook( VENDI_CACHE_FCPATH, array( __CLASS__, 'install_plugin' ) );
         register_deactivation_hook( VENDI_CACHE_FCPATH, array( __CLASS__, 'uninstall_plugin' ) );
 
-        $versionInOptions = get_option( 'vendi_cache_version', false );
+        $versionInOptions = get_option( VENDI_CACHE_OPTION_KEY_FOR_VERSION, false );
         if( ( ! $versionInOptions ) || version_compare( VENDI_CACHE_VERSION, $versionInOptions, '>' ) )
         {
             //Either there is no version in options or the version in options is greater and we need to run the upgrade
@@ -95,7 +96,7 @@ class wordfence
         if( defined( 'MULTISITE' ) && MULTISITE === true )
         {
             //Because the plugin is active once installed, even before it's network activated, for site 1 (WordPress team, why?!)
-            if( 1 === get_current_blog_id() && get_option( 'wordfenceActivated' ) != 1 )
+            if( 1 === get_current_blog_id() && get_option( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION ) != 1 )
             {
                 return;
             }
@@ -521,7 +522,7 @@ class wordfence
                                                             'firstNonce' => $nonce,
                                                             'cacheType' => self::get_vwc_cache_settings()->get_cache_mode(),
 
-                                                            'msg_loading' => __( 'Wordfence is working...', 'Vendi Cache' ),
+                                                            'msg_loading' => __( 'Vendi Cache is working...', 'Vendi Cache' ),
                                                             'msg_general_error' => __( 'An error occurred', 'Vendi Cache' ),
 
                                                             'msg_heading_enable_enhanced' => __( 'Enabling Disk-Based Cache Engine', 'Vendi Cache' ),
