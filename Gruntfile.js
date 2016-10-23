@@ -9,7 +9,7 @@ module.exports = function( grunt ) {
 
 		addtextdomain: {
 			options: {
-				textdomain: 'vendi-wordfence',
+				textdomain: 'vendi-cache',
 			},
 			target: {
 				files: {
@@ -30,8 +30,8 @@ module.exports = function( grunt ) {
 			target: {
 				options: {
 					domainPath: '/languages',
-					mainFile: 'vendi-wordfence.php',
-					potFilename: 'vendi-wordfence.pot',
+					mainFile: 'vendi-cache.php',
+					potFilename: 'vendi-cache.pot',
 					potHeaders: {
 						poedit: true,
 						'x-poedit-keywordslist': true
