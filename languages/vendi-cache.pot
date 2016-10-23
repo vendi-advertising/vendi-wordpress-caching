@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Vendi Cache 1.0.2\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/vendi-cache\n"
-"POT-Creation-Date: 2016-10-23 10:44:47+00:00\n"
+"POT-Creation-Date: 2016-10-23 11:37:24+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -134,84 +134,142 @@ msgstr ""
 msgid "Add exclusion"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:127
+#: lib/Vendi/Cache/Legacy/wordfence.php:128
 msgid ""
 "You appear to have logged out or you are not an admin. Please sign-out and "
 "sign-in again."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:135
+#: lib/Vendi/Cache/Legacy/wordfence.php:136
 msgid ""
 "Your browser sent an invalid security token. Please try reloading this page "
 "or signing out and in again."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:142
+#: lib/Vendi/Cache/Legacy/wordfence.php:143
 msgid "Could not find AJAX func %1$s"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:147
+#: lib/Vendi/Cache/Legacy/wordfence.php:148
 msgid "We encountered an internal error executing that request."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:152
+#: lib/Vendi/Cache/Legacy/wordfence.php:153
 msgid "Function %1$s did not return an array and did not generate an error."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:157
+#: lib/Vendi/Cache/Legacy/wordfence.php:158
 msgid ""
 "The ajax function returned an array with 'nonce' already set. This could be "
 "a bug."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:524
-msgid "Wordfence is working..."
-msgstr ""
-
-#: lib/Vendi/Cache/Legacy/wordfence.php:525
-msgid "An error occurred"
+#: lib/Vendi/Cache/Legacy/wordfence.php:526
+msgid "Vendi Cache is working..."
 msgstr ""
 
 #: lib/Vendi/Cache/Legacy/wordfence.php:527
-msgid "Enabling Disk-Based Cache Engine"
-msgstr ""
-
-#: lib/Vendi/Cache/Legacy/wordfence.php:528
-msgid "We encountered a problem"
+msgid "An error occurred"
 msgstr ""
 
 #: lib/Vendi/Cache/Legacy/wordfence.php:529
-msgid "Incorrect pattern for exclusion"
+msgid "Enabling Disk-Based Cache Engine"
 msgstr ""
 
 #: lib/Vendi/Cache/Legacy/wordfence.php:530
-msgid "Cache Exclusions"
+msgid "We encountered a problem"
 msgstr ""
 
 #: lib/Vendi/Cache/Legacy/wordfence.php:531
+msgid "Incorrect pattern for exclusion"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:532
+msgid "Cache Exclusions"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:533
 msgid "You need to manually update your .htaccess"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:570
+#: lib/Vendi/Cache/Legacy/wordfence.php:535
+msgid ""
+"Disk-based cache modifies your website configuration file which is called "
+"your .htaccess file. To enable disk-based cache we ask that you make a "
+"backup of this file. This is a safety precaution in case for some reason "
+"disk-based cache is not compatible with your site."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:539
+msgid "Click here to download a backup copy of your .htaccess file now"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:540
+#: lib/Vendi/Cache/Legacy/wordfence.php:554
+msgctxt "Vendi Cache"
+msgid "Click to Enable Disk-based cache Engine"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:544
+msgid ""
+"You are using an Nginx web server and using a FastCGI processor like PHP5-"
+"FPM. To use disk-based cache you will need to manually modify your nginx."
+"conf configuration file and reload your Nginx server for the changes to take "
+"effect. You can find the <a href=\"%s\" target=\"_blank\">rules you need to "
+"make these changes to nginx.conf on this page on wordfence.com</a>. Once you "
+"have made these changes, compressed cached files will be served to your "
+"visitors directly from Nginx making your site extremely fast. When you have "
+"made the changes and reloaded your Nginx server, you can click the button "
+"below to enable Disk-based cache."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:556
+msgid "We can't modify your .htaccess file for you because: @@1@@"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:558
+msgid ""
+"Advanced users: If you would like to manually enable disk-based cache "
+"yourself by editing your .htaccess, you can add the rules below to the "
+"beginning of your .htaccess file. Then click the button below to enable disk-"
+"based cache. Don't do this unless you understand website configuration."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:560
+msgctxt "Vendi Cache"
+msgid "Enable disk-based cache after manually editing .htaccess"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:563
+msgid ""
+"Your option was updated but you need to change the disk-base cache code in "
+"your .htaccess to the following:"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:567
+msgid ""
+"You can not enter full URL's for exclusion from caching. You entered a full "
+"URL that started with http:// or https://. You must enter relative URL's e."
+"g. /exclude/this/page/. You can also enter text that might be contained in "
+"the path part of a URL or at the end of the path part of a URL."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:569
 msgid ""
 "There are not currently any exclusions. If you have a site that does not "
 "change often, it is perfectly normal to not have any pages you want to "
 "exclude from the cache."
 msgstr ""
 
-#: lib/Vendi/Cache/cache_settings.php:110
-msgid "Empty value passed to add_single_cache_exclusion."
-msgstr ""
-
-#: lib/Vendi/Cache/cache_settings.php:115
+#: lib/Vendi/Cache/Legacy/wordfence.php:583
 msgid ""
-"Method add_single_cache_exclusion must be provided with type cache_exclusion."
+"Vendi Cache generated an error on activation. The output we received during "
+"activation was:"
 msgstr ""
 
 #: lib/Vendi/Cache/wordpress_actions.php:87
 #: lib/Vendi/Cache/wordpress_actions.php:104
 #: lib/Vendi/Cache/wordpress_actions.php:119
-msgctxt "Vendi Cache"
 msgid "Remove from Vendi Cache"
 msgstr ""
 
