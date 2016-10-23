@@ -522,14 +522,14 @@ class wordfence
                                                             'firstNonce' => $nonce,
                                                             'cacheType' => self::get_vwc_cache_settings()->get_cache_mode(),
 
-                                                            'msg_loading' => __( 'Vendi Cache is working...', 'Vendi Cache' ),
-                                                            'msg_general_error' => __( 'An error occurred', 'Vendi Cache' ),
+                                                            'msg_loading' => esc_html__( 'Vendi Cache is working...', 'Vendi Cache' ),
+                                                            'msg_general_error' => esc_html__( 'An error occurred', 'Vendi Cache' ),
 
-                                                            'msg_heading_enable_enhanced' => __( 'Enabling Disk-Based Cache Engine', 'Vendi Cache' ),
-                                                            'msg_heading_error' => __( 'We encountered a problem', 'Vendi Cache' ),
-                                                            'msg_heading_invalid_pattern' => __( 'Incorrect pattern for exclusion', 'Vendi Cache' ),
-                                                            'msg_heading_cache_exclusions' => __( 'Cache Exclusions', 'Vendi Cache' ),
-                                                            'msg_heading_manual_update' => __( 'You need to manually update your .htaccess', 'Vendi Cache' ),
+                                                            'msg_heading_enable_enhanced' => esc_html__( 'Enabling Disk-Based Cache Engine', 'Vendi Cache' ),
+                                                            'msg_heading_error' => esc_html__( 'We encountered a problem', 'Vendi Cache' ),
+                                                            'msg_heading_invalid_pattern' => esc_html__( 'Incorrect pattern for exclusion', 'Vendi Cache' ),
+                                                            'msg_heading_cache_exclusions' => esc_html__( 'Cache Exclusions', 'Vendi Cache' ),
+                                                            'msg_heading_manual_update' => esc_html__( 'You need to manually update your .htaccess', 'Vendi Cache' ),
 
                                                             'msg_switch_apache' => 'Disk-based cache modifies your website configuration file which is called your .htaccess file.
                                                                                     To enable disk-based cache we ask that you make a backup of this file.
