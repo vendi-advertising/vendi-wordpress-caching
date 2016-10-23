@@ -1,4 +1,4 @@
-/* globals WordfenceAdminVars, jQuery */
+/* globals VendiCacheAdminVars, jQuery */
 (function($) {
 	if (!window.hasOwnProperty( 'vendiCache')) {
 		window.vendiCache = {
@@ -25,23 +25,23 @@
 			},
 
 			setupAdminVars: function() {
-				this.nonce = WordfenceAdminVars.firstNonce;
+				this.nonce = VendiCacheAdminVars.firstNonce;
 
-				this.msgs.msg_loading = WordfenceAdminVars.msg_loading;
-				this.msgs.msg_general_error = WordfenceAdminVars.msg_general_error;
+				this.msgs.msg_loading = VendiCacheAdminVars.msg_loading;
+				this.msgs.msg_general_error = VendiCacheAdminVars.msg_general_error;
 
-				this.msgs.msg_heading_enable_enhanced = WordfenceAdminVars.msg_heading_enable_enhanced;
-				this.msgs.msg_heading_error = WordfenceAdminVars.msg_heading_error;
-				this.msgs.msg_heading_invalid_pattern = WordfenceAdminVars.msg_heading_invalid_pattern;
-				this.msgs.msg_heading_cache_exclusions = WordfenceAdminVars.msg_heading_cache_exclusions;
-				this.msgs.msg_heading_manual_update = WordfenceAdminVars.msg_heading_manual_update;
+				this.msgs.msg_heading_enable_enhanced = VendiCacheAdminVars.msg_heading_enable_enhanced;
+				this.msgs.msg_heading_error = VendiCacheAdminVars.msg_heading_error;
+				this.msgs.msg_heading_invalid_pattern = VendiCacheAdminVars.msg_heading_invalid_pattern;
+				this.msgs.msg_heading_cache_exclusions = VendiCacheAdminVars.msg_heading_cache_exclusions;
+				this.msgs.msg_heading_manual_update = VendiCacheAdminVars.msg_heading_manual_update;
 
-				this.msgs.msg_switch_apache = WordfenceAdminVars.msg_switch_apache;
-				this.msgs.msg_switch_nginx = WordfenceAdminVars.msg_switch_nginx;
-				this.msgs.msg_switch_error = WordfenceAdminVars.msg_switch_error;
-				this.msgs.msg_manual_update = WordfenceAdminVars.msg_manual_update;
-				this.msgs.msg_invalid_pattern = WordfenceAdminVars.msg_invalid_pattern;
-				this.msgs.msg_no_exclusions = WordfenceAdminVars.msg_no_exclusions;
+				this.msgs.msg_switch_apache = VendiCacheAdminVars.msg_switch_apache;
+				this.msgs.msg_switch_nginx = VendiCacheAdminVars.msg_switch_nginx;
+				this.msgs.msg_switch_error = VendiCacheAdminVars.msg_switch_error;
+				this.msgs.msg_manual_update = VendiCacheAdminVars.msg_manual_update;
+				this.msgs.msg_invalid_pattern = VendiCacheAdminVars.msg_invalid_pattern;
+				this.msgs.msg_no_exclusions = VendiCacheAdminVars.msg_no_exclusions;
 			},
 			showLoading: function() {
 				this.loadingCount++;
@@ -85,7 +85,7 @@
 				}
 				jQuery.ajax({
 					type: 'POST',
-					url: WordfenceAdminVars.ajaxURL,
+					url: VendiCacheAdminVars.ajaxURL,
 					dataType: "json",
 					data: data,
 					success: function(json) {

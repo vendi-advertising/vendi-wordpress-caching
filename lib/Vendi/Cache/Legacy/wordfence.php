@@ -516,7 +516,7 @@ class wordfence
         $nonce = wp_create_nonce( 'wp-ajax' );
         wp_localize_script(
                             'vendi-cache-admin',
-                            'WordfenceAdminVars', array(
+                            'VendiCacheAdminVars', array(
                                                             'ajaxURL' => admin_url( 'admin-ajax.php' ),
                                                             'firstNonce' => $nonce,
                                                             'cacheType' => self::get_vwc_cache_settings()->get_cache_mode(),

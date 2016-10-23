@@ -1,10 +1,10 @@
-/* globals WordfenceAdminVars, jQuery */
+/* globals VendiCacheAdminVars, jQuery */
 if(! window.hasOwnProperty( 'vendiCacheExt' )) {
 window.vendiCacheExt = {
 	nonce: false,
 	loadingCount: 0,
 	init: function(){
-		this.nonce = WordfenceAdminVars.firstNonce; 
+		this.nonce = VendiCacheAdminVars.firstNonce; 
 	},
 	showLoading: function(){
 		this.loadingCount++;
@@ -45,7 +45,7 @@ window.vendiCacheExt = {
 		}
 		jQuery.ajax({
 			type: 'POST',
-			url: WordfenceAdminVars.ajaxURL,
+			url: VendiCacheAdminVars.ajaxURL,
 			dataType: "json",
 			data: data,
 			success: function(json){ 
