@@ -1,7 +1,7 @@
 /* globals WordfenceAdminVars, jQuery */
 (function($) {
-	if (!window.hasOwnProperty( 'wordfenceAdmin')) {
-		window.wordfenceAdmin = {
+	if (!window.hasOwnProperty( 'vendiCache')) {
+		window.vendiCache = {
 			loadingCount: 0,
 			colorboxQueue: [],
 			nonce: false,
@@ -266,9 +266,9 @@
 			}
 		};
 
-		window.WFAD = window.wordfenceAdmin;
+		window.WFAD = window.vendiCache;
 	}
 	jQuery(function() {
-		window.wordfenceAdmin.init();
+		window.vendiCache.init();
 	});
 })(jQuery);

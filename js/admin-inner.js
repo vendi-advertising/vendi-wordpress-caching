@@ -1,6 +1,6 @@
 /* globals WordfenceAdminVars, jQuery */
-if(! window.hasOwnProperty( 'wordfenceExt' )) {
-window.wordfenceExt = {
+if(! window.hasOwnProperty( 'vendiCacheExt' )) {
+window.vendiCacheExt = {
 	nonce: false,
 	loadingCount: 0,
 	init: function(){
@@ -68,5 +68,5 @@ window.wordfenceExt = {
 };
 }
 jQuery(function(){
-	window.wordfenceExt.init();
+	window.vendiCacheExt.init();
 });
