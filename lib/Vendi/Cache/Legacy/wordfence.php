@@ -625,11 +625,6 @@ jQuery(document).ready(function($) {
 JQUERY;
 
     }
-
-    public static function getMyOptionsURL()
-    {
-        return network_admin_url( 'admin.php?page=WordfenceSecOpt', 'http' );
-    }
     
     /**
      * Call this to prevent Wordfence from caching the current page.
