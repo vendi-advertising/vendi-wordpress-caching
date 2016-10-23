@@ -103,21 +103,6 @@ class cache_settings
         update_option( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS, $cache_exclusions );
     }
 
-    public function add_single_cache_exclusion( $cache_exclusion )
-    {
-        if( ! $cache_exclusion )
-        {
-            throw new cache_setting_exception( __( 'Empty value passed to add_single_cache_exclusion.', 'Vendi Cache' ) );
-        }
-
-        if( ! $cache_exclusion instanceof cache_exclusion )
-        {
-            throw new cache_setting_exception( __( 'Method add_single_cache_exclusion must be provided with type cache_exclusion.', 'Vendi Cache' ) );
-        }
-
-        $this->cache_exclusions[ ] = $cache_exclusion;
-    }
-
 /*Database loading/saving/uninstall*/
 
     public static function uninstall()
