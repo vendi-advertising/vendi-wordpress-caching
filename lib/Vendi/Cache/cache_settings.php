@@ -38,7 +38,7 @@ class cache_settings
             return;
         }
 
-        throw new cache_setting_exception( __( sprintf( 'Unknown cache mode: %1$s', $cache_mode ), 'Vendi Caching' ) );
+        throw new cache_setting_exception( __( sprintf( 'Unknown cache mode: %1$s', $cache_mode ), 'Vendi Cache' ) );
     }
 
     public function get_do_cache_https_urls()
@@ -107,12 +107,12 @@ class cache_settings
     {
         if( ! $cache_exclusion )
         {
-            throw new cache_setting_exception( __( 'Empty value passed to add_single_cache_exclusion.', 'Vendi Caching' ) );
+            throw new cache_setting_exception( __( 'Empty value passed to add_single_cache_exclusion.', 'Vendi Cache' ) );
         }
 
         if( ! $cache_exclusion instanceof cache_exclusion )
         {
-            throw new cache_setting_exception( __( 'Method add_single_cache_exclusion must be provided with type cache_exclusion.', 'Vendi Caching' ) );
+            throw new cache_setting_exception( __( 'Method add_single_cache_exclusion must be provided with type cache_exclusion.', 'Vendi Cache' ) );
         }
 
         $this->cache_exclusions[ ] = $cache_exclusion;
