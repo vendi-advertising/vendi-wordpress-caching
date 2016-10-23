@@ -304,7 +304,7 @@ class wfCache
             return $buffer;
         }
 
-        $file = self::file_from_request( utils::get_server_value( 'HTTP_HOST' ) ? utils::get_server_value( 'SERVER_NAME' ) : utils::get_server_value( 'REQUEST_URI' ) );
+        $file = self::file_from_request( utils::get_server_value( 'HTTP_HOST', utils::get_server_value( 'SERVER_NAME' ) ), utils::get_server_value( 'REQUEST_URI' ) );
         self::make_dir_if_needed( $file );
         // self::writeCacheDirectoryHtaccess();
         $append = "";
