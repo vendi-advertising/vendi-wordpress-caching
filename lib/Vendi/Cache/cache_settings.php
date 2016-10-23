@@ -103,6 +103,17 @@ class cache_settings
         update_option( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS, $cache_exclusions );
     }
 
+/*Methods*/
+    /**
+     * Check whether any cache mode is enabled.
+     * 
+     * @return boolean True if the cache mode is php or enhanced, otherwise false.
+     */
+    public function is_any_cache_mode_enabled()
+    {
+        return $this->get_cache_mode() == cache_settings::CACHE_MODE_PHP || $this->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED;
+    }
+
 /*Database loading/saving/uninstall*/
 
     public static function uninstall()

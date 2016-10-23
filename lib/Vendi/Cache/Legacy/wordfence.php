@@ -73,7 +73,7 @@ class wordfence
         update_option( VENDI_CACHE_OPTION_KEY_FOR_VERSION, VENDI_CACHE_VERSION ); //In case we have a fatal error we don't want to keep running install.
         //EVERYTHING HERE MUST BE IDEMPOTENT
 
-        if( self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_PHP || self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED )
+        if( self::get_vwc_cache_settings()->is_any_cache_mode_enabled() )
         {
             wfCache::remove_cache_directory_htaccess();
         }
