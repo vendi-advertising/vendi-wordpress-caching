@@ -125,8 +125,8 @@ class cache_settings
 
     }
 
-/*Static Factory Helper*/
-    private static function is_valid_cache_mode( $cache_mode )
+/*Static Helpers*/
+    public static function is_valid_cache_mode( $cache_mode )
     {
         switch( $cache_mode )
         {
