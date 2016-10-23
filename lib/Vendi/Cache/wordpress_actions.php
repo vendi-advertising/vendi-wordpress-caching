@@ -84,7 +84,7 @@ class wordpress_actions
             $actions = array_merge(
                                     $actions,
                                     array(
-                                        'wfCachePurge' => '<a href="#" onclick="vendiCacheExt.removeFromCache(\'' . $post->ID . '\'); return false;">' . esc_html_x( 'Remove from Vendi Cache', 'Vendi Cache' ) . '</a>'
+                                        'wfCachePurge' => '<a href="#" onclick="vendiCacheExt.removeFromCache(\'' . $post->ID . '\'); return false;">' . esc_html__( 'Remove from Vendi Cache', 'Vendi Cache' ) . '</a>'
                                     )
                                 );
         }
@@ -101,7 +101,7 @@ class wordpress_actions
             $actions = array_merge(
                                     $actions,
                                     array(
-                                        'wfCachePurge' => '<a href="#" onclick="vendiCacheExt.removeFromCache(\'' . $post->ID . '\'); return false;">' . esc_html_x( 'Remove from Vendi Cache', 'Vendi Cache' ) . '</a>'
+                                        'wfCachePurge' => '<a href="#" onclick="vendiCacheExt.removeFromCache(\'' . $post->ID . '\'); return false;">' . esc_html__( 'Remove from Vendi Cache', 'Vendi Cache' ) . '</a>'
                                     )
                                 );
         }
@@ -116,7 +116,7 @@ class wordpress_actions
         if( wfUtils::isAdmin() )
         {
             $post = get_post();
-            echo '<div><a href="#" onclick="vendiCacheExt.removeFromCache(\'' . $post->ID . '\'); return false;">' . esc_html_x( 'Remove from Vendi Cache', 'Vendi Cache' ) . '</a></div>';
+            echo '<div><a href="#" onclick="vendiCacheExt.removeFromCache(\'' . $post->ID . '\'); return false;">' . esc_html__( 'Remove from Vendi Cache', 'Vendi Cache' ) . '</a></div>';
         }
     }
 }
