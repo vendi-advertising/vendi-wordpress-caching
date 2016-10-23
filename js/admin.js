@@ -96,7 +96,7 @@
 							self.nonce = json.nonce;
 						}
 						if (json && json.errorMsg) {
-							self.colorbox('400px', this.msgs.msg_general_error, json.errorMsg);
+							self.colorbox('400px', self.msgs.msg_general_error, json.errorMsg);
 						}
 						cb(json);
 					},
