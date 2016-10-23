@@ -502,11 +502,11 @@ class wordfence
             wp_enqueue_script( 'jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array( 'jquery' ), VENDI_CACHE_VERSION );
 
             wp_enqueue_script( 'vendi-cache-admin', wfUtils::getBaseURL() . 'js/admin.js', array( 'jquery' ), VENDI_CACHE_VERSION );
-            wp_enqueue_script( 'vendi-cache-admin-extra', wfUtils::getBaseURL() . 'js/tourTip.js', array( 'jquery' ), VENDI_CACHE_VERSION );
+            wp_enqueue_script( 'vendi-cache-admin-extra', wfUtils::getBaseURL() . 'js/admin-inner.js', array( 'jquery' ), VENDI_CACHE_VERSION );
         }
         else
         {
-            wp_enqueue_script( 'vendi-cache-admin', wfUtils::getBaseURL() . 'js/tourTip.js', array( 'jquery' ), VENDI_CACHE_VERSION );
+            wp_enqueue_script( 'vendi-cache-admin', wfUtils::getBaseURL() . 'js/admin-inner.js', array( 'jquery' ), VENDI_CACHE_VERSION );
         }
         self::setupAdminVars();
     }
