@@ -124,35 +124,37 @@ class wordfence
     {
         if( ! wfUtils::isAdmin() )
         {
-            die( json_encode( array( 'errorMsg' => 'You appear to have logged out or you are not an admin. Please sign-out and sign-in again.' ) ) );
+            die( json_encode( array( 'errorMsg' => esc_html__( 'You appear to have logged out or you are not an admin. Please sign-out and sign-in again.', 'Vendi Cache' ) ) ) );
         }
+
+        //Attempt to get the values from POST, and fallback to GET
         $func = utils::get_post_value( 'action', utils::get_get_value( 'action' ) );
         $nonce = utils::get_post_value( 'nonce', utils::get_get_value( 'nonce' ) );
         if( ! wp_verify_nonce( $nonce, 'wp-ajax' ) )
         {
-            die( json_encode( array( 'errorMsg' => 'Your browser sent an invalid security token to Wordfence. Please try reloading this page or signing out and in again.' ) ) );
+            die( json_encode( array( 'errorMsg' => esc_html__( 'Your browser sent an invalid security token. Please try reloading this page or signing out and in again.', 'Vendi Cache' ) ) ) );
         }
-        //func is e.g. wordfence_ticker so need to munge it
+
         $func = str_replace( 'vendi_cache_', '', $func );
         $fq_func = array( __CLASS__, 'ajax_' . $func . '_callback' );
         if( ! is_callable( $fq_func ) )
         {
-            die( json_encode( array( 'errorMsg' => sprintf( 'Could not find AJAX func %1$s', esc_html( $func ) ) ) ) );
+            die( json_encode( array( 'errorMsg' => sprintf( esc_html__( 'Could not find AJAX func %1$s', 'Vendi Cache' ), esc_html( $func ) ) ) ) );
         }
         $returnArr = call_user_func( $fq_func );
         if( $returnArr === false )
         {
-            $returnArr = array( 'errorMsg' => 'Wordfence encountered an internal error executing that request.' );
+            $returnArr = array( 'errorMsg' => esc_html__( 'We encountered an internal error executing that request.', 'Vendi Cache' ) );
         }
 
         if( ! is_array( $returnArr ) )
         {
-            error_log( sprintf( 'Function %1$s did not return an array and did not generate an error.', esc_html( $func ) ) );
+            error_log( sprintf( __( 'Function %1$s did not return an array and did not generate an error.', 'Vendi Cache' ), esc_html( $func ) ) );
             $returnArr = array();
         }
         if( isset( $returnArr[ 'nonce' ] ) )
         {
-            error_log( 'Wordfence ajax function return an array with \'nonce\' already set. This could be a bug.' );
+            error_log( __( 'The ajax function returned an array with \'nonce\' already set. This could be a bug.', 'Vendi Cache' ) );
         }
         $returnArr[ 'nonce' ] = wp_create_nonce( 'wp-ajax' );
         die( json_encode( $returnArr ) );
@@ -492,19 +494,19 @@ class wordfence
 
         if( 'VendiWPCaching' === utils::get_get_value( 'page' ) )
         {
-            wp_enqueue_style( 'wordfence-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_CACHE_VERSION );
-            wp_enqueue_style( 'wordfence-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', VENDI_CACHE_VERSION );
+            wp_enqueue_style( 'vendi-cache-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_CACHE_VERSION );
+            wp_enqueue_style( 'vendi-cache-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', VENDI_CACHE_VERSION );
 
             wp_enqueue_script( 'json2' );
             wp_enqueue_script( 'jquery.wftmpl', wfUtils::getBaseURL() . 'js/jquery.tmpl.min.js', array( 'jquery' ), VENDI_CACHE_VERSION );
             wp_enqueue_script( 'jquery.wfcolorbox', wfUtils::getBaseURL() . 'js/jquery.colorbox-min.js', array( 'jquery' ), VENDI_CACHE_VERSION );
 
-            wp_enqueue_script( 'wordfenceAdminjs', wfUtils::getBaseURL() . 'js/admin.js', array( 'jquery' ), VENDI_CACHE_VERSION );
-            wp_enqueue_script( 'wordfenceAdminExtjs', wfUtils::getBaseURL() . 'js/tourTip.js', array( 'jquery' ), VENDI_CACHE_VERSION );
+            wp_enqueue_script( 'vendi-cache-admin', wfUtils::getBaseURL() . 'js/admin.js', array( 'jquery' ), VENDI_CACHE_VERSION );
+            wp_enqueue_script( 'vendi-cache-admin-extra', wfUtils::getBaseURL() . 'js/tourTip.js', array( 'jquery' ), VENDI_CACHE_VERSION );
         }
         else
         {
-            wp_enqueue_script( 'wordfenceAdminjs', wfUtils::getBaseURL() . 'js/tourTip.js', array( 'jquery' ), VENDI_CACHE_VERSION );
+            wp_enqueue_script( 'vendi-cache-admin', wfUtils::getBaseURL() . 'js/tourTip.js', array( 'jquery' ), VENDI_CACHE_VERSION );
         }
         self::setupAdminVars();
     }
@@ -513,7 +515,7 @@ class wordfence
     {
         $nonce = wp_create_nonce( 'wp-ajax' );
         wp_localize_script(
-                            'wordfenceAdminjs',
+                            'vendi-cache-admin',
                             'WordfenceAdminVars', array(
                                                             'ajaxURL' => admin_url( 'admin-ajax.php' ),
                                                             'firstNonce' => $nonce,
