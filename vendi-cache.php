@@ -54,15 +54,6 @@ if( 1 != get_option( 'vendiWordPressCachingActivated' ) )
             );
 }
 
-if( (int)@ini_get( 'memory_limit' ) < 128 )
-{
-    if( false === strpos( ini_get( 'disable_functions' ), 'ini_set' ) )
-    {
-        @ini_set( 'memory_limit', '128M' ); //Some hosts have ini set at as little as 32 megs. 64 is the min sane amount of memory.
-    }
-}
-
-
 //Load both the legacy code as well as the new code
 require_once VENDI_CACHE_PATH . '/autoload.php';
 
