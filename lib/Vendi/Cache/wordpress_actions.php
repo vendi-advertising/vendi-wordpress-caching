@@ -38,8 +38,17 @@ class wordpress_actions
                 add_filter( 'page_row_actions', array( __CLASS__, 'page_row_actions' ), 0, 2 );
                 add_action( 'post_submitbox_start', array( __CLASS__, 'post_submitbox_start' ) );
             }
+
+            add_filter( 'plugin_action_links_' . plugin_basename( VENDI_CACHE_FILE ), array( __CLASS__, 'plugin_action_links' ) );
         }
     }
+
+    public static function plugin_action_links( $links )
+    {
+        array_unshift( $links, '<a href="' . add_query_arg( array( 'page' => VENDI_CACHE_PLUGIN_PAGE_SLUG ), admin_url( 'options-general.php' ) ) . '">' . __( 'Settings' ) . '</a>' );
+        return $links;
+    }
+
 
     /**
      * @vendi_flag  KEEP

@@ -553,7 +553,7 @@ class wordfence
             add_action( 'wp_ajax_vendi_cache_' . $func, array( __CLASS__, 'ajax_receiver' ) );
         }
 
-        if( 'VendiWPCaching' === utils::get_get_value( 'page' ) )
+        if( VENDI_CACHE_PLUGIN_PAGE_SLUG === utils::get_get_value( 'page' ) )
         {
             wp_enqueue_style( 'vendi-cache-main-style', wfUtils::getBaseURL() . 'css/main.css', '', VENDI_CACHE_VERSION );
             wp_enqueue_style( 'vendi-cache-colorbox-style', wfUtils::getBaseURL() . 'css/colorbox.css', '', VENDI_CACHE_VERSION );
@@ -660,7 +660,7 @@ class wordfence
             $warningAdded = true;
         }
 
-        add_submenu_page( 'options-general.php', 'Vendi Cache', 'Vendi Cache', 'activate_plugins', 'VendiWPCaching', array( __CLASS__, 'show_admin_page' ) );
+        add_submenu_page( 'options-general.php', 'Vendi Cache', 'Vendi Cache', 'activate_plugins', VENDI_CACHE_PLUGIN_PAGE_SLUG, array( __CLASS__, 'show_admin_page' ) );
     }
 
     public static function show_admin_page()
