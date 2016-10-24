@@ -1,5 +1,5 @@
 #!/bin/bash
 cd ../
-rm -f vendi-wordpress-caching.zip
-zip -r9 vendi-wordpress-caching.zip vendi-wordpress-caching/  -x "*/.*" -x vendi-wordpress-caching/.git* -x vendi-wordpress-caching/tests/* -x vendi-wordpress-caching/bin/* -x vendi-wordpress-caching/.travis.yml -x vendi-wordpress-caching/.editorconfig -x vendi-wordpress-caching/.distignore -x vendi-wordpress-caching/phpunit.xml -x vendi-wordpress-caching/Gruntfile.js -x vendi-wordpress-caching/build.sh -x vendi-wordpress-caching/run-phpunit.sh -x vendi-wordpress-caching/phpunit.xml.dist -x vendi-wordpress-caching/package.json
-cd vendi-wordpress-caching
+rm -f vendi-cache.zip
+zip -r9 vendi-cache.zip vendi-cache/  -x "*/.*" -x vendi-cache/.git* -x "vendi-cache/tests*" -x "vendi-cache/bin*" -x vendi-cache/.travis.yml -x vendi-cache/*.md -x vendi-cache/.editorconfig -x vendi-cache/.distignore -x vendi-cache/phpunit.xml -x vendi-cache/Gruntfile.js -x vendi-cache/build.sh -x vendi-cache/run-phpunit.sh -x vendi-cache/phpunit.xml.dist -x vendi-cache/package.json
+cd vendi-cache
