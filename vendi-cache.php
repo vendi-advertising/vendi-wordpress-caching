@@ -8,6 +8,7 @@ Version: 1.1.0
 Author URI: https://www.vendiadvertising.com/
 Text Domain: vendi-cache
 Domain Path: /languages
+Stable tag: 1.1.0
 */
 
 if( defined( 'WP_INSTALLING' ) && WP_INSTALLING )
