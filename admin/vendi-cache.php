@@ -40,7 +40,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 				</tr>
 			</table>
 
-			<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Save Changes to the type of caching enabled above', 'Vendi Cache' ); ?>" onclick="VCAD.saveCacheConfig();" />
+			<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Save changes to the type of caching enabled above', 'Vendi Cache' ); ?>" onclick="VCAD.saveCacheConfig();" />
 
 		</div>
 
@@ -74,7 +74,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 
 			<br />
 
-			<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Save Changes to the the caching options above', 'Vendi Cache' ); ?>" onclick="VCAD.saveCacheOptions();" />
+			<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Save changes to the the caching options above', 'Vendi Cache' ); ?>" onclick="VCAD.saveCacheOptions();" />
 
 		</div>
 
@@ -83,9 +83,9 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 			<h2><?php esc_html_e( 'Cache Management', 'Vendi Cache' ); ?></h2>
 
 			<p style="width: 500px;">
-				<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Clear the Cache', 'Vendi Cache' ); ?>" onclick="VCAD.clearPageCache();" />
+				<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Clear the cache', 'Vendi Cache' ); ?>" onclick="VCAD.clearPageCache();" />
 				&nbsp;&nbsp;
-				<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Get Cache Stats', 'Vendi Cache' ); ?>" onclick="VCAD.getCacheStats();" />
+				<input type="button" id="button1" name="button1" class="button-primary" value="<?php esc_attr_e( 'Get cache stats', 'Vendi Cache' ); ?>" onclick="VCAD.getCacheStats();" />
 				<br />
 				<?php esc_html_e( 'Note that the cache is automatically cleared when administrators make any site updates. Some of the actions that will automatically clear the cache are:', 'Vendi Cache' ); ?>
 				<ul>
