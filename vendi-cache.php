@@ -33,6 +33,9 @@ define( 'VENDI_CACHE_ACTION_NAME_CACHE_CLEAR', 'vendi_cache_cache_clear');
 //If an invalid pattern is detected it will be cleansed and possibly reverted back to vendi_cache.
 define( 'VENDI_CACHE_FOLDER_NAME', 'vendi_cache');
 
+define( 'VENDI_CACHE_PLUGIN_NAME', 'Vendi Cache' );
+define( 'VENDI_CACHE_PLUGIN_PRODUCT_ENHANCED', 'disk-based cache' );
+
 //This code is original to WF and I'm pretty sure it allows a
 //plugin to be hosted in a shared location on a server instead
 //of installing it on every single site.
