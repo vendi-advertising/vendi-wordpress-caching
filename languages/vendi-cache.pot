@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Vendi Cache 1.0.2\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/vendi-cache\n"
-"POT-Creation-Date: 2016-10-23 11:37:24+00:00\n"
+"POT-Creation-Date: 2016-10-24 19:02:12+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,7 +25,7 @@ msgid "No performance improvement"
 msgstr ""
 
 #: admin/vendi-cache.php:32
-msgid "Enable Basic Caching:"
+msgid "Enable basic caching:"
 msgstr ""
 
 #: admin/vendi-cache.php:34
@@ -33,7 +33,7 @@ msgid "2 to 3 Times speed increase"
 msgstr ""
 
 #: admin/vendi-cache.php:37
-msgid "Enable Disk-Based Caching Engine:"
+msgid "Enable %1$s:"
 msgstr ""
 
 #: admin/vendi-cache.php:39
@@ -41,7 +41,7 @@ msgid "30 to 50 Times speed increase"
 msgstr ""
 
 #: admin/vendi-cache.php:43
-msgid "Save Changes to the type of caching enabled above"
+msgid "Save changes to the type of caching enabled above"
 msgstr ""
 
 #: admin/vendi-cache.php:53
@@ -69,12 +69,12 @@ msgstr ""
 
 #: admin/vendi-cache.php:70
 msgid ""
-"The entire disk-based cache will be cleared when WordPress publishes a post "
-"you've scheduled to be published in future."
+"The entire %1$s will be cleared when WordPress publishes a post you've "
+"scheduled to be published in future."
 msgstr ""
 
 #: admin/vendi-cache.php:77
-msgid "Save Changes to the the caching options above"
+msgid "Save changes to the the caching options above"
 msgstr ""
 
 #: admin/vendi-cache.php:83
@@ -82,11 +82,11 @@ msgid "Cache Management"
 msgstr ""
 
 #: admin/vendi-cache.php:86
-msgid "Clear the Cache"
+msgid "Clear the cache"
 msgstr ""
 
 #: admin/vendi-cache.php:88
-msgid "Get Cache Stats"
+msgid "Get cache stats"
 msgstr ""
 
 #: admin/vendi-cache.php:90
@@ -134,6 +134,22 @@ msgstr ""
 msgid "Add exclusion"
 msgstr ""
 
+#: lib/Vendi/Cache/Legacy/wfCache.php:414
+msgid "The directory %1$s does not exist and we could not create it."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wfCache.php:417
+msgid " The error we received was: %1$s"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wfCache.php:713
+msgid "Error: add_htaccess_code must be called with 'add' or 'remove' as param"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wfCache.php:718
+msgid "Vendi Cache could not find your .htaccess file."
+msgstr ""
+
 #: lib/Vendi/Cache/Legacy/wordfence.php:128
 msgid ""
 "You appear to have logged out or you are not an admin. Please sign-out and "
@@ -164,89 +180,157 @@ msgid ""
 "a bug."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:526
-msgid "Vendi Cache is working..."
+#: lib/Vendi/Cache/Legacy/wordfence.php:203
+msgid "Vendi Cache could not edit your .htaccess file. The error was: %1$s"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:527
+#: lib/Vendi/Cache/Legacy/wordfence.php:252
+msgid ""
+"You can not enable Vendi Cache with other caching plugins enabled as this "
+"may cause conflicts. The plugins you have that conflict are: <strong>1$s.</"
+"strong> Disable these plugins, then return to this page and enable Vendi "
+"Cache."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:275
+msgid "Please disable WordFence\\s cache before enabling Vendi Cache."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:293
+msgid ""
+"You need to enable Permalinks for your site to use the %1$s. You can enable "
+"Permalinks in WordPress by going to the Settings - Permalinks menu and "
+"enabling it there. Permalinks change your site URL structure from something "
+"that looks like /p=123 to pretty URLs like /my-new-post-today/ that are "
+"generally more search engine friendly."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:319
+msgid ""
+"To enable caching, %1$s needs to be able to create and write to the %2$s "
+"directory. We did some tests that indicate this is not possible. You need to "
+"manually create the %2$s directory and make it writable by %1$s. The error "
+"we encountered was during our tests was: %3$s"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:337
+msgid ""
+"Warning: We could not remove the caching code from your .htaccess file. You "
+"will need to manually remove this file."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:342
+msgid "Caching successfully disabled."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:347
+msgid "Basic Caching Enabled"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:358
+msgid "%1$s could not edit .htaccess"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:367
+msgid "%1$s Activated!"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:368
+msgid "%1$s has been activated on your system."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:369
+msgctxt "Vendi Cache"
+msgid "Click here now to refresh this page"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:372
+msgid "An error occurred. Probably an unknown cacheType: %1$s"
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:586
+msgid "%1$s is working..."
+msgstr ""
+
+#: lib/Vendi/Cache/Legacy/wordfence.php:587
 msgid "An error occurred"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:529
-msgid "Enabling Disk-Based Cache Engine"
+#: lib/Vendi/Cache/Legacy/wordfence.php:589
+msgid "Enabling %1$s"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:530
+#: lib/Vendi/Cache/Legacy/wordfence.php:590
 msgid "We encountered a problem"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:531
+#: lib/Vendi/Cache/Legacy/wordfence.php:591
 msgid "Incorrect pattern for exclusion"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:532
+#: lib/Vendi/Cache/Legacy/wordfence.php:592
 msgid "Cache Exclusions"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:533
+#: lib/Vendi/Cache/Legacy/wordfence.php:593
 msgid "You need to manually update your .htaccess"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:535
+#: lib/Vendi/Cache/Legacy/wordfence.php:595
 msgid ""
-"Disk-based cache modifies your website configuration file which is called "
-"your .htaccess file. To enable disk-based cache we ask that you make a "
-"backup of this file. This is a safety precaution in case for some reason "
-"disk-based cache is not compatible with your site."
+"%1$s modifies your website configuration file which is called your .htaccess "
+"file. To enable %2$s we ask that you make a backup of this file. This is a "
+"safety precaution in case for some reason %2$s is not compatible with your "
+"site."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:539
+#: lib/Vendi/Cache/Legacy/wordfence.php:596
 msgid "Click here to download a backup copy of your .htaccess file now"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:540
-#: lib/Vendi/Cache/Legacy/wordfence.php:554
+#: lib/Vendi/Cache/Legacy/wordfence.php:596
+#: lib/Vendi/Cache/Legacy/wordfence.php:610
 msgctxt "Vendi Cache"
-msgid "Click to Enable Disk-based cache Engine"
+msgid "Click to enable %1$s"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:544
+#: lib/Vendi/Cache/Legacy/wordfence.php:599
 msgid ""
 "You are using an Nginx web server and using a FastCGI processor like PHP5-"
-"FPM. To use disk-based cache you will need to manually modify your nginx."
-"conf configuration file and reload your Nginx server for the changes to take "
+"FPM. To use %2$s you will need to manually modify your nginx.conf "
+"configuration file and reload your Nginx server for the changes to take "
 "effect. You can find the <a href=\"%s\" target=\"_blank\">rules you need to "
 "make these changes to nginx.conf on this page on wordfence.com</a>. Once you "
 "have made these changes, compressed cached files will be served to your "
 "visitors directly from Nginx making your site extremely fast. When you have "
 "made the changes and reloaded your Nginx server, you can click the button "
-"below to enable Disk-based cache."
+"below to enable %2$s."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:556
+#: lib/Vendi/Cache/Legacy/wordfence.php:612
 msgid "We can't modify your .htaccess file for you because: @@1@@"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:558
+#: lib/Vendi/Cache/Legacy/wordfence.php:614
 msgid ""
-"Advanced users: If you would like to manually enable disk-based cache "
-"yourself by editing your .htaccess, you can add the rules below to the "
-"beginning of your .htaccess file. Then click the button below to enable disk-"
-"based cache. Don't do this unless you understand website configuration."
+"Advanced users: If you would like to manually enable %1$s yourself by "
+"editing your .htaccess, you can add the rules below to the beginning of "
+"your .htaccess file. Then click the button below to enable %1$s. Don't do "
+"this unless you understand website configuration."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:560
+#: lib/Vendi/Cache/Legacy/wordfence.php:615
 msgctxt "Vendi Cache"
-msgid "Enable disk-based cache after manually editing .htaccess"
+msgid "Enable %1$s after manually editing .htaccess"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:563
+#: lib/Vendi/Cache/Legacy/wordfence.php:618
 msgid ""
-"Your option was updated but you need to change the disk-base cache code in "
-"your .htaccess to the following:"
+"Your option was updated but you need to change the %1$s code in your ."
+"htaccess to the following:"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:567
+#: lib/Vendi/Cache/Legacy/wordfence.php:621
 msgid ""
 "You can not enter full URL's for exclusion from caching. You entered a full "
 "URL that started with http:// or https://. You must enter relative URL's e."
@@ -254,22 +338,26 @@ msgid ""
 "the path part of a URL or at the end of the path part of a URL."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:569
+#: lib/Vendi/Cache/Legacy/wordfence.php:623
 msgid ""
 "There are not currently any exclusions. If you have a site that does not "
 "change often, it is perfectly normal to not have any pages you want to "
 "exclude from the cache."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:583
+#: lib/Vendi/Cache/Legacy/wordfence.php:637
 msgid ""
 "Vendi Cache generated an error on activation. The output we received during "
 "activation was:"
 msgstr ""
 
-#: lib/Vendi/Cache/wordpress_actions.php:87
-#: lib/Vendi/Cache/wordpress_actions.php:104
-#: lib/Vendi/Cache/wordpress_actions.php:119
+#: lib/Vendi/Cache/wordpress_actions.php:48
+msgid "Settings"
+msgstr ""
+
+#: lib/Vendi/Cache/wordpress_actions.php:96
+#: lib/Vendi/Cache/wordpress_actions.php:113
+#: lib/Vendi/Cache/wordpress_actions.php:128
 msgid "Remove from Vendi Cache"
 msgstr ""
 
