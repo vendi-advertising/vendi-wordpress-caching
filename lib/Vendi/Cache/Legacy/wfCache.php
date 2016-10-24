@@ -333,7 +333,7 @@ class wfCache
         chmod( $file, 0644 );
         if( self::$cacheType == cache_settings::CACHE_MODE_ENHANCED )
         {
-//create gzipped files so we can send precompressed files
+            //create gzipped files so we can send precompressed files
             $file .= '_gzip';
             @file_put_contents( $file, gzencode( $buffer . $appendGzip, 9 ), LOCK_EX );
             chmod( $file, 0644 );
@@ -356,7 +356,8 @@ class wfCache
         $key = $host . $URI . ( $isHTTPS ? '_HTTPS' : '' );
         if( isset( self::$fileCache[ $key ] ) )
         {
-return self::$fileCache[ $key ]; }
+            return self::$fileCache[ $key ];
+        }
         $host = preg_replace( '/[^a-zA-Z0-9\-\.]+/', '', $host );
         $URI = preg_replace( '/(?:[^a-zA-Z0-9\-\_\.\~\/]+|\.{2,})/', '', $URI ); //Strip out bad chars and multiple dots
         if( preg_match( '/\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)(.*)$/', $URI, $matches ) )
@@ -371,8 +372,20 @@ return self::$fileCache[ $key ]; }
         $ext = '';
         if( $isHTTPS )
         {
-$ext = '_https'; }
-        $file = WP_CONTENT_DIR . '/wfcache/' . $host . '_' . $URI . '_wfcache' . $ext . '.html';
+            $ext = '_https';
+        }
+
+        $cache_dir = self::get_vwc_cache_settings()->get_cache_folder_name_safe();
+        $file = sprintf(
+                            '%1$s/%2$s/%3$s_%4$s_%5$s%6$s.html',
+                            WP_CONTENT_DIR,
+                            $cache_dir,
+                            $host,
+                            $URI,
+                            $cache_dir,
+                            $ext
+                        );
+        // $file = WP_CONTENT_DIR . '/' . $cache_dir . '/' . $host . '_' . $URI . '_' . $cache_dir . $ext . '.html';
         self::$fileCache[ $key ] = $file;
         return $file;
     }
@@ -391,24 +404,25 @@ $ext = '_https'; }
 
     public static function cache_directory_test()
     {
-        $cacheDir = WP_CONTENT_DIR . '/wfcache/';
-        if( ! is_dir( $cacheDir ) )
+        $cache_dir = WP_CONTENT_DIR . '/' . self::get_vwc_cache_settings()->get_cache_folder_name_safe() . '/';
+
+        if( ! is_dir( $cache_dir ) )
         {
-            if( ! @mkdir( $cacheDir, 0755, true ) )
+            if( ! @mkdir( $cache_dir, 0755, true ) )
             {
                 $err = error_get_last();
-                $msg = "The directory $cacheDir does not exist and we could not create it.";
+                $msg = sprtinf( esc_html__( 'The directory %1$s does not exist and we could not create it.', 'Vendi Cache' ), esc_html( $cache_dir ) );
                 if( $err )
                 {
-                    $msg .= ' The error we received was: ' . $err[ 'message' ];
+                    $msg .= sprtinf( esc_html__( ' The error we received was: %1$s', 'Vendi Cache' ), esc_html( $err[ 'message' ] ) );
                 }
                 return $msg;
             }
         }
-        if( ! @file_put_contents( $cacheDir . 'test.php', 'test' ) )
+        if( ! @file_put_contents( $cache_dir . 'test.php', 'test' ) )
         {
             $err = error_get_last();
-            $msg = "We could not write to the file $cacheDir" . "test.php when testing if the cache directory is writable.";
+            $msg = "We could not write to the file $cache_dir" . "test.php when testing if the cache directory is writable.";
             if( $err )
             {
                 $msg .= " The error was: " . $err[ 'message' ];
@@ -422,10 +436,10 @@ $ext = '_https'; }
 
     public static function remove_cache_directory_htaccess()
     {
-        $cacheDir = WP_CONTENT_DIR . '/wfcache/';
-        if( file_exists( $cacheDir . '.htaccess' ) )
+        $cache_dir = WP_CONTENT_DIR . '/' . self::get_vwc_cache_settings()->get_cache_folder_name_safe() . '/';
+        if( file_exists( $cache_dir . '.htaccess' ) )
         {
-            unlink( $cacheDir . '.htaccess' );
+            unlink( $cache_dir . '.htaccess' );
         }
     }
 
@@ -482,6 +496,8 @@ return; }
 
     public static function get_cache_stats()
     {
+        $cache_dir = WP_CONTENT_DIR . '/' . self::get_vwc_cache_settings()->get_cache_folder_name_safe() . '/';
+
         self::$cacheStats = array(
             'files' => 0,
             'dirs' => 0,
@@ -494,7 +510,7 @@ return; }
             'newestFile' => false,
             'largestFile' => 0,
             );
-        self::recursive_stats( WP_CONTENT_DIR . '/wfcache/' );
+        self::recursive_stats( $cache_dir );
         return self::$cacheStats;
     }
 
@@ -516,7 +532,8 @@ return; }
             {
                 if( $file == 'clear.lock' )
                 {
-continue; }
+                    continue;
+                }
                 self::$cacheStats[ 'files' ]++;
                 $stat = stat( $fullPath );
                 if( is_array( $stat ) )
@@ -575,7 +592,10 @@ return; }
             'totalErrors' => 0,
             'error' => '',
             );
-        $cacheClearLock = WP_CONTENT_DIR . '/wfcache/clear.lock';
+
+        $cache_dir = WP_CONTENT_DIR . '/' . self::get_vwc_cache_settings()->get_cache_folder_name_safe() . '/';
+
+        $cacheClearLock = $cache_dir . 'clear.lock';
         if( ! is_file( $cacheClearLock ) )
         {
             if( ! touch( $cacheClearLock ) )
@@ -594,11 +614,11 @@ return; }
         }
         if( flock( $fp, LOCK_EX | LOCK_NB ) )
         {
-//non blocking exclusive flock attempt. If we get a lock then it continues and returns true. If we don't lock, then return false, don't block and don't clear the cache. 
-                    // This logic means that if a cache clear is currently in progress we don't try to clear the cache.
-                    // This prevents web server children from being queued up waiting to be able to also clear the cache. 
+            //non blocking exclusive flock attempt. If we get a lock then it continues and returns true. If we don't lock, then return false, don't block and don't clear the cache. 
+            // This logic means that if a cache clear is currently in progress we don't try to clear the cache.
+            // This prevents web server children from being queued up waiting to be able to also clear the cache. 
             self::$lastRecursiveDeleteError = false;
-            self::recursive_delete( WP_CONTENT_DIR . '/wfcache/' );
+            self::recursive_delete( $cache_dir );
             if( self::$lastRecursiveDeleteError )
             {
                 self::$cacheStats[ 'error' ] = self::$lastRecursiveDeleteError;
@@ -616,6 +636,8 @@ return; }
      */
     public static function recursive_delete( $dir )
     {
+        $cache_dir_name_safe = self::get_vwc_cache_settings()->get_cache_folder_name_safe();
+
         $files = array_diff( scandir( $dir ), array( '.', '..' ) ); 
         foreach( $files as $file )
         {
@@ -630,13 +652,14 @@ return; }
             {
                 if( $file == 'clear.lock' )
                 {
-continue; } //Don't delete our lock file
+                    continue;
+                } //Don't delete our lock file
                 $size = filesize( $dir . '/' . $file );
                 if( $size )
                 {
                     self::$cacheStats[ 'totalData' ] += round( $size / 1024 );
                 }
-                if( strpos( $dir, 'wfcache/' ) === false )
+                if( strpos( $dir, $cache_dir_name_safe . '/' ) === false )
                 {
                     self::$lastRecursiveDeleteError = "Not deleting file in directory $dir because it appears to be in the wrong path.";
                     self::$cacheStats[ 'totalErrors' ]++;
@@ -654,9 +677,9 @@ continue; } //Don't delete our lock file
                 }
             }
         } 
-        if( $dir != WP_CONTENT_DIR . '/wfcache/' )
+        if( $dir != WP_CONTENT_DIR . '/' . $cache_dir_name_safe . '/' )
         {
-            if( strpos( $dir, 'wfcache/' ) === false )
+            if( strpos( $dir, $cache_dir_name_safe . '/' ) === false )
             {
                 self::$lastRecursiveDeleteError = "Not deleting directory $dir because it appears to be in the wrong path.";
                 self::$cacheStats[ 'totalErrors' ]++;
@@ -784,6 +807,8 @@ continue; } //Don't delete our lock file
             }
         }
 
+        $cache_dir_name_safe = self::get_vwc_cache_settings()->get_cache_folder_name_safe();
+
         $code = <<<EOT
 #VENDI_CACHE_CACHE_CODE - Do not remove this line. Disable Web Caching in Vendi Cache to remove this data.
 <IfModule mod_deflate.c>
@@ -826,8 +851,8 @@ continue; } //Don't delete our lock file
     RewriteCond %{HTTP_COOKIE} !(comment_author|wp\-postpass|wf_logout|wordpress_logged_in|wptouch_switch_toggle|wpmp_switcher) [NC]
     {$otherRewriteConds}
     RewriteCond %{REQUEST_URI} \/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)(.*)$
-    RewriteCond "%{DOCUMENT_ROOT}{$pathPrefix}/wp-content/wfcache/%{HTTP_HOST}_%1/%2~%3~%4~%5~%6_wfcache%{ENV:WRDFNC_HTTPS}.html%{ENV:WRDFNC_ENC}" -f
-    RewriteRule \/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)(.*)$ "{$pathPrefix}/wp-content/wfcache/%{HTTP_HOST}_{$matchCaps}_wfcache%{ENV:WRDFNC_HTTPS}.html%{ENV:WRDFNC_ENC}" [L]
+    RewriteCond "%{DOCUMENT_ROOT}{$pathPrefix}/wp-content/{$cache_dir_name_safe}/%{HTTP_HOST}_%1/%2~%3~%4~%5~%6_{$cache_dir_name_safe}%{ENV:WRDFNC_HTTPS}.html%{ENV:WRDFNC_ENC}" -f
+    RewriteRule \/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)(.*)$ "{$pathPrefix}/wp-content/{$cache_dir_name_safe}/%{HTTP_HOST}_{$matchCaps}_{$cache_dir_name_safe}%{ENV:WRDFNC_HTTPS}.html%{ENV:WRDFNC_ENC}" [L]
 </IfModule>
 #Do not remove this line. Disable Web caching in Vendi Cache to remove this data - VENDI_CACHE_CACHE_CODE
 EOT;

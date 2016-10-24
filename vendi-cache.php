@@ -6,7 +6,8 @@ Plugin URI: https://www.vendiadvertising.com/
 Author: Vendi Advertising (Chris Haas)
 Version: 1.0.2
 Author URI: https://www.vendiadvertising.com/
-Network: true
+Text Domain: vendi-cache
+Domain Path: /languages
 */
 
 if( defined( 'WP_INSTALLING' ) && WP_INSTALLING )
@@ -27,6 +28,10 @@ define( 'VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION', 'vendiWordPressCachingActivated
 define( 'VENDI_CACHE_OPTION_KEY_FOR_VERSION', 'vendi_cache_version' );
 define( 'VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR', 'vwc_plugin_act_error' );
 define( 'VENDI_CACHE_ACTION_NAME_CACHE_CLEAR', 'vendi_cache_cache_clear');
+
+//If you want to change the folder that items are cache to. Only lowercase letters and underscores are allowed.
+//If an invalid pattern is detected it will be cleansed and possibly reverted back to vendi_cache.
+define( 'VENDI_CACHE_FOLDER_NAME', 'vendi_cache');
 
 //This code is original to WF and I'm pretty sure it allows a
 //plugin to be hosted in a shared location on a server instead

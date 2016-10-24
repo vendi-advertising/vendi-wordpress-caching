@@ -6,6 +6,7 @@ class cache_settings
 {
 /*Fields*/
     private static $instance;
+    private $cache_folder_name_safe = null;
 
 /*Constants*/
     const CACHE_MODE_OFF      = 'off';
@@ -112,6 +113,21 @@ class cache_settings
     public function is_any_cache_mode_enabled()
     {
         return $this->get_cache_mode() == cache_settings::CACHE_MODE_PHP || $this->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED;
+    }
+
+    public function get_cache_folder_name_safe()
+    {
+        if( ! $this->cache_folder_name_safe )
+        {
+            $this->cache_folder_name_safe = preg_replace( '/[^a-z_]+/', '', strtolower( VENDI_CACHE_FOLDER_NAME ) );
+
+            if( ! $this->cache_folder_name_safe )
+            {
+                $this->cache_folder_name_safe = 'vendi_cache';
+            }
+        }
+        
+        return $this->cache_folder_name_safe;
     }
 
 /*Database loading/saving/uninstall*/

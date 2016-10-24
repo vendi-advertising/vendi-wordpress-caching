@@ -198,7 +198,13 @@ class wordfence
             $err = wfCache::add_htaccess_code( 'add' );
             if( $err )
             {
-                return array( 'updateErr' => sprintf( esc_html__( 'Vendi Cache could not edit your .htaccess file. The error was: %1$s', 'Vendi Cache' ), esc_html( $err ) ), 'code' => wfCache::get_htaccess_code() );
+                return array(
+                        'updateErr' => sprintf(
+                            esc_html__( 'Vendi Cache could not edit your .htaccess file. The error was: %1$s', 'Vendi Cache' ),
+                            esc_html( $err )
+                        ),
+                        'code' => wfCache::get_htaccess_code(),
+                    );
             }
         }
         wfCache::schedule_cache_clear();
@@ -296,13 +302,15 @@ class wordfence
         }
         if( $cacheType == cache_settings::CACHE_MODE_PHP || $cacheType == cache_settings::CACHE_MODE_ENHANCED )
         {
+            $cache_dir_name_safe = self::get_vwc_cache_settings()->get_cache_folder_name_safe();
+
             $err = wfCache::cache_directory_test();
             if( $err )
             {
                 return array(
                                 'ok' => 1,
                                 'heading' => 'Could not write to cache directory',
-                                'body' => "To enable caching, Vendi Cache needs to be able to create and write to the /wp-content/wfcache/ directory. We did some tests that indicate this is not possible. You need to manually create the /wp-content/wfcache/ directory and make it writable by Vendi Cache. The error we encountered was during our tests was: $err"
+                                'body' => "To enable caching, Vendi Cache needs to be able to create and write to the /wp-content/{$cache_dir_name_safe}/ directory. We did some tests that indicate this is not possible. You need to manually create the /wp-content/{$cache_dir_name_safe}/ directory and make it writable by Vendi Cache. The error we encountered was during our tests was: $err"
                             );
             }
         }
@@ -320,12 +328,12 @@ class wordfence
         if( $cacheType == cache_settings::CACHE_MODE_OFF )
         {
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
-            return array( 'ok' => 1, 'heading' => esc_html__( 'Caching successfully disabled.', 'Vendi Cache' ), 'body' => "{$htMsg}Caching has been disabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
+            return array( 'ok' => 1, 'heading' => esc_html__( 'Caching successfully disabled.', 'Vendi Cache' ), 'body' => "{$htMsg} Caching has been disabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
         }
         else if( $cacheType == cache_settings::CACHE_MODE_PHP )
         {
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_PHP );
-            return array( 'ok' => 1, 'heading' => esc_html__( 'Vendi Cache Basic Caching Enabled', 'Vendi Cache' ), 'body' => "{$htMsg}Vendi Cache basic caching has been enabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
+            return array( 'ok' => 1, 'heading' => esc_html__( 'Basic Caching Enabled', 'Vendi Cache' ), 'body' => "{$htMsg} Basic caching has been enabled on your system.<br /><br /><center><input type='button' name='wfReload' value='Click here now to refresh this page' onclick='window.location.reload(true);' /></center>" );
         }
         else if( $cacheType == cache_settings::CACHE_MODE_ENHANCED )
         {
@@ -395,6 +403,7 @@ class wordfence
 
     public static function ajax_clearPageCache_callback()
     {
+        $cache_dir_name_safe = self::get_vwc_cache_settings()->get_cache_folder_name_safe();
         $stats = wfCache::clear_page_cache();
         if( $stats[ 'error' ] )
         {
@@ -404,7 +413,7 @@ class wordfence
         $body = "A total of " . $stats[ 'filesDeleted' ] . ' files were deleted and ' . $stats[ 'dirsDeleted' ] . ' directories were removed. We cleared a total of ' . $stats[ 'totalData' ] . 'KB of data in the cache.';
         if( $stats[ 'totalErrors' ] > 0 )
         {
-            $body .= ' A total of ' . $stats[ 'totalErrors' ] . ' errors were encountered. This probably means that we could not remove some of the files or directories in the cache. Please use your CPanel or file manager to remove the rest of the files in the directory: ' . WP_CONTENT_DIR . '/wfcache/';
+            $body .= ' A total of ' . $stats[ 'totalErrors' ] . ' errors were encountered. This probably means that we could not remove some of the files or directories in the cache. Please use your CPanel or file manager to remove the rest of the files in the directory: ' . WP_CONTENT_DIR . '/' . $cache_dir_name_safe . '/';
         }
         return array( 'ok' => 1, 'heading' => 'Page Cache Cleared', 'body' => $body );
     }
