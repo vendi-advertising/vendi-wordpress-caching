@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Vendi Cache
-Description: Disk-based page and post cache. (Formerly Wordfence Falcon Cachine)
+Description: Disk-based page and post cache. (Formerly Wordfence Falcon Cache)
 Plugin URI: https://www.vendiadvertising.com/
 Author: Vendi Advertising (Chris Haas)
 Version: 1.1.1
