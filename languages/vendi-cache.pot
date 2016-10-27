@@ -373,7 +373,7 @@ msgid "https://www.vendiadvertising.com/"
 msgstr ""
 
 #. Description of the plugin/theme
-msgid "Disk-based page and post cache. (Formerly Wordfence Falcon Cachine)"
+msgid "Disk-based page and post cache. (Formerly Wordfence Falcon Cache)"
 msgstr ""
 
 #. Author of the plugin/theme
