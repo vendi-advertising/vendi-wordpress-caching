@@ -25,18 +25,24 @@ define( 'VENDI_CACHE_SUPPORT_MU', false );
 
 define( 'VENDI_CACHE_VERSION', '1.1.1' );
 
-define( 'VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION', 'vendiWordPressCachingActivated' );
-define( 'VENDI_CACHE_OPTION_KEY_FOR_VERSION', 'vendi_cache_version' );
-define( 'VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR', 'vwc_plugin_act_error' );
-define( 'VENDI_CACHE_ACTION_NAME_CACHE_CLEAR', 'vendi_cache_cache_clear');
-define( 'VENDI_CACHE_PLUGIN_PAGE_SLUG', 'vendi-cache' );
+define( 'VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION',    'vendiWordPressCachingActivated' );
+define( 'VENDI_CACHE_OPTION_KEY_FOR_VERSION',       'vendi_cache_version' );
+define( 'VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR',  'vendi_cache_plugin_act_error' );
+define( 'VENDI_CACHE_ACTION_NAME_CACHE_CLEAR',      'vendi_cache_cache_clear');
+define( 'VENDI_CACHE_PLUGIN_PAGE_SLUG',             'vendi-cache' );
 
 //If you want to change the folder that items are cache to. Only lowercase letters and underscores are allowed.
 //If an invalid pattern is detected it will be cleansed and possibly reverted back to vendi_cache.
-define( 'VENDI_CACHE_FOLDER_NAME', 'vendi_cache');
+if( ! defined( 'VENDI_CACHE_FOLDER_NAME' ) )
+{
+    define( 'VENDI_CACHE_FOLDER_NAME', 'vendi_cache');
+}
 
-define( 'VENDI_CACHE_PLUGIN_NAME', 'Vendi Cache' );
-define( 'VENDI_CACHE_PLUGIN_PRODUCT_ENHANCED', 'disk-based cache' );
+//If you want to (for some reason) white-label this
+if( ! defined( 'VENDI_CACHE_PLUGIN_NAME' ) )
+{
+    define( 'VENDI_CACHE_PLUGIN_NAME', 'Vendi Cache' );
+}
 
 //This code is original to WF and I'm pretty sure it allows a
 //plugin to be hosted in a shared location on a server instead

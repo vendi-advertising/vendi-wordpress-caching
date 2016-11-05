@@ -34,7 +34,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 					<td><?php esc_html_e( '2 to 3 Times speed increase', 'Vendi Cache' ); ?></td>
 				</tr>
 				<tr>
-					<td><?php printf( esc_html__( 'Enable %1$s:', 'Vendi Cache' ), VENDI_CACHE_PLUGIN_PRODUCT_ENHANCED ); ?></td>
+					<td><?php esc_html_e( 'Enable disk-based cache:', 'Vendi Cache' ); ?></td>
 					<td><input type="radio" name="cacheType" value="<?php echo cache_settings::CACHE_MODE_ENHANCED; ?>" <?php if( cache_settings::CACHE_MODE_ENHANCED === $vwc_settings->get_cache_mode() ) { echo 'checked="checked"'; } ?> /></td>
 					<td><?php esc_html_e( '30 to 50 Times speed increase', 'Vendi Cache' ); ?></td>
 				</tr>
@@ -67,7 +67,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 					<td><?php esc_html_e( 'Clear cache when a scheduled post is published:', 'Vendi Cache' ); ?></td>
 					<td>
 						<input type="checkbox" id="wfclearCacheSched" value="1" <?php if( $vwc_settings->get_do_clear_on_save() ) { echo 'checked="checked"'; } ?> />
-						<?php printf( esc_html__( 'The entire %1$s will be cleared when WordPress publishes a post you\'ve scheduled to be published in future.', 'Vendi Cache' ), VENDI_CACHE_PLUGIN_PRODUCT_ENHANCED ); ?>
+						<?php esc_html_e( 'The entire disk-based cache will be cleared when WordPress publishes a post you\'ve scheduled to be published in future.', 'Vendi Cache' ); ?>
 					</td>
 				</tr>
 			</table>
@@ -101,7 +101,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 
 			<h3><?php esc_html_e( 'You can add items like URLs, cookies and browsers (user-agents) to exclude from caching', 'Vendi Cache' ); ?></h3>
 
-			<!-- Not sure what the best way to get translators access to this -->
+			<!-- Not sure what the best way to get translators access to this. Anyone have any ideas? -->
 			<p style="width: 500px; white-space:nowrap;">
 				If a 
 					<select id="wfPatternType">
