@@ -93,9 +93,44 @@ class wfCache
                     }
                 }
             }
+
+            //Do not cache fatal errors
+            global $vendi_cache_old_error_handler;
+            $vendi_cache_old_error_handler = set_error_handler( array( __CLASS__, 'handle_error' ) );
+
+            global $vendi_cache_old_exception_handler;
+            $vendi_cache_old_exception_handler = set_exception_handler( array( __CLASS__, 'handle_exception' ) );
+
             ob_start( array( __CLASS__, 'ob_complete' ) ); //Setup routine to store the file
         }
     }
+
+    public static function handle_exception( $exception )
+    {
+        if( ! defined( 'VENDI_CACHE_PHP_ERROR' ) )
+        {
+            define( 'VENDI_CACHE_PHP_ERROR', true );
+        }
+
+        //Pass this exception back to the default handler
+        global $vendi_cache_old_exception_handler;
+        if( $vendi_cache_old_exception_handler && is_callable( $vendi_cache_old_exception_handler ) )
+        {
+            $vendi_cache_old_exception_handler( $exception );
+        }
+    }
+
+    public static function handle_error( int $errno, string $errstr, string $errfile = null, int $errline = null, array $errcontext = null )
+    {
+        if( ! defined( 'VENDI_CACHE_PHP_ERROR' ) )
+        {
+            define( 'VENDI_CACHE_PHP_ERROR', true );
+        }
+
+        //False means that we're not going to handle the exception here
+        return false;
+    }
+
     public static function redirect_filter( $status )
     {
         if( ! defined( 'WFDONOTCACHE' ) )
@@ -108,7 +143,7 @@ class wfCache
     public static function is_a_no_cache_constant_defined()
     {
         //If you want to tell ua not to cache something in another plugin, simply define one of these. 
-        return defined( 'WFDONOTCACHE' ) || defined( 'DONOTCACHEPAGE' ) || defined( 'DONOTCACHEDB' ) || defined( 'DONOTCACHEOBJECT' );
+        return defined( 'WFDONOTCACHE' ) || defined( 'DONOTCACHEPAGE' ) || defined( 'DONOTCACHEDB' ) || defined( 'DONOTCACHEOBJECT' ) || defined( 'VENDI_CACHE_PHP_ERROR' );
     }
 
     public static function is_cachable_test_exclusions()
