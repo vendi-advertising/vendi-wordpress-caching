@@ -105,6 +105,14 @@ class wfCache
         }
     }
 
+    /**
+     * Set a global constant if an exception occurs and return exception handling
+     * back to original handler.
+     *
+     * @since  1.1.5
+     * 
+     * @param  \Exception $exception The exception that occurred.
+     */
     public static function handle_exception( $exception )
     {
         if( ! defined( 'VENDI_CACHE_PHP_ERROR' ) )
@@ -120,6 +128,14 @@ class wfCache
         }
     }
 
+    /**
+     * Set a global constant if an error occurs and return error handling
+     * back to original handler.
+     *
+     * See PHP docs for parameters.
+     *
+     * @since  1.1.5
+     */
     public static function handle_error( int $errno, string $errstr, string $errfile = null, int $errline = null, array $errcontext = null )
     {
         if( ! defined( 'VENDI_CACHE_PHP_ERROR' ) )
