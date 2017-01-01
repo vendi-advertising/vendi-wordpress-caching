@@ -363,8 +363,8 @@ class wordfence
                             'ok'        => 1,
                             'heading'   => esc_html__( 'Disk-based cache activated!', 'Vendi Cache' ),
                             'body'      => esc_html__( 'Disk-based cache has been activated on your system.', 'Vendi Cache' ) .
-                                           ' <center><input type="button" name="wfReload" value="' . 
-                                           esc_attr_x( 'Click here now to refresh this page', 'Vendi Cache' ) . 
+                                           ' <center><input type="button" name="wfReload" value="' .
+                                           esc_attr_x( 'Click here now to refresh this page', 'Vendi Cache' ) .
                                            '" onclick="window.location.reload(true);"" /></center>' );
         }
         return array(
@@ -616,11 +616,11 @@ class wordfence
                                                             'msg_switch_error'  => esc_html__( 'We can\'t modify your .htaccess file for you because: @@1@@', 'Vendi Cache' ) .
                                                                                     '<br /><br />' .
                                                                                     esc_html__( 'Advanced users: If you would like to manually enable the disk-based cache yourself by editing your .htaccess, you can add the rules below to the beginning of your .htaccess file. Then click the button below to enable %1$s. Don\'t do this unless you understand website configuration.', 'Vendi Cache' ) .
-                                                                                    '<br /><textarea style="width: 300px; height:100px;" readonly>@@2@@</textarea><br /><input type="button" value="' . 
+                                                                                    '<br /><textarea style="width: 300px; height:100px;" readonly>@@2@@</textarea><br /><input type="button" value="' .
                                                                                     esc_attr_x( 'Enable the disk-based cache after manually editing .htaccess', 'Vendi Cache' ) .
                                                                                     '" onclick="VCAD.confirmSwitchToFalcon(1);" />',
 
-                                                            'msg_manual_update' => '@@1@@<br />' . 
+                                                            'msg_manual_update' => '@@1@@<br />' .
                                                                                     esc_html__( 'Your option was updated but you need to change the disk-based cache code in your .htaccess to the following:', 'Vendi Cache' ) .
                                                                                     '<br /><textarea style="width: 300px; height: 120px;">@@2@@</textarea>',
 
