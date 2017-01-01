@@ -110,7 +110,7 @@ class wfCache
      * back to original handler.
      *
      * @since  1.1.5
-     * 
+     *
      * @param  \Exception $exception The exception that occurred.
      */
     public static function handle_exception( $exception )
@@ -158,19 +158,19 @@ class wfCache
 
     public static function is_a_no_cache_constant_defined()
     {
-        //If you want to tell ua not to cache something in another plugin, simply define one of these. 
+        //If you want to tell us not to cache something in another plugin, simply define one of these.
         return defined( 'WFDONOTCACHE' ) || defined( 'DONOTCACHEPAGE' ) || defined( 'DONOTCACHEDB' ) || defined( 'DONOTCACHEOBJECT' ) || defined( 'VENDI_CACHE_PHP_ERROR' );
     }
 
     public static function is_cachable_test_exclusions()
     {
-        
+
         $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
         if( ! $ex || ! is_array( $ex ) || 0 === count( $ex ) )
         {
             return true;
         }
-        
+
         $user_agent = utils::get_server_value( 'HTTP_USER_AGENT', '' );
         $uri = utils::get_server_value( 'REQUEST_URI', '' );
 
@@ -287,7 +287,7 @@ class wfCache
         //Don't cache query strings unless they are /?123132423=123123234 DDoS style.
         if( strlen( $query_string ) > 0 && ( ! preg_match( '/^\d+=\d+$/', $query_string ) ) )
         {
-            return false; 
+            return false;
         }
 
         $cookies = utils::get_request_object( 'COOKIE' );
@@ -307,7 +307,7 @@ class wfCache
                 }
             }
         }
-        
+
         if( ! self::is_cachable_test_exclusions() )
         {
             return false;
@@ -345,10 +345,10 @@ class wfCache
         //These constants may have been set after we did the initial is_cachable check by e.g. wp_redirect filter. If they're set then just return the buffer and don't cache.
         if( self::is_a_no_cache_constant_defined() )
         {
-            return $buffer; 
+            return $buffer;
         }
 
-        //The average web page size is 1246,000 bytes. If web page is less than 1000 bytes, don't cache it. 
+        //The average web page size is 1246,000 bytes. If web page is less than 1000 bytes, don't cache it.
         //TODO: Move to option
         if( strlen( $buffer ) < 1000 )
         {
@@ -570,7 +570,7 @@ return; }
      */
     private static function recursive_stats( $dir )
     {
-        $files = array_diff( scandir( $dir ), array( '.', '..' ) ); 
+        $files = array_diff( scandir( $dir ), array( '.', '..' ) );
         foreach( $files as $file )
         {
             $fullPath = $dir . '/' . $file;
@@ -633,7 +633,7 @@ return; }
         self::clear_page_cache();
     }
 
-    //If a clear is in progress this does nothing. 
+    //If a clear is in progress this does nothing.
     public static function clear_page_cache()
     {
         self::$cacheStats = array(
@@ -665,9 +665,9 @@ return; }
         }
         if( flock( $fp, LOCK_EX | LOCK_NB ) )
         {
-            //non blocking exclusive flock attempt. If we get a lock then it continues and returns true. If we don't lock, then return false, don't block and don't clear the cache. 
+            //non blocking exclusive flock attempt. If we get a lock then it continues and returns true. If we don't lock, then return false, don't block and don't clear the cache.
             // This logic means that if a cache clear is currently in progress we don't try to clear the cache.
-            // This prevents web server children from being queued up waiting to be able to also clear the cache. 
+            // This prevents web server children from being queued up waiting to be able to also clear the cache.
             self::$lastRecursiveDeleteError = false;
             self::recursive_delete( $cache_dir );
             if( self::$lastRecursiveDeleteError )
@@ -689,7 +689,7 @@ return; }
     {
         $cache_dir_name_safe = self::get_vwc_cache_settings()->get_cache_folder_name_safe();
 
-        $files = array_diff( scandir( $dir ), array( '.', '..' ) ); 
+        $files = array_diff( scandir( $dir ), array( '.', '..' ) );
         foreach( $files as $file )
         {
             if( is_dir( $dir . '/' . $file ) )
@@ -727,7 +727,7 @@ return; }
                     return false;
                 }
             }
-        } 
+        }
         if( $dir != WP_CONTENT_DIR . '/' . $cache_dir_name_safe . '/' )
         {
             if( strpos( $dir, $cache_dir_name_safe . '/' ) === false )
