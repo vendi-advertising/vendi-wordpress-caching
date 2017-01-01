@@ -136,7 +136,7 @@ class wfCache
      *
      * @since  1.1.5
      */
-    public static function handle_error( int $errno, string $errstr, string $errfile = null, int $errline = null, array $errcontext = null )
+    public static function handle_error( $errno, $errstr, $errfile = null, $errline = null, $errcontext = null )
     {
         if( ! defined( 'VENDI_CACHE_PHP_ERROR' ) )
         {
