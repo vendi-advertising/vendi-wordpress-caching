@@ -348,6 +348,12 @@ class wfCache
             return $buffer;
         }
 
+        //Check for no cache filter
+        if( apply_filters( \Vendi\Cache\api::FILTER_NAME_DO_NOT_CACHE, false, $buffer ) )
+        {
+            return $buffer;
+        }
+
         //The average web page size is 1246,000 bytes. If web page is less than 1000 bytes, don't cache it.
         //TODO: Move to option
         if( strlen( $buffer ) < 1000 )

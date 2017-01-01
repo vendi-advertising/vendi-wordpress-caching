@@ -680,8 +680,7 @@ class wordfence
      */
     public static function do_not_cache()
     {
-        wfCache::do_not_cache();
-        return true;
+        return \Vendi\Cache\api::do_not_cache();
     }
 
     /**

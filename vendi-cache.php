@@ -4,11 +4,11 @@ Plugin Name: Vendi Cache
 Description: Disk-based page and post cache. (Formerly Wordfence Falcon Cache)
 Plugin URI: https://www.vendiadvertising.com/
 Author: Vendi Advertising (Chris Haas)
-Version: 1.1.5
+Version: 1.2.0
 Author URI: https://www.vendiadvertising.com/
 Text Domain: vendi-cache
 Domain Path: /languages
-Stable tag: 1.1.5
+Stable tag: 1.2.0
 */
 
 if( defined( 'WP_INSTALLING' ) && WP_INSTALLING )
