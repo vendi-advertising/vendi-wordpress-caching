@@ -1,14 +1,14 @@
-# Copyright (C) 2016 Vendi Cache
+# Copyright (C) 2017 Vendi Cache
 # This file is distributed under the same license as the Vendi Cache package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Vendi Cache 1.1.2\n"
+"Project-Id-Version: Vendi Cache 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/vendi-cache\n"
-"POT-Creation-Date: 2016-11-05 14:05:03+00:00\n"
+"POT-Creation-Date: 2017-01-01 21:27:04+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
@@ -134,19 +134,19 @@ msgstr ""
 msgid "Add exclusion"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wfCache.php:414
+#: lib/Vendi/Cache/Legacy/wfCache.php:471
 msgid "The directory %1$s does not exist and we could not create it."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wfCache.php:417
+#: lib/Vendi/Cache/Legacy/wfCache.php:474
 msgid " The error we received was: %1$s"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wfCache.php:713
+#: lib/Vendi/Cache/Legacy/wfCache.php:751
 msgid "Error: add_htaccess_code must be called with 'add' or 'remove' as param"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wfCache.php:718
+#: lib/Vendi/Cache/Legacy/wfCache.php:756
 msgid "Vendi Cache could not find your .htaccess file."
 msgstr ""
 
@@ -187,7 +187,7 @@ msgstr ""
 #: lib/Vendi/Cache/Legacy/wordfence.php:252
 msgid ""
 "You can not enable Vendi Cache with other caching plugins enabled as this "
-"may cause conflicts. The plugins you have that conflict are: <strong>1$s.</"
+"may cause conflicts. The plugins you have that conflict are: <strong>%1$s.</"
 "strong> Disable these plugins, then return to this page and enable Vendi "
 "Cache."
 msgstr ""
@@ -248,35 +248,35 @@ msgstr ""
 msgid "An error occurred. Probably an unknown cacheType: %1$s"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:585
+#: lib/Vendi/Cache/Legacy/wordfence.php:541
 msgid "%1$s is working..."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:586
+#: lib/Vendi/Cache/Legacy/wordfence.php:542
 msgid "An error occurred"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:588
+#: lib/Vendi/Cache/Legacy/wordfence.php:544
 msgid "Enabling disk-based cache"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:589
+#: lib/Vendi/Cache/Legacy/wordfence.php:545
 msgid "We encountered a problem"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:590
+#: lib/Vendi/Cache/Legacy/wordfence.php:546
 msgid "Incorrect pattern for exclusion"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:591
+#: lib/Vendi/Cache/Legacy/wordfence.php:547
 msgid "Cache Exclusions"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:592
+#: lib/Vendi/Cache/Legacy/wordfence.php:548
 msgid "You need to manually update your .htaccess"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:594
+#: lib/Vendi/Cache/Legacy/wordfence.php:550
 msgid ""
 "The disk-based cache modifies your website configuration file which is "
 "called your .htaccess file. To enable the disk-based cache we ask that you "
@@ -284,17 +284,17 @@ msgid ""
 "reason the disk-based cache is not compatible with your site."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:596
+#: lib/Vendi/Cache/Legacy/wordfence.php:552
 msgid "Click here to download a backup copy of your .htaccess file now"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:598
-#: lib/Vendi/Cache/Legacy/wordfence.php:613
+#: lib/Vendi/Cache/Legacy/wordfence.php:554
+#: lib/Vendi/Cache/Legacy/wordfence.php:569
 msgctxt "Vendi Cache"
 msgid "Click to enable the disk-based cache"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:602
+#: lib/Vendi/Cache/Legacy/wordfence.php:558
 msgid ""
 "You are using an Nginx web server and using a FastCGI processor like PHP5-"
 "FPM. To use the disk-based cache you will need to manually modify your nginx."
@@ -307,11 +307,11 @@ msgid ""
 "below to enable the disk-based cache."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:616
+#: lib/Vendi/Cache/Legacy/wordfence.php:572
 msgid "We can't modify your .htaccess file for you because: @@1@@"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:618
+#: lib/Vendi/Cache/Legacy/wordfence.php:574
 msgid ""
 "Advanced users: If you would like to manually enable the disk-based cache "
 "yourself by editing your .htaccess, you can add the rules below to the "
@@ -319,18 +319,18 @@ msgid ""
 "%1$s. Don't do this unless you understand website configuration."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:620
+#: lib/Vendi/Cache/Legacy/wordfence.php:576
 msgctxt "Vendi Cache"
 msgid "Enable the disk-based cache after manually editing .htaccess"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:624
+#: lib/Vendi/Cache/Legacy/wordfence.php:580
 msgid ""
 "Your option was updated but you need to change the disk-based cache code in "
 "your .htaccess to the following:"
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:627
+#: lib/Vendi/Cache/Legacy/wordfence.php:583
 msgid ""
 "You can not enter full URL's for exclusion from caching. You entered a full "
 "URL that started with http:// or https://. You must enter relative URL's e."
@@ -338,17 +338,75 @@ msgid ""
 "the path part of a URL or at the end of the path part of a URL."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:629
+#: lib/Vendi/Cache/Legacy/wordfence.php:585
 msgid ""
 "There are not currently any exclusions. If you have a site that does not "
 "change often, it is perfectly normal to not have any pages you want to "
 "exclude from the cache."
 msgstr ""
 
-#: lib/Vendi/Cache/Legacy/wordfence.php:643
+#: lib/Vendi/Cache/Legacy/wordfence.php:599
 msgid ""
 "Vendi Cache generated an error on activation. The output we received during "
 "activation was:"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:97 lib/Vendi/Cache/cache_stats.php:150
+msgid "Cache Stats"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:98
+msgid ""
+"The cache is currently empty. It may be disabled or it may have been "
+"recently cleared."
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:104
+msgid "Total files in cache: %d"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:105
+msgid "Total directories in cache: %d"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:109
+msgid "Total data: %s"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:113
+msgid "Files: %d"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:114
+msgid "Data: %s"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:115
+msgid "Compressed files: %d"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:116
+msgid "Compressed data: %s"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:121
+msgid "Largest file: %s"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:128
+msgid "Oldest file in cache created %d seconds ago"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:132
+msgid "Oldest file in cache created %s ago"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:140
+msgid "Newest file in cache created %d seconds ago"
+msgstr ""
+
+#: lib/Vendi/Cache/cache_stats.php:144
+msgid "Newest file in cache created %s ago"
 msgstr ""
 
 #: lib/Vendi/Cache/wordpress_actions.php:48
@@ -365,9 +423,9 @@ msgstr ""
 msgid "Vendi Cache"
 msgstr ""
 
-#. #-#-#-#-#  vendi-cache.pot (Vendi Cache 1.1.2)  #-#-#-#-#
+#. #-#-#-#-#  vendi-cache.pot (Vendi Cache 1.2.0)  #-#-#-#-#
 #. Plugin URI of the plugin/theme
-#. #-#-#-#-#  vendi-cache.pot (Vendi Cache 1.1.2)  #-#-#-#-#
+#. #-#-#-#-#  vendi-cache.pot (Vendi Cache 1.2.0)  #-#-#-#-#
 #. Author URI of the plugin/theme
 msgid "https://www.vendiadvertising.com/"
 msgstr ""
