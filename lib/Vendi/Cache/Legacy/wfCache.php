@@ -555,26 +555,17 @@ return; }
     {
         $cache_dir = WP_CONTENT_DIR . '/' . self::get_vwc_cache_settings()->get_cache_folder_name_safe() . '/';
 
-        self::$cacheStats = array(
-            'files' => 0,
-            'dirs' => 0,
-            'data' => 0,
-            'compressedFiles' => 0,
-            'compressedKBytes' => 0,
-            'uncompressedFiles' => 0,
-            'uncompressedKBytes' => 0,
-            'oldestFile' => false,
-            'newestFile' => false,
-            'largestFile' => 0,
-            );
-        self::recursive_stats( $cache_dir );
-        return self::$cacheStats;
+        $cache_stats = new \Vendi\Cache\cache_stats();
+
+        self::recursive_stats( $cache_dir, $cache_stats );
+
+        return $cache_stats;
     }
 
     /**
      * @param string $dir
      */
-    private static function recursive_stats( $dir )
+    private static function recursive_stats( $dir, $cache_stats )
     {
         $files = array_diff( scandir( $dir ), array( '.', '..' ) );
         foreach( $files as $file )
@@ -582,8 +573,8 @@ return; }
             $fullPath = $dir . '/' . $file;
             if( is_dir( $fullPath ) )
             {
-                self::$cacheStats[ 'dirs' ]++;
-                self::recursive_stats( $fullPath );
+                $cache_stats->increment_dir_count();
+                self::recursive_stats( $fullPath, $cache_stats );
             }
             else
             {
@@ -591,40 +582,29 @@ return; }
                 {
                     continue;
                 }
-                self::$cacheStats[ 'files' ]++;
+                $cache_stats->increment_file_count();
                 $stat = stat( $fullPath );
                 if( is_array( $stat ) )
                 {
                     $size = $stat[ 7 ];
                     if( $size )
                     {
-                        $size = round( $size / 1024 );
-                        self::$cacheStats[ 'data' ] += $size;
+                        $cache_stats->add_size_to_data( $size );
                         if( strrpos( $file, '_gzip' ) == strlen( $file ) - 6 )
                         {
-                            self::$cacheStats[ 'compressedFiles' ]++;
-                            self::$cacheStats[ 'compressedKBytes' ] += $size;
+                            $cache_stats->increment_compressed_file_count();
+                            $cache_stats->add_bytes_to_compressed_file_size( $size );
                         }
                         else
                         {
-                            self::$cacheStats[ 'uncompressedFiles' ]++;
-                            self::$cacheStats[ 'uncompressedKBytes' ] += $size;
+                            $cache_stats->increment_uncompressed_file_count();
+                            $cache_stats->add_bytes_to_uncompressed_file_size( $size );
                         }
-                        if( self::$cacheStats[ 'largestFile' ] < $size )
-                        {
-                            self::$cacheStats[ 'largestFile' ] = $size;
-                        }
+                        $cache_stats->maybe_set_largest_file_size( $size );
                     }
 
                     $ctime = $stat[ 10 ];
-                    if( self::$cacheStats[ 'oldestFile' ] > $ctime || self::$cacheStats[ 'oldestFile' ] === false )
-                    {
-                        self::$cacheStats[ 'oldestFile' ] = $ctime;
-                    }
-                    if( self::$cacheStats[ 'newestFile' ] === false || self::$cacheStats[ 'newestFile' ] < $ctime )
-                    {
-                        self::$cacheStats[ 'newestFile' ] = $ctime;
-                    }
+                    $cache_stats->maybe_set_oldest_newest_file( $ctime );
                 }
             }
         }
@@ -634,7 +614,8 @@ return; }
     {
         if( self::$cacheClearedThisRequest )
         {
-return; }
+            return;
+        }
         self::$cacheClearedThisRequest = true;
         self::clear_page_cache();
     }

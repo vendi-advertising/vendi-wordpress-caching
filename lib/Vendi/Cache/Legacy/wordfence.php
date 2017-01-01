@@ -374,51 +374,7 @@ class wordfence
 
     public static function ajax_getCacheStats_callback()
     {
-        $s = wfCache::get_cache_stats();
-        if( $s[ 'files' ] == 0 )
-        {
-            return array( 'ok' => 1, 'heading' => 'Cache Stats', 'body' => "The cache is currently empty. It may be disabled or it may have been recently cleared." );
-        }
-        $body = 'Total files in cache: ' . $s[ 'files' ] .
-            '<br />Total directories in cache: ' . $s[ 'dirs' ] .
-            '<br />Total data: ' . $s[ 'data' ] . 'KB';
-        if( $s[ 'compressedFiles' ] > 0 )
-        {
-            $body .= '<br />Files: ' . $s[ 'uncompressedFiles' ] .
-                '<br />Data: ' . $s[ 'uncompressedKBytes' ] . 'KB' .
-                '<br />Compressed files: ' . $s[ 'compressedFiles' ] .
-                '<br />Compressed data: ' . $s[ 'compressedKBytes' ] . 'KB';
-        }
-        if( $s[ 'largestFile' ] > 0 )
-        {
-            $body .= '<br />Largest file: ' . $s[ 'largestFile' ] . 'KB';
-        }
-        if( $s[ 'oldestFile' ] !== false )
-        {
-            $body .= '<br />Oldest file in cache created ';
-            if( time() - $s[ 'oldestFile' ] < 300 )
-            {
-                $body .= ( time() - $s[ 'oldestFile' ] ) . ' seconds ago';
-            }
-            else
-            {
-                $body .= human_time_diff( $s[ 'oldestFile' ] ) . ' ago.';
-            }
-        }
-        if( $s[ 'newestFile' ] !== false )
-        {
-            $body .= '<br />Newest file in cache created ';
-            if( time() - $s[ 'newestFile' ] < 300 )
-            {
-                $body .= ( time() - $s[ 'newestFile' ] ) . ' seconds ago';
-            }
-            else
-            {
-                $body .= human_time_diff( $s[ 'newestFile' ] ) . ' ago.';
-            }
-        }
-
-        return array( 'ok' => 1, 'heading' => 'Cache Stats', 'body' => $body );
+        return wfCache::get_cache_stats()->get_message_array_for_ajax();
     }
 
     public static function ajax_clearPageCache_callback()
@@ -676,6 +632,8 @@ class wordfence
 
     /**
      * Call this to prevent us from caching the current page.
+     *
+     * @deprecated 1.2.0 Use filter \Vendi\Cache\api::FILTER_NAME_DO_NOT_CACHE instead.
      * @return boolean
      */
     public static function do_not_cache()

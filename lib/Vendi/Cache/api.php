@@ -12,7 +12,7 @@ class api
     const FILTER_NAME_DO_NOT_CACHE = 'vendi-cache/do-not-cache';
     /**
      * This is a legacy function used to invoke a newly implemented filter.
-     * Please use the filter 'vendi-cache/do-not-cache' instead.
+     * Please use the filter instead by calling the first line of the function.
      *
      * @since  1.2.0
      */
