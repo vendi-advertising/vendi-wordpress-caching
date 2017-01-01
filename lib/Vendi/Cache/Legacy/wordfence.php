@@ -250,7 +250,7 @@ class wordfence
                                 'errorMsg' => sprintf(
                                                         wp_kses(
                                                                     __(
-                                                                        'You can not enable Vendi Cache with other caching plugins enabled as this may cause conflicts. The plugins you have that conflict are: <strong>1$s.</strong> Disable these plugins, then return to this page and enable Vendi Cache.',
+                                                                        'You can not enable Vendi Cache with other caching plugins enabled as this may cause conflicts. The plugins you have that conflict are: <strong>%1$s.</strong> Disable these plugins, then return to this page and enable Vendi Cache.',
                                                                         'Vendi Cache'
                                                                         ),
                                                                     array(
