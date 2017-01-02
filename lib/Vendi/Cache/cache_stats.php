@@ -88,6 +88,95 @@ class cache_stats
         $this->maybe_set_newest_file( $ctime );
     }
 
+    public function get_body_lines_basic()
+    {
+        $body_lines = array();
+
+        $body_lines[] = sprintf( __( 'Total files in cache: %s', 'Vendi Cache' ), number_format_i18n( $this->files ) );
+        $body_lines[] = sprintf( __( 'Total directories in cache: %s', 'Vendi Cache' ), number_format_i18n( $this->dirs ) );
+
+        //size_format calls into number_format_i18n which in turn calls apply_filters so it is technically
+        //possible for something to return improper HTML and we should therefor escape it.
+        $body_lines[] = sprintf( __( 'Total data: %s', 'Vendi Cache' ), esc_html( size_format( $this->data ) ) );
+
+        return $body_lines;
+    }
+
+    public function get_body_lines_compressed_files()
+    {
+        $body_lines = array();
+
+        if( $this->compressedFiles )
+        {
+            $body_lines[] = sprintf( __( 'Files: %s', 'Vendi Cache' ), number_format_i18n( $this->uncompressedFiles ) );
+            $body_lines[] = sprintf( __( 'Data: %s', 'Vendi Cache' ), esc_html( size_format( $this->uncompressedBytes ) ) );
+            $body_lines[] = sprintf( __( 'Compressed files: %s', 'Vendi Cache' ), number_format_i18n( $this->compressedFiles ) );
+            $body_lines[] = sprintf( __( 'Compressed data: %s', 'Vendi Cache' ), esc_html( size_format( $this->compressedBytes ) ) );
+        }
+
+        return $body_lines;
+    }
+
+    public function get_body_lines_largest_file()
+    {
+        $body_lines = array();
+
+        if( $this->largestFile )
+        {
+            $body_lines[] = sprintf( __( 'Largest file: %s', 'Vendi Cache' ), esc_html( size_format( $this->largestFile ) ) );
+        }
+
+        return $body_lines;
+    }
+
+    public function get_body_lines_oldest_file( $time_to_check_against = null )
+    {
+        $body_lines = array();
+
+        if( $this->oldestFile )
+        {
+            if( null === $time_to_check_against )
+            {
+                $time_to_check_against = time();
+            }
+
+            if( $time_to_check_against - $this->oldestFile < 300 )
+            {
+                $body_lines[] = sprintf( __( 'Oldest file in cache created %s seconds ago', 'Vendi Cache' ), number_format_i18n( $time_to_check_against - $this->oldestFile ) );
+            }
+            else
+            {
+                $body_lines[] = sprintf( __( 'Oldest file in cache created %s ago', 'Vendi Cache' ), human_time_diff( $this->oldestFile ) );
+            }
+        }
+
+        return $body_lines;
+    }
+
+    public function get_body_lines_newest_file( $time_to_check_against = null )
+    {
+        $body_lines = array();
+
+        if( $this->newestFile )
+        {
+            if( null === $time_to_check_against )
+            {
+                $time_to_check_against = time();
+            }
+
+            if( $this->newestFile - $time_to_check_against < 300 )
+            {
+                $body_lines[] = sprintf( __( 'Newest file in cache created %s seconds ago', 'Vendi Cache' ), number_format_i18n( $this->newestFile - $time_to_check_against ) );
+            }
+            else
+            {
+                $body_lines[] = sprintf( __( 'Newest file in cache created %s ago', 'Vendi Cache' ), human_time_diff( $this->newestFile ) );
+            }
+        }
+
+        return $body_lines;
+    }
+
     public function get_message_array_for_ajax()
     {
         if( ! $this->files )
@@ -101,49 +190,15 @@ class cache_stats
 
         $body_lines = array();
 
-        $body_lines[] = sprintf( __( 'Total files in cache: %d', 'Vendi Cache' ), $this->files );
-        $body_lines[] = sprintf( __( 'Total directories in cache: %d', 'Vendi Cache' ), $this->dirs );
+        $body_lines += $this->get_body_lines_basic();
 
-        //size_format calls into number_format_i18n which in turn calls apply_filters so it is technically
-        //possible for something to return improper HTML and we should therefor escape it.
-        $body_lines[] = sprintf( __( 'Total data: %s', 'Vendi Cache' ), esc_html( size_format( $this->data ) ) );
+        $body_lines += $this->get_body_lines_compressed_files();
 
-        if( $this->compressedFiles )
-        {
-            $body_lines[] = sprintf( __( 'Files: %d', 'Vendi Cache' ), $this->uncompressedFiles );
-            $body_lines[] = sprintf( __( 'Data: %s', 'Vendi Cache' ), esc_html( size_format( $this->uncompressedBytes ) ) );
-            $body_lines[] = sprintf( __( 'Compressed files: %d', 'Vendi Cache' ), $this->compressedFiles );
-            $body_lines[] = sprintf( __( 'Compressed data: %s', 'Vendi Cache' ), esc_html( size_format( $this->compressedBytes ) ) );
-        }
+        $body_lines += $this->get_body_lines_largest_file();
 
-        if( $this->largestFile )
-        {
-            $body_lines[] = sprintf( __( 'Largest file: %s', 'Vendi Cache' ), esc_html( size_format( $this->largestFile ) ) );
-        }
+        $body_lines += $this->get_body_lines_oldest_file();
 
-        if( $this->oldestFile )
-        {
-            if( time() - $this->oldestFile < 300 )
-            {
-                $body_lines[] = sprintf( __( 'Oldest file in cache created %d seconds ago', 'Vendi Cache' ), time() - $this->oldestFile );
-            }
-            else
-            {
-                $body_lines[] = sprintf( __( 'Oldest file in cache created %s ago', 'Vendi Cache' ), human_time_diff( $this->oldestFile ) );
-            }
-        }
-
-        if( $this->newestFile )
-        {
-            if( time() - $this->newestFile < 300 )
-            {
-                $body_lines[] = sprintf( __( 'Newest file in cache created %d seconds ago', 'Vendi Cache' ), time() - $this->newestFile );
-            }
-            else
-            {
-                $body_lines[] = sprintf( __( 'Newest file in cache created %s ago', 'Vendi Cache' ), human_time_diff( $this->newestFile ) );
-            }
-        }
+        $body_lines += $this->get_body_lines_newest_file();
 
         return array(
                         'ok' => 1,
