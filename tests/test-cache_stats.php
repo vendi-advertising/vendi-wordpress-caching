@@ -11,7 +11,7 @@ class test_cache_stats extends WP_UnitTestCase
      * @covers Vendi\Cache\cache_stats::increment_compressed_file_count
      * @covers Vendi\Cache\cache_stats::increment_uncompressed_file_count
      */
-    public function test_all_increments( string $property, $method )
+    public function test_all_increments( $property, $method )
     {
         $cs = new \Vendi\Cache\cache_stats();
 
@@ -27,7 +27,7 @@ class test_cache_stats extends WP_UnitTestCase
      * @covers Vendi\Cache\cache_stats::add_bytes_to_compressed_file_size
      * @covers Vendi\Cache\cache_stats::add_bytes_to_uncompressed_file_size
      */
-    public function test_all_adders( string $property, $method )
+    public function test_all_adders( $property, $method )
     {
         $cs = new \Vendi\Cache\cache_stats();
 
