@@ -3,7 +3,7 @@
 **Tags:** cache, caching, disk cache, disk caching, page cache, performance, plugin  
 **Requires at least:** 3.9  
 **Tested up to:** 4.7.0  
-**Stable tag:** 1.2.5 0
+**Stable tag:** 1.2.1
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -55,6 +55,9 @@ For historical reasons, if defined the global constant is always honored first a
 
 
 ## Changelog
+
+### 1.2.1
+* Bug Fix: Incorrect function signature for error handling.
 
 ### 1.2.0
 * Add API class for all future public contracts.

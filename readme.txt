@@ -3,7 +3,7 @@ Contributors: chrisvendiadvertisingcom
 Tags: cache, caching, disk cache, disk caching, page cache, performance, plugin
 Requires at least: 3.9
 Tested up to: 4.7.0
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,9 @@ Yes, the caching engine may be stopped for a given request in several ways. The 
 For historical reasons, if defined the global constant is always honored first and cannot be undone via the filter. This might be changed in the future if someone actually has a need for it but generally speaking, constants are used to make global changes by administrators that local code should not be able to undo.
 
 == Changelog ==
+
+= 1.2.1 =
+* Bug Fix: Incorrect function signature for error handling.
 
 = 1.2.0 =
 * Add API class for all future public contracts.
