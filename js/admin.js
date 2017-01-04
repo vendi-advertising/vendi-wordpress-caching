@@ -166,10 +166,10 @@
 			switchToFalcon: function() {
 				var self = this;
 				this.ajax('vendi_cache_checkFalconHtaccess', {}, function(res) {
-					if (res.ok) {
-						self.colorbox('400px', self.msgs.msg_heading_enable_enhanced, self.msgs.msg_switch_apache );
-					} else if (res.nginx) {
+					if (res.nginx) {
 						self.colorbox('400px', self.msgs.msg_heading_enable_enhanced, self.msgs.msg_switch_nginx );
+					}else if (res.ok) {
+						self.colorbox('400px', self.msgs.msg_heading_enable_enhanced, self.msgs.msg_switch_apache );
 					} else if (res.err) {
 						var p1 = res.err;
 						var p2 = jQuery('<div/>').text(res.code).html();

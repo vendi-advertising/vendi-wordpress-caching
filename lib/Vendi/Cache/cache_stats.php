@@ -177,6 +177,11 @@ class cache_stats
         return $body_lines;
     }
 
+    /**
+     * Get all of the cache stats for HTML/AJAX display.
+     *
+     * @return array
+     */
     public function get_message_array_for_ajax()
     {
         if( ! $this->files )
