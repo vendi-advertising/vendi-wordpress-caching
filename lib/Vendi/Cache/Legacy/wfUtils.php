@@ -4,12 +4,6 @@ namespace Vendi\Cache\Legacy;
 
 class wfUtils
 {
-    public static function patternToRegex( $pattern, $mod = 'i', $sep = '/' )
-    {
-        $pattern = preg_quote( trim( $pattern ), $sep );
-        $pattern = str_replace( ' ', '\s', $pattern );
-        return $sep . '^' . str_replace( '\*', '.*', $pattern ) . '$' . $sep . $mod;
-    }
     public static function hasLoginCookie()
     {
         if( isset( $_COOKIE ) )
@@ -27,17 +21,7 @@ class wfUtils
         }
         return false;
     }
-    public static function setcookie( $name, $value, $expire, $path, $domain, $secure, $httpOnly )
-    {
-        if( version_compare( PHP_VERSION, '5.2.0' ) >= 0 )
-        {
-            @setcookie( $name, $value, $expire, $path, $domain, $secure, $httpOnly );
-        }
-        else
-        {
-            @setcookie( $name, $value, $expire, $path );
-        }
-    }
+
     public static function getLastError()
     {
         $err = error_get_last();
@@ -47,6 +31,7 @@ class wfUtils
         }
         return '';
     }
+
     public static function isAdmin( $user = false )
     {
         if( $user )
@@ -97,10 +82,6 @@ class wfUtils
     {
         return plugins_url( '', VENDI_CACHE_FCPATH ) . '/';
     }
-    public static function getSiteBaseURL()
-    {
-        return rtrim( site_url(), '/' ) . '/';
-    }
     public static function isNginx()
     {
         $sapi = php_sapi_name();
@@ -109,14 +90,5 @@ class wfUtils
         {
             return true;
         }
-    }
-    public static function cleanupOneEntryPerLine( $string )
-    {
-        $string = str_replace( ",", "\n", $string ); // fix old format
-        return implode( "\n", array_unique( array_filter( array_map( 'trim', explode( "\n", $string ) ) ) ) );
-    }
-    public static function bigRandomHex()
-    {
-        return dechex( rand( 0, 2147483647 ) ) . dechex( rand( 0, 2147483647 ) ) . dechex( rand( 0, 2147483647 ) );
     }
 }
