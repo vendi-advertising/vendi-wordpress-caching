@@ -20,3 +20,8 @@
 	list-style-type: disc;
 	margin-left: 25px;
 }
+
+.wrap .section td
+{
+    vertical-align: top;
+}
