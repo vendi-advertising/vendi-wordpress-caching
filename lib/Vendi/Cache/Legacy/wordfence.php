@@ -155,7 +155,8 @@ class wordfence
         if( array_key_exists( $func, $new_funcs ) )
         {
             $to_call = '\\Vendi\\Cache\\AjaxCallbacks\\' . $new_funcs[ $func ];
-            $returnArr = ( new $to_call( self::get_vwc_cache_settings() ) )->get_result();
+            $obj = new $to_call( self::get_vwc_cache_settings() );
+            $returnArr = $obj->get_result();
         }
         else
         {
