@@ -138,10 +138,27 @@ class wfCache
      */
     public static function handle_error( $errno, $errstr, $errfile = null, $errline = null, $errcontext = null )
     {
+        //Maybe?
+        // if( E_WARNING === $code )
+        // {
+        //     return true;
+        // }
+
         if( ! defined( 'VENDI_CACHE_PHP_ERROR' ) )
         {
             define( 'VENDI_CACHE_PHP_ERROR', true );
         }
+
+        // if( false )
+        // {
+        //     echo $errstr;
+        //     echo "<br />\n";
+        //     echo $errfile;
+        //     echo "<br />\n";
+        //     echo $errline;
+
+        //     die( $errstr );
+        // }
 
         //False means that we're not going to handle the exception here
         return false;
@@ -403,6 +420,26 @@ class wfCache
         return self::file_from_uri( $host, $URI, self::is_https_page() );
     }
 
+    public static function sanitize_host_for_cache_filename( $host )
+    {
+        return preg_replace( '/[^a-zA-Z0-9\-\.]+/', '', $host );
+    }
+
+    public static function sanitize_uri_for_cache_filename( $URI )
+    {
+        $URI = preg_replace( '/(?:[^a-zA-Z0-9\-\_\.\~\/]+|\.{2,})/', '', $URI ); //Strip out bad chars and multiple dots
+        if( preg_match( '/\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)(.*)$/', $URI, $matches ) )
+        {
+            $URI = $matches[ 1 ] . '/';
+            for( $i = 2; $i <= 6; $i++ )
+            {
+                $URI .= strlen( $matches[ $i ] ) > 0 ? $matches[ $i ] : '';
+                $URI .= $i < 6 ? '~' : '';
+            }
+        }
+        return $URI;
+    }
+
     /**
      * @param boolean $isHTTPS
      *
@@ -415,17 +452,9 @@ class wfCache
         {
             return self::$fileCache[ $key ];
         }
-        $host = preg_replace( '/[^a-zA-Z0-9\-\.]+/', '', $host );
-        $URI = preg_replace( '/(?:[^a-zA-Z0-9\-\_\.\~\/]+|\.{2,})/', '', $URI ); //Strip out bad chars and multiple dots
-        if( preg_match( '/\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)\/*([^\/]*)(.*)$/', $URI, $matches ) )
-        {
-            $URI = $matches[ 1 ] . '/';
-            for( $i = 2; $i <= 6; $i++ )
-            {
-                $URI .= strlen( $matches[ $i ] ) > 0 ? $matches[ $i ] : '';
-                $URI .= $i < 6 ? '~' : '';
-            }
-        }
+
+        $host = self::sanitize_host_for_cache_filename( $host );
+        $URI = self::sanitize_uri_for_cache_filename( $URI );
         $ext = '';
         if( $isHTTPS )
         {
@@ -468,10 +497,10 @@ class wfCache
             if( ! @mkdir( $cache_dir, 0755, true ) )
             {
                 $err = error_get_last();
-                $msg = sprtinf( esc_html__( 'The directory %1$s does not exist and we could not create it.', 'Vendi Cache' ), esc_html( $cache_dir ) );
+                $msg = sprintf( esc_html__( 'The directory %1$s does not exist and we could not create it.', 'Vendi Cache' ), esc_html( $cache_dir ) );
                 if( $err )
                 {
-                    $msg .= sprtinf( esc_html__( ' The error we received was: %1$s', 'Vendi Cache' ), esc_html( $err[ 'message' ] ) );
+                    $msg .= sprintf( esc_html__( ' The error we received was: %1$s', 'Vendi Cache' ), esc_html( $err[ 'message' ] ) );
                 }
                 return $msg;
             }
