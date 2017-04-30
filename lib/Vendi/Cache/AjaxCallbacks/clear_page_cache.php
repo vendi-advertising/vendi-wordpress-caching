@@ -3,8 +3,8 @@
 namespace Vendi\Cache\AjaxCallbacks;
 
 use Vendi\Cache\ajax_message;
-use Vendi\Cache\utils;
 use Vendi\Cache\Legacy\wfCache;
+use Vendi\Shared\utils;
 
 class clear_page_cache extends ajax_callback_base
 {

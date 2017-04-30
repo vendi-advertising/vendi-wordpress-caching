@@ -1,5 +1,6 @@
 {
     "require": {
+        "vendi-advertising/vendi-shared-utils": "*",
         "apix/log": "^1.2"
     },
     "require-dev": {

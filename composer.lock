@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4d6506800c6703f149d5c5f629b1ab53",
+    "content-hash": "6d6438e3dc86c570c16c812698492432",
     "packages": [
         {
             "name": "apix/log",
@@ -103,6 +103,54 @@
                 "psr-3"
             ],
             "time": "2016-10-10T12:19:37+00:00"
+        },
+        {
+            "name": "vendi-advertising/vendi-shared-utils",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vendi-advertising/vendi-shared-utils.git",
+                "reference": "79d3ebca83a56aa8cc44f14dc0ba98d61bf73068"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vendi-advertising/vendi-shared-utils/zipball/79d3ebca83a56aa8cc44f14dc0ba98d61bf73068",
+                "reference": "79d3ebca83a56aa8cc44f14dc0ba98d61bf73068",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.6.4",
+                "phpunit/phpunit": "*",
+                "scrutinizer/ocular": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Vendi\\Shared\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chris Haas",
+                    "email": "chris@vendiadvertising.com",
+                    "homepage": "https://www.vendiadvertising.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Helper class shared across all Vendi-controlled properties",
+            "homepage": "https://github.com/vendi-advertising/vendi-shared-utils",
+            "keywords": [
+                "vendi",
+                "vendi-advertising"
+            ],
+            "time": "2017-02-28T17:29:14+00:00"
         }
     ],
     "packages-dev": [

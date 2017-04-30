@@ -6,8 +6,8 @@ use Vendi\Cache\cache_setting_exception;
 use Vendi\Cache\cache_settings;
 use Vendi\Cache\ajax_message;
 use Vendi\Cache\ajax_error;
-use Vendi\Cache\utils;
 use Vendi\Cache\Legacy\wfCache;
+use Vendi\Shared\utils;
 
 class add_cache_exclusion extends ajax_callback_base
 {

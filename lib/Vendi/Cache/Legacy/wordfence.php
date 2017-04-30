@@ -3,9 +3,9 @@
 namespace Vendi\Cache\Legacy;
 
 use Vendi\Cache\cache_settings;
-use Vendi\Cache\utils;
 use Vendi\Cache\wordpress_actions;
 use Vendi\Cache\AjaxCallbacks;
+use Vendi\Shared\utils;
 
 class wordfence
 {

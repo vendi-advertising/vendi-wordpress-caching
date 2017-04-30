@@ -3,7 +3,7 @@
 namespace Vendi\Cache\Legacy;
 
 use Vendi\Cache\cache_settings;
-use Vendi\Cache\utils;
+use Vendi\Shared\utils;
 
 class wfCache
 {
