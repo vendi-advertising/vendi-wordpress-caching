@@ -9,6 +9,7 @@ class test_check_falcon_htaccess extends PHPUnit_Framework_TestCase
      */
     public function test_get_result()
     {
-        ( new check_falcon_htaccess() )->get_result();
+        $obj = new check_falcon_htaccess();
+        $obj->get_result();
     }
 }

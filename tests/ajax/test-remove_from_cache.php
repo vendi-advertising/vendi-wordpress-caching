@@ -9,6 +9,7 @@ class test_remove_from_cache extends PHPUnit_Framework_TestCase
      */
     public function test_get_result()
     {
-        ( new remove_from_cache() )->get_result();
+        $obj = new remove_from_cache();
+        $obj->get_result();
     }
 }

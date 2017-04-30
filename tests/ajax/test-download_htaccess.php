@@ -9,6 +9,7 @@ class test_download_htaccess extends PHPUnit_Framework_TestCase
      */
     public function test_get_result()
     {
-        ( new download_htaccess() )->get_result();
+        $obj = new download_htaccess();
+        $obj->get_result();
     }
 }

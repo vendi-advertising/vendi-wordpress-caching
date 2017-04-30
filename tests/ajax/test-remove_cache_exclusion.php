@@ -26,7 +26,8 @@ class test_remove_cache_exclusion extends PHPUnit_Framework_TestCase
         //                 'id' => microtime( true ),
         //             );
 
-        ( new remove_cache_exclusion() )->get_result();
+        $obj = new remove_cache_exclusion();
+        $obj->get_result();
 
         // dump( cache_settings::get_instance()->get_cache_exclusions() );
 

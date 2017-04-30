@@ -9,6 +9,7 @@ class test_add_cache_exclusion extends PHPUnit_Framework_TestCase
      */
     public function test_get_result()
     {
-        ( new add_cache_exclusion() )->get_result();
+        $obj = new add_cache_exclusion();
+        $obj->get_result();
     }
 }

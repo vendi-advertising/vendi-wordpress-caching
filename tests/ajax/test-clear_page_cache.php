@@ -9,6 +9,7 @@ class test_clear_page_cache extends PHPUnit_Framework_TestCase
      */
     public function test_get_result()
     {
-        ( new clear_page_cache() )->get_result();
+        $obj = new clear_page_cache();
+        $obj->get_result();
     }
 }
