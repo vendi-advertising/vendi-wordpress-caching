@@ -4,5 +4,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "5.*"
+    },
+    "config": {
+        "optimize-autoloader": true
     }
 }
