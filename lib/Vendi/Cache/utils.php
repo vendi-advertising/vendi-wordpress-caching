@@ -2,11 +2,27 @@
 
 namespace Vendi\Cache;
 
+use Apix\Log\Logger;
+
 /**
  * Utility class generally for HTTP.
  */
 class utils
 {
+    private static $_logger;
+
+    public static function get_logger()
+    {
+        if( ! self::$_logger )
+        {
+            self::$_logger = new Logger\File( VENDI_CACHE_PATH . 'debug.log');
+            self::$_logger->setMinLevel('debug');
+            self::$_logger->setDeferred(true);
+        }
+
+        return self::$_logger;
+    }
+
     /**
      * Get the value from the HTTP POST return the $default_value.
      * @param  string        $key           The form field's name to search in the $_POST array for.
@@ -140,7 +156,7 @@ class utils
 
     /**
      * Test if we're in a certain type of HTTP request.
-     * 
+     *
      * @param  string  $method The server method to test for. Generally one of GET, POST, HEAD, PUT, DELETE.
      * @return boolean         Returns true if the REQUEST_METHOD server variable is set to the supplied $method, otherwise false.
      */
@@ -156,7 +172,7 @@ class utils
      * for all POST checks.
      *
      * \Vendi\Forms\utils::is_post()
-     * 
+     *
      * @return boolean Returns true if the REQUEST_METHOD server variable is set to POST, otherwise false.
      */
     public static function is_post()
@@ -168,7 +184,7 @@ class utils
      * Test if the given $input can be converted to an int excluding booleans.
      *
      * \Vendi\Forms\utils::is_integer_like( value )
-     * 
+     *
      * @param  mixed  $input The value to test.
      * @return boolean       True if $input is an integer or a string that contains only digits possibly starting with a dash.
      */
