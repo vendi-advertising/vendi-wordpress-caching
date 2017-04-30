@@ -2,6 +2,7 @@
 
 namespace Vendi\Cache\Legacy;
 
+use Vendi\Cache\cache_setting_exception;
 use Vendi\Cache\cache_settings;
 
 if( ! VENDI_CACHE_SUPPORT_MU && defined( 'MULTISITE' ) && MULTISITE )
@@ -103,15 +104,15 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 
 			<!-- Not sure what the best way to get translators access to this. Anyone have any ideas? -->
 			<p style="width: 500px; white-space:nowrap;">
-				If a 
+				If a
 					<select id="wfPatternType">
-						<option value="s">URL Starts with</option>
-						<option value="e">URL Ends with</option>
-						<option value="c">URL Contains</option>
-						<option value="eq">URL Exactly Matches</option>
-						<option value="uac">User-Agent Contains</option>
-						<option value="uaeq">User-Agent Exactly Matches</option>
-						<option value="cc">Cookie Name Contains</option>
+						<option value="<?php echo cache_setting_exception::URL_STARTS_WITH; ?>">URL Starts with</option>
+						<option value="<?php echo cache_setting_exception::URL_ENDS_WITH; ?>">URL Ends with</option>
+						<option value="<?php echo cache_setting_exception::URL_CONTAINS; ?>">URL Contains</option>
+						<option value="<?php echo cache_setting_exception::URL_MATCHES_EXACTLY; ?>">URL Exactly Matches</option>
+						<option value="<?php echo cache_setting_exception::USER_AGENT_CONTAINS; ?>">User-Agent Contains</option>
+						<option value="<?php echo cache_setting_exception::USER_AGENT_MATCHES_EXACTLY; ?>">User-Agent Exactly Matches</option>
+						<option value="<?php echo cache_setting_exception::COOKIE_NAME_CONTAINS; ?>">Cookie Name Contains</option>
 					</select>
 				this value<br />then don't cache it:
 				<input type="text" id="wfPattern" value="" size="20" maxlength="1000" />e.g. /my/dynamic/page/
@@ -133,7 +134,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 	If the
 	<strong style="color: #0A0;">
 	{{if pt == 's'}}
-	URL starts with	
+	URL starts with
 	{{else pt == 'e'}}
 	URL ends with
 	{{else pt =='c'}}
@@ -152,7 +153,7 @@ $vwc_settings = \Vendi\Cache\cache_settings::get_instance( );
 	IP Address equals
 	{{/if}}
 	</strong>
-	(without quotes): 
+	(without quotes):
 	<strong style="color: #F00;">
 	"${p}"
 	</strong>
