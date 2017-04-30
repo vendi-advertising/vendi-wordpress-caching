@@ -13,13 +13,7 @@ abstract class ajax_callback_base
      */
     public static function get_vwc_cache_settings()
     {
-        if( ! self::$vwc_cache_settings )
-        {
-            self::$vwc_cache_settings = new cache_settings();
-        }
-
-        return self::$vwc_cache_settings;
-
+        return cache_settings::get_instance();
     }
 
     abstract public function get_result();
