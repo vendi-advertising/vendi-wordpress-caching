@@ -115,6 +115,9 @@ class wfCache
      */
     public static function handle_exception( $exception )
     {
+        utils::get_logger()->error( __( 'Vendi Cache detected an exception and disabled caching for this request. Error details follow on the next line', 'vendi-cache' ) );
+        utils::get_logger()->error( $exception );
+
         if( ! defined( 'VENDI_CACHE_PHP_ERROR' ) )
         {
             define( 'VENDI_CACHE_PHP_ERROR', true );
@@ -138,6 +141,14 @@ class wfCache
      */
     public static function handle_error( $errno, $errstr, $errfile = null, $errline = null, $errcontext = null )
     {
+
+        // utils::get_logger()->error( __( 'Vendi Cache detected an error and disabled caching for this request. Error details follow in the next five lines', 'vendi-cache' ) );
+        // utils::get_logger()->error( sprintf( __( 'Error Number: %1$d',  'vendi-cache' ), $errno ) );
+        // utils::get_logger()->error( sprintf( __( 'Error Message: %1$s', 'vendi-cache' ), $errstr ) );
+        // utils::get_logger()->error( sprintf( __( 'Error File: %1$s',    'vendi-cache' ), $errfile ) );
+        // utils::get_logger()->error( sprintf( __( 'Error Line: %1$s',    'vendi-cache' ), $errline ) );
+        // utils::get_logger()->error( sprintf( __( 'Error Context: %1$s', 'vendi-cache' ), $errcontext && is_array( $errcontext ) ? implode( PHP_EOL, $errcontext ) : null ) );
+
         //Maybe?
         // if( E_WARNING === $code )
         // {
@@ -166,6 +177,7 @@ class wfCache
 
     public static function redirect_filter( $status )
     {
+
         if( ! defined( 'WFDONOTCACHE' ) )
         {
             define( 'WFDONOTCACHE', true );
@@ -176,20 +188,60 @@ class wfCache
     public static function is_a_no_cache_constant_defined()
     {
         //If you want to tell us not to cache something in another plugin, simply define one of these.
-        return defined( 'WFDONOTCACHE' ) || defined( 'DONOTCACHEPAGE' ) || defined( 'DONOTCACHEDB' ) || defined( 'DONOTCACHEOBJECT' ) || defined( 'VENDI_CACHE_PHP_ERROR' );
+        //NOTE: This is broken into multiple IF statements for unit-testing purposes.
+        if( defined( 'WFDONOTCACHE' ) )
+        {
+            return true;
+        }
+
+        if( defined( 'DONOTCACHEPAGE' ) )
+        {
+            return true;
+        }
+
+        if( defined( 'DONOTCACHEDB' ) )
+        {
+            return true;
+        }
+
+        if( defined( 'DONOTCACHEOBJECT' ) )
+        {
+            return true;
+        }
+
+        if( defined( 'VENDI_CACHE_PHP_ERROR' ) )
+        {
+            return true;
+        }
+
+        return false;
     }
 
-    public static function is_cachable_test_exclusions()
+    public static function is_cachable_test_exclusions( $uri = null, $user_agent = null, $cache_exclusions = null )
     {
+        if( ! $cache_exclusions )
+        {
+            $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
+        }
+        else
+        {
+            $ex = $cache_exclusions;
+        }
 
-        $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
         if( ! $ex || ! is_array( $ex ) || 0 === count( $ex ) )
         {
             return true;
         }
 
-        $user_agent = utils::get_server_value( 'HTTP_USER_AGENT', '' );
-        $uri = utils::get_server_value( 'REQUEST_URI', '' );
+        if( ! $user_agent )
+        {
+            $user_agent = utils::get_server_value( 'HTTP_USER_AGENT', '' );
+        }
+
+        if( ! $uri )
+        {
+            $uri = utils::get_server_value( 'REQUEST_URI', '' );
+        }
 
         foreach( $ex as $v )
         {
@@ -488,9 +540,12 @@ class wfCache
         }
     }
 
-    public static function cache_directory_test()
+    public static function cache_directory_test( $cache_dir = null )
     {
-        $cache_dir = WP_CONTENT_DIR . '/' . self::get_vwc_cache_settings()->get_cache_folder_name_safe() . '/';
+        if( ! $cache_dir )
+        {
+            $cache_dir = WP_CONTENT_DIR . '/' . self::get_vwc_cache_settings()->get_cache_folder_name_safe() . '/';
+        }
 
         if( ! is_dir( $cache_dir ) )
         {
