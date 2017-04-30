@@ -19,17 +19,19 @@ env:
 before_script:
   - bash bin/install-wp-tests.sh wordpress_test travis '' localhost $WP_VERSION
   - composer update
-  - composer install --dev
 
 script:
   - cd $TRAVIS_BUILD_DIR
   - |
     if [[ "$TRAVIS_PHP_VERSION" == "5.6" && "$WP_VERSION" == "latest" && "$WP_MULTISITE" == "0" ]] ; then
-        ./vendor/bin/phpunit --coverage-clover=coverage.xml
-        wget https://scrutinizer-ci.com/ocular.phar
-        php ocular.phar code-coverage:upload --format=php-clover coverage.xml
+      phpunit --coverage-clover=coverage.xml
+      wget https://scrutinizer-ci.com/ocular.phar
+      php ocular.phar code-coverage:upload --format=php-clover coverage.xml
+    elif [[ "$TRAVIS_PHP_VERSION" == "5.3" || "$TRAVIS_PHP_VERSION" == "5.4" || "$TRAVIS_PHP_VERSION" == "5.5" ]]
+      phpunit
     else
-        ./vendor/bin/phpunit
+      composer install --dev
+      ./vendor/bin/phpunit
     fi
 
 after_success:
