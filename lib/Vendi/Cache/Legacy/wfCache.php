@@ -3,6 +3,7 @@
 namespace Vendi\Cache\Legacy;
 
 use Vendi\Cache\cache_settings;
+use Vendi\Cache\logging;
 use Vendi\Shared\utils;
 
 class wfCache
@@ -115,8 +116,8 @@ class wfCache
      */
     public static function handle_exception( $exception )
     {
-        utils::get_logger()->error( __( 'Vendi Cache detected an exception and disabled caching for this request. Error details follow on the next line', 'vendi-cache' ) );
-        utils::get_logger()->error( $exception );
+        logging::get_logger()->error( __( 'Vendi Cache detected an exception and disabled caching for this request. Error details follow on the next line', 'vendi-cache' ) );
+        logging::get_logger()->error( $exception );
 
         if( ! defined( 'VENDI_CACHE_PHP_ERROR' ) )
         {
@@ -142,12 +143,12 @@ class wfCache
     public static function handle_error( $errno, $errstr, $errfile = null, $errline = null, $errcontext = null )
     {
 
-        // utils::get_logger()->error( __( 'Vendi Cache detected an error and disabled caching for this request. Error details follow in the next five lines', 'vendi-cache' ) );
-        // utils::get_logger()->error( sprintf( __( 'Error Number: %1$d',  'vendi-cache' ), $errno ) );
-        // utils::get_logger()->error( sprintf( __( 'Error Message: %1$s', 'vendi-cache' ), $errstr ) );
-        // utils::get_logger()->error( sprintf( __( 'Error File: %1$s',    'vendi-cache' ), $errfile ) );
-        // utils::get_logger()->error( sprintf( __( 'Error Line: %1$s',    'vendi-cache' ), $errline ) );
-        // utils::get_logger()->error( sprintf( __( 'Error Context: %1$s', 'vendi-cache' ), $errcontext && is_array( $errcontext ) ? implode( PHP_EOL, $errcontext ) : null ) );
+        // logging::get_logger()->error( __( 'Vendi Cache detected an error and disabled caching for this request. Error details follow in the next five lines', 'vendi-cache' ) );
+        // logging::get_logger()->error( sprintf( __( 'Error Number: %1$d',  'vendi-cache' ), $errno ) );
+        // logging::get_logger()->error( sprintf( __( 'Error Message: %1$s', 'vendi-cache' ), $errstr ) );
+        // logging::get_logger()->error( sprintf( __( 'Error File: %1$s',    'vendi-cache' ), $errfile ) );
+        // logging::get_logger()->error( sprintf( __( 'Error Line: %1$s',    'vendi-cache' ), $errline ) );
+        // logging::get_logger()->error( sprintf( __( 'Error Context: %1$s', 'vendi-cache' ), $errcontext && is_array( $errcontext ) ? implode( PHP_EOL, $errcontext ) : null ) );
 
         //Maybe?
         // if( E_WARNING === $code )
