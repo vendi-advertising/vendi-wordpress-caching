@@ -3,7 +3,6 @@
 namespace Vendi\Cache\AjaxCallbacks;
 
 use Vendi\Cache\cache_settings;
-use Vendi\Cache\ajax_message;
 use Vendi\Cache\ajax_error;
 use Vendi\Cache\Legacy\wfCache;
 use Vendi\Shared\utils;

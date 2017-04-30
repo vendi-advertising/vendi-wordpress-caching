@@ -2,10 +2,6 @@
 
 namespace Vendi\Cache;
 
-use Vendi\Cache\Legacy\wfCache;
-use Vendi\Cache\Legacy\wfUtils;
-use Vendi\Cache\cache_settings;
-
 /**
  *
  * @since 1.2.2
