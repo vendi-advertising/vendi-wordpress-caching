@@ -18,7 +18,6 @@ env:
 
 before_script:
   - bash bin/install-wp-tests.sh wordpress_test travis '' localhost $WP_VERSION
-  - composer update
 
 script:
   - cd $TRAVIS_BUILD_DIR
@@ -30,6 +29,7 @@ script:
     elif [[ "$TRAVIS_PHP_VERSION" == "5.3" || "$TRAVIS_PHP_VERSION" == "5.4" || "$TRAVIS_PHP_VERSION" == "5.5" ]]
       phpunit
     else
+      composer update
       composer install --dev
       ./vendor/bin/phpunit
     fi
