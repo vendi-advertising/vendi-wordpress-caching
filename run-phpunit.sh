@@ -33,7 +33,7 @@ if [ "$UPDATE" = true ]; then
 fi
 
 if [ -z "$GROUP" ]; then
-    ./vendor/bin/phpunit -c phpunit.xml --coverage-html ./tests/logs/coverage/
+    ./vendor/bin/phpunit -c phpunit.xml --coverage-html ./tests/logs/coverage/ --dont-report-useless-tests
 else
     ./vendor/bin/phpunit -c phpunit.xml --coverage-html ./tests/logs/coverage/ --group $GROUP 
 fi
