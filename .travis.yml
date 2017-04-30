@@ -16,9 +16,12 @@ php:
 env:
   - WP_VERSION=latest WP_MULTISITE=0
 
+before_install:
+  - if [[ "$TRAVIS_PHP_VERSION" == "5.6" && "$WP_VERSION" == "latest" && "$WP_MULTISITE" == "0" ]]; then echo 'Running with XDebug'; else xdebug-disable; fi
+  - composer install --dev
+
 before_script:
   - bash bin/install-wp-tests.sh wordpress_test travis '' localhost $WP_VERSION
-  - composer install --dev
 
 script:
   - cd $TRAVIS_BUILD_DIR
