@@ -107,7 +107,7 @@ class cache_settings
 /*Methods*/
     /**
      * Check whether any cache mode is enabled.
-     * 
+     *
      * @return boolean True if the cache mode is php or enhanced, otherwise false.
      */
     public function is_any_cache_mode_enabled()
@@ -126,7 +126,7 @@ class cache_settings
                 $this->cache_folder_name_safe = 'vendi_cache';
             }
         }
-        
+
         return $this->cache_folder_name_safe;
     }
 
