@@ -11,7 +11,7 @@ class test_wfCache extends WP_UnitTestCase
      */
     public function test_get_vwc_cache_settings()
     {
-        $this->assertInstanceOf( cache_settings::class, wfCache::get_vwc_cache_settings() );
+        $this->assertInstanceOf( 'Vendi\Cache\cache_settings', wfCache::get_vwc_cache_settings() );
     }
 
     /**
