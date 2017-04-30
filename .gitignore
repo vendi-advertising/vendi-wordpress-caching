@@ -22,6 +22,7 @@ wp-content/plugins/hello.php
 /sitemap.xml
 /sitemap.xml.gz
 /_logs/
+vendor/
 /tests/logs/
 bin/wp2md
 
