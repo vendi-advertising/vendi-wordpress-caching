@@ -64,6 +64,12 @@ if( ! defined( 'VENDI_CACHE_FCPATH' ) )
     define( 'VENDI_CACHE_PATH', trailingslashit( dirname( VENDI_CACHE_FCPATH ) ) );
 }
 
+//Composer autoload for logging
+if( is_file( VENDI_CACHE_PATH . 'vendor/autoload.php' ) )
+{
+    require_once VENDI_CACHE_PATH . 'vendor/autoload.php';
+}
+
 if( 1 != get_option( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION ) )
 {
     add_action(
