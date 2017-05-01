@@ -7,7 +7,7 @@ class file_system_exception extends \Exception
 {
     private $_error_get_last;
 
-    public function __construct( string $message = null, array $error_get_last = null )
+    public function __construct( $message = null, array $error_get_last = null )
     {
         parent::__construct( $message );
         $this->error_get_last = $error_get_last;
