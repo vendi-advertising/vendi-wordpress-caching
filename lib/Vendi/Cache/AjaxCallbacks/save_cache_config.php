@@ -104,15 +104,15 @@ class save_cache_config extends ajax_callback_base
             $cache_dir_name_safe = self::get_vwc_cache_settings()->get_cache_folder_name_safe();
 
             $err = wfCache::cache_directory_test();
-            if( $err )
+            if( $err instanceof \Exception )
             {
                 return new ajax_message(
-                                __( 'Could not write to cache directory', 'Vendi Cache' ),
-                                sprintf(
+                                        __( 'Could not write to cache directory', 'Vendi Cache' ),
+                                        sprintf(
                                                     esc_html__( 'To enable caching, %1$s needs to be able to create and write to the %2$s directory. We did some tests that indicate this is not possible. You need to manually create the %2$s directory and make it writable by %1$s. The error we encountered was during our tests was: %3$s', 'Vendi Cache' ),
-                                                    VENDI_CACHE_PLUGIN_NAME,
+                                                    '<strong>' . VENDI_CACHE_PLUGIN_NAME . '</strong>',
                                                     "/wp-content/{$cache_dir_name_safe}/",
-                                                    esc_html( $err )
+                                                    esc_html( $err->__toString() )
                                                 )
 
                             );

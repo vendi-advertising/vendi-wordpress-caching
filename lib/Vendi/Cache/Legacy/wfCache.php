@@ -4,6 +4,7 @@ namespace Vendi\Cache\Legacy;
 
 use Vendi\Cache\cache_settings;
 use Vendi\Cache\logging;
+use Vendi\Cache\Exceptions\file_system_exception;
 use Vendi\Shared\utils;
 
 class wfCache
@@ -541,38 +542,57 @@ class wfCache
         }
     }
 
-    public static function cache_directory_test( $cache_dir = null )
+    public static function create_directory( $absolute_directory_path, $permissions = 0755 )
     {
+        if( is_dir( $absolute_directory_path ) )
+        {
+            return true;
+        }
+
+        if( ! @mkdir( $absolute_directory_path, $permissions, true ) )
+        {
+            throw new file_system_exception(
+                                                sprintf( __( 'The directory %1$s does not exist and we could not create it.', 'Vendi Cache' ), esc_html( $absolute_directory_path ) ),
+                                                error_get_last()
+                                );
+        }
+    }
+
+    public static function cache_directory_test( $cache_dir = null, $file_name = 'test.php' )
+    {
+        $file_name = trim( $file_name, '/\\' );
+        if( basename( $file_name ) !== $file_name )
+        {
+            throw new file_system_exception(
+                                                sprintf( __( 'Second argument to method %1$s must be a filename without path however %2$s was provided.', 'Vendi Cache' ), 'cache_directory_test()', esc_html( $file_name ) )
+                                );
+        }
+
         if( ! $cache_dir )
         {
             $cache_dir = WP_CONTENT_DIR . '/' . self::get_vwc_cache_settings()->get_cache_folder_name_safe() . '/';
         }
 
-        if( ! is_dir( $cache_dir ) )
+        $cache_dir = trailingslashit( $cache_dir );
+
+        $dir_result = self::create_directory( $cache_dir );
+        if( true !== $dir_result )
         {
-            if( ! @mkdir( $cache_dir, 0755, true ) )
-            {
-                $err = error_get_last();
-                $msg = sprintf( esc_html__( 'The directory %1$s does not exist and we could not create it.', 'Vendi Cache' ), esc_html( $cache_dir ) );
-                if( $err )
-                {
-                    $msg .= sprintf( esc_html__( ' The error we received was: %1$s', 'Vendi Cache' ), esc_html( $err[ 'message' ] ) );
-                }
-                return $msg;
-            }
+            return $dir_result;
         }
-        if( ! @file_put_contents( $cache_dir . 'test.php', 'test' ) )
+
+        $full_test_filename = $cache_dir . $file_name;
+
+        if( ! @file_put_contents( $full_test_filename, 'test' ) )
         {
-            $err = error_get_last();
-            $msg = "We could not write to the file $cache_dir" . "test.php when testing if the cache directory is writable.";
-            if( $err )
-            {
-                $msg .= " The error was: " . $err[ 'message' ];
-            }
-            return $msg;
+            throw new file_system_exception(
+                                                sprintf( __( 'We could not write to the file %1$s when testing if the cache directory is writable.', 'Vendi Cache' ), esc_html( $full_test_filename ) ),
+                                                error_get_last()
+                                );
         }
+
         self::remove_cache_directory_htaccess();
-        return false;
+        return true;
         // return self::writeCacheDirectoryHtaccess(); //Everything is OK
     }
 
