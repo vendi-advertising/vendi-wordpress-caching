@@ -738,6 +738,11 @@ return; }
 
         $cache_dir = WP_CONTENT_DIR . '/' . self::get_vwc_cache_settings()->get_cache_folder_name_safe() . '/';
 
+        if( ! is_dir( $cache_dir ) )
+        {
+            return self::$cacheStats;
+        }
+
         $cacheClearLock = $cache_dir . 'clear.lock';
         if( ! is_file( $cacheClearLock ) )
         {
