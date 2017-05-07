@@ -1,15 +1,15 @@
 <?php
 
-use Vendi\Cache\cache_setting_exception;
+use Vendi\Cache\cache_setting_exclusion;
 
-class test_cache_setting_exception extends WP_UnitTestCase
+class test_cache_setting_exclusion extends WP_UnitTestCase
 {
     /**
      * @dataProvider provider_test_constants
      */
     public function test_constants( $constant, $value )
     {
-        $this->assertSame( constant( "Vendi\Cache\cache_setting_exception::$constant" ), $value );
+        $this->assertSame( constant( "Vendi\Cache\cache_setting_exclusion::$constant" ), $value );
     }
 
     public function provider_test_constants()
