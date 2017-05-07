@@ -5,7 +5,7 @@ namespace Vendi\Cache;
 class cache_settings
 {
 /*Fields*/
-    private static $instance;
+    private static $_instances = [];
     private $cache_folder_name_safe = null;
 
 /*Constants*/
@@ -24,6 +24,8 @@ class cache_settings
     const OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE = 'vwc_do_append_debug_message';
     const OPTION_KEY_NAME_DO_CLEAR_ON_SAVE        = 'vwc_do_clear_on_save';
     const OPTION_KEY_NAME_CACHE_EXCLUSIONS        = 'vwc_cache_exclusions';
+
+    const DEFAULT_INSTANCE_ID = 1;
 
 /*Property Access*/
     public function get_cache_mode()
@@ -159,13 +161,13 @@ class cache_settings
     }
 
 /*Static Factory Methods*/
-    public static function get_instance( $not_used = false )
+    public static function get_instance( $instance_id = self::DEFAULT_INSTANCE_ID )
     {
-        if( ! self::$instance )
+        if( ! array_key_exists( $instance_id, self::$_instances ) )
         {
-            self::$instance = new self();
+            self::$_instances[ $instance_id ] = new self();
         }
-        return self::$instance;
+        return self::$_instances[ $instance_id ];
 
     }
 
