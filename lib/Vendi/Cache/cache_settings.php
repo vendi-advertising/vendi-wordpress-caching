@@ -163,12 +163,17 @@ class cache_settings
 /*Static Factory Methods*/
     public static function get_instance( $instance_id = self::DEFAULT_INSTANCE_ID )
     {
-        if( ! array_key_exists( $instance_id, self::$_instances ) )
+        if( ! self::has_instance( $instance_id ) )
         {
             self::$_instances[ $instance_id ] = new self();
         }
         return self::$_instances[ $instance_id ];
 
+    }
+
+    public static function has_instance( $instance_id )
+    {
+        return array_key_exists( $instance_id, self::$_instances );
     }
 
 /*Static Helpers*/
