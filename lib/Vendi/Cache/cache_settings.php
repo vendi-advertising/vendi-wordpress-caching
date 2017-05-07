@@ -5,7 +5,7 @@ namespace Vendi\Cache;
 class cache_settings
 {
 /*Fields*/
-    private static $_instances = [];
+    private static $_instances = array();
 
     private $_instance_id = '';
 
