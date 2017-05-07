@@ -178,7 +178,7 @@ class cache_settings
 
     public static function erase_instance( $instance_id )
     {
-        if( self->has_instance( $instance_id ) )
+        if( self::has_instance( $instance_id ) )
         {
             unset( self::$_instances[ $instance_id ] );
         }
