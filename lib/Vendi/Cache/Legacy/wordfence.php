@@ -11,20 +11,12 @@ class wordfence
 {
     private static $runInstallCalled = false;
 
-    private static $vwc_cache_settings;
-
     /**
      * @return null|cache_settings
      */
     public static function get_vwc_cache_settings()
     {
-        if( ! self::$vwc_cache_settings )
-        {
-            self::$vwc_cache_settings = new cache_settings();
-        }
-
-        return self::$vwc_cache_settings;
-
+        return cache_settings::get_instance();
     }
 
     public static function install_plugin()

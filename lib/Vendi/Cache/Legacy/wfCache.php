@@ -21,13 +21,7 @@ class wfCache
 
     public static function get_vwc_cache_settings()
     {
-        if( ! self::$vwc_cache_settings )
-        {
-            self::$vwc_cache_settings = new cache_settings();
-        }
-
-        return self::$vwc_cache_settings;
-
+        return cache_settings::get_instance();
     }
 
     public static function setup_caching()

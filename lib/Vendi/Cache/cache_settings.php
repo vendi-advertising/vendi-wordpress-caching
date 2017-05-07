@@ -6,6 +6,9 @@ class cache_settings
 {
 /*Fields*/
     private static $_instances = [];
+
+    private $_instance_id = '';
+
     private $cache_folder_name_safe = null;
 
 /*Constants*/
@@ -27,7 +30,18 @@ class cache_settings
 
     const DEFAULT_INSTANCE_ID = 1;
 
+    public function __construct( $instance_id )
+    {
+        $this->_instance_id = $instance_id;
+    }
+
 /*Property Access*/
+
+    public function get_instance_id()
+    {
+        return $this->_instance_id;
+    }
+
     public function get_cache_mode()
     {
         return get_option( self::OPTION_KEY_NAME_CACHE_MODE, self::DEFAULT_VALUE_CACHE_MODE );
@@ -165,7 +179,7 @@ class cache_settings
     {
         if( ! self::has_instance( $instance_id ) )
         {
-            self::$_instances[ $instance_id ] = new self();
+            self::$_instances[ $instance_id ] = new self( $instance_id );
         }
         return self::$_instances[ $instance_id ];
 
