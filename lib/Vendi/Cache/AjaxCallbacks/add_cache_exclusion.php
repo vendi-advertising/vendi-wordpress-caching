@@ -2,7 +2,7 @@
 
 namespace Vendi\Cache\AjaxCallbacks;
 
-use Vendi\Cache\cache_setting_exception;
+use Vendi\Cache\cache_setting_exclusion;
 use Vendi\Cache\cache_settings;
 use Vendi\Cache\ajax_message;
 use Vendi\Cache\ajax_error;
@@ -13,18 +13,12 @@ class add_cache_exclusion extends ajax_callback_base
 {
     public function get_result()
     {
-        $ex = self::get_vwc_cache_settings()->get_cache_exclusions();
-        $ex[ ] = array(
-            'pt' => utils::get_post_value( 'patternType' ),
-            'p' => utils::get_post_value( 'pattern' ),
-            'id' => microtime( true ),
-            );
-
-        self::get_vwc_cache_settings()->set_cache_exclusions( $ex );
+        $settings = self::get_vwc_cache_settings();
+        $settings->add_single_cache_exclusion( utils::get_post_value( 'patternType' ), utils::get_post_value( 'pattern' ) );
         wfCache::schedule_cache_clear();
-        if( self::get_vwc_cache_settings()->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED )
+        if( $settings->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED )
         {
-            if( in_array( utils::get_post_value( 'patternType' ), array( cache_setting_exception::USER_AGENT_CONTAINS, cache_setting_exception::USER_AGENT_MATCHES_EXACTLY, cache_setting_exception::COOKIE_NAME_CONTAINS ) ) )
+            if( in_array( utils::get_post_value( 'patternType' ), array( cache_setting_exclusion::USER_AGENT_CONTAINS, cache_setting_exclusion::USER_AGENT_MATCHES_EXACTLY, cache_setting_exclusion::COOKIE_NAME_CONTAINS ) ) )
             {
                 //rewrites htaccess rules
                 if( wfCache::add_htaccess_code( 'add' ) )

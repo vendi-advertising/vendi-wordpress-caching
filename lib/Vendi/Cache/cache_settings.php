@@ -104,6 +104,23 @@ class cache_settings
         update_option( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS, $cache_exclusions );
     }
 
+    public function add_single_cache_exclusion( $patternType, $pattern, $id = null )
+    {
+        if( ! $id )
+        {
+            $id = microtime( true );
+        }
+
+        $ex = $this->get_cache_exclusions();
+        $ex[] = array(
+                        'pt' => $patternType,
+                        'p'  => $pattern,
+                        'id' => $id,
+                    );
+
+        $this->set_cache_exclusions( $ex );
+    }
+
 /*Methods*/
     /**
      * Check whether any cache mode is enabled.
