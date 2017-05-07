@@ -247,7 +247,7 @@ class wfCache
 
         foreach( $ex as $v )
         {
-            if( $v[ 'pt' ] == 'eq' )
+            if( $v[ 'pt' ] == cache_setting_exclusion::URL_MATCHES_EXACTLY )
             {
                 if( strtolower( $uri ) == strtolower( $v[ 'p' ] ) )
                 {
@@ -255,7 +255,7 @@ class wfCache
                 }
             }
 
-            if( $v[ 'pt' ] == 's' )
+            if( $v[ 'pt' ] == cache_setting_exclusion::URL_STARTS_WITH )
             {
                 if( stripos( $uri, $v[ 'p' ] ) === 0 )
                 {
@@ -263,7 +263,7 @@ class wfCache
                 }
             }
 
-            if( $v[ 'pt' ] == 'e' )
+            if( $v[ 'pt' ] == cache_setting_exclusion::URL_ENDS_WITH )
             {
                 if( stripos( $uri, $v[ 'p' ] ) === ( strlen( $uri ) - strlen( $v[ 'p' ] ) ) )
                 {
@@ -271,7 +271,7 @@ class wfCache
                 }
             }
 
-            if( $v[ 'pt' ] == 'c' )
+            if( $v[ 'pt' ] == cache_setting_exclusion::URL_CONTAINS )
             {
                 if( stripos( $uri, $v[ 'p' ] ) !== false )
                 {
@@ -280,7 +280,7 @@ class wfCache
             }
 
             //User-agent contains
-            if( $v[ 'pt' ] == 'uac' )
+            if( $v[ 'pt' ] == cache_setting_exclusion::USER_AGENT_CONTAINS )
             {
                 if( stripos( $user_agent, $v[ 'p' ] ) !== false )
                 {
@@ -289,7 +289,7 @@ class wfCache
             }
 
             //user-agent equals
-            if( $v[ 'pt' ] == 'uaeq' )
+            if( $v[ 'pt' ] == cache_setting_exclusion::USER_AGENT_MATCHES_EXACTLY )
             {
                 if( strtolower( $user_agent ) == strtolower( $v[ 'p' ] ) )
                 {
@@ -297,7 +297,7 @@ class wfCache
                 }
             }
 
-            if( $v[ 'pt' ] == 'cc' )
+            if( $v[ 'pt' ] == cache_setting_exclusion::COOKIE_NAME_CONTAINS )
             {
 
                 $cookies = utils::get_request_object( 'COOKIE' );
