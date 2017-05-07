@@ -176,6 +176,14 @@ class cache_settings
         return array_key_exists( $instance_id, self::$_instances );
     }
 
+    public static function erase_instance( $instance_id )
+    {
+        if( self->has_instance( $instance_id ) )
+        {
+            unset( self::$_instances[ $instance_id ] );
+        }
+    }
+
 /*Static Helpers*/
     public static function is_valid_cache_mode( $cache_mode )
     {
