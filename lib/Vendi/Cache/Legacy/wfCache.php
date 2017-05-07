@@ -3,6 +3,7 @@
 namespace Vendi\Cache\Legacy;
 
 use Vendi\Cache\cache_settings;
+use Vendi\Cache\cache_setting_exclusion;
 use Vendi\Cache\logging;
 use Vendi\Cache\Exceptions\file_system_exception;
 use Vendi\Shared\utils;
