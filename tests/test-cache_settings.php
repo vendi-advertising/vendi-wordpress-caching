@@ -46,25 +46,31 @@ class test_cache_settings extends WP_UnitTestCase
                             cache_settings::OPTION_KEY_NAME_CACHE_EXCLUSIONS,
             );
 
+        //Grab our settings instance
         $settings = $this->_get_new_setting_instance();
 
+        //None of the cache keys should exist
         foreach( $options as $option )
         {
             $this->assertFalse( $settings->get_option_for_instance( $option ) );
         }
 
+        //Set each one
         foreach( $options as $option )
         {
             $settings->update_option_for_instance( $option, 'CHEESE' );
         }
 
+        //Make sure that they have a value
         foreach( $options as $option )
         {
             $this->assertSame( 'CHEESE', $settings->get_option_for_instance( $option ) );
         }
 
+        //Run the instance-specific uninstaller
         $settings->uninstall();
 
+        //The keys should no longer exist again
         foreach( $options as $option )
         {
             $this->assertFalse( $settings->get_option_for_instance( $option ) );
