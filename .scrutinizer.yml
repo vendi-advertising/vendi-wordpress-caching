@@ -14,7 +14,7 @@ build:
         redis: false
 
         variables:
-            WP_VERSION: '4.6.1'
+            WP_VERSION: '4.7.4'
             WP_MULTISITE: '0'
 
     dependencies:
@@ -27,7 +27,7 @@ build:
     tests:
          override:
               -
-                    command: 'phpunit --coverage-clover=coverage.xml'
+                    command: './vendor/bin/phpunit --coverage-clover=coverage.xml'
                     idle_timeout: 1800
                     coverage:
                         file: 'coverage.xml'
