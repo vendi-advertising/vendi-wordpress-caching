@@ -5,7 +5,7 @@ use Vendi\Cache\cache_settings;
 class test_cache_settings extends WP_UnitTestCase
 {
 
-    private $_instances = [];
+    private $_instances = array();
 
     public function tearDown()
     {
