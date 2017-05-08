@@ -165,7 +165,7 @@ class cache_settings
 
 /*Database loading/saving/uninstall*/
 
-    public static function uninstall()
+    public function uninstall()
     {
         delete_option( self::OPTION_KEY_NAME_CACHE_MODE );
         delete_option( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS );

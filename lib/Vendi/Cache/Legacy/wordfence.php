@@ -33,6 +33,8 @@ class wordfence
         if( $cacheType == cache_settings::CACHE_MODE_ENHANCED )
         {
             wfCache::add_htaccess_code( 'remove' );
+
+            //This isn't needed anymore, uninstall should take care of it
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
 
             //We currently don't clear the cache when plugin is disabled because it will take too long if done synchronously and won't work because plugin is disabled if done asynchronously.
@@ -41,13 +43,15 @@ class wordfence
         }
         else if( $cacheType == cache_settings::CACHE_MODE_PHP )
         {
+
+            //This isn't needed anymore, uninstall should take care of it
             self::get_vwc_cache_settings()->set_cache_mode( cache_settings::CACHE_MODE_OFF );
         }
 
         //Used by MU code below
         update_option( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION, 0 );
 
-        cache_settings::uninstall();
+        cache_settings::get_instance()->uninstall();
     }
 
     public static function runInstall()
