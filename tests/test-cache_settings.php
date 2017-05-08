@@ -18,8 +18,10 @@ class test_cache_settings extends WP_UnitTestCase
         //Reset the master array since this is called on each test
         $this->_instances = array();
 
+        $ref = new \ReflectionClass( 'Vendi\Cache\cache_settings' );
+
         //Unset any existing constants
-        foreach( ( new \ReflectionClass( 'Vendi\Cache\cache_settings' ) )->getConstants() as $name => $value )
+        foreach( $ref->getConstants() as $name => $value )
         {
             if( 0 === strpos( $name, 'OPTION_KEY_NAME_' ) )
             {
