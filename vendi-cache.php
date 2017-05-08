@@ -76,7 +76,7 @@ if( 1 != get_option( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION ) )
                 'activated_plugin',
                 function()
                 {
-                    update_option( VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR, ob_get_contents() );
+                    cache_settings::get_instance()->update_option_for_instance( VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR, ob_get_contents() );
                 }
             );
 }

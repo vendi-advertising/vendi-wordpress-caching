@@ -37,6 +37,17 @@ class cache_settings
 
 /*Property Access*/
 
+    public function get_key_name_with_instance_id( $key_name )
+    {
+        $suffix = '';
+        if( $this->_instance_id )
+        {
+            $suffix .= '_' . $this->_instance_id;
+        }
+
+        return $key_name . $suffix;
+    }
+
     public function get_instance_id()
     {
         return $this->_instance_id;
@@ -44,14 +55,14 @@ class cache_settings
 
     public function get_cache_mode()
     {
-        return get_option( self::OPTION_KEY_NAME_CACHE_MODE, self::DEFAULT_VALUE_CACHE_MODE );
+        return $this->get_option_for_instance( self::OPTION_KEY_NAME_CACHE_MODE, self::DEFAULT_VALUE_CACHE_MODE );
     }
 
     public function set_cache_mode( $cache_mode )
     {
         if( self::is_valid_cache_mode( $cache_mode ) )
         {
-            update_option( self::OPTION_KEY_NAME_CACHE_MODE, $cache_mode );
+            $this->update_option_for_instance( self::OPTION_KEY_NAME_CACHE_MODE, $cache_mode );
             return;
         }
 
@@ -60,7 +71,7 @@ class cache_settings
 
     public function get_do_cache_https_urls()
     {
-        return true == get_option( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS, self::DEFAULT_VALUE_DO_CACHE_HTTPS_URLS );
+        return true == $this->get_option_for_instance( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS, self::DEFAULT_VALUE_DO_CACHE_HTTPS_URLS );
     }
 
     /**
@@ -68,12 +79,12 @@ class cache_settings
      */
     public function set_do_cache_https_urls( $do_cache_https_urls )
     {
-        update_option( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS, $do_cache_https_urls );
+        $this->update_option_for_instance( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS, $do_cache_https_urls );
     }
 
     public function get_do_append_debug_message()
     {
-        return true == get_option( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE, self::DEFAULT_VALUE_DO_APPEND_DEBUG_MESSAGE );
+        return true == $this->get_option_for_instance( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE, self::DEFAULT_VALUE_DO_APPEND_DEBUG_MESSAGE );
     }
 
     /**
@@ -81,12 +92,12 @@ class cache_settings
      */
     public function set_do_append_debug_message( $do_append_debug_message )
     {
-        update_option( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE, $do_append_debug_message );
+        $this->update_option_for_instance( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE, $do_append_debug_message );
     }
 
     public function get_do_clear_on_save()
     {
-        return true == get_option( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE, self::DEFAULT_VALUE_DO_CLEAR_ON_SAVE );
+        return true == $this->get_option_for_instance( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE, self::DEFAULT_VALUE_DO_CLEAR_ON_SAVE );
     }
 
     /**
@@ -94,12 +105,12 @@ class cache_settings
      */
     public function set_do_clear_on_save( $do_clear_on_save )
     {
-        update_option( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE, $do_clear_on_save );
+        $this->update_option_for_instance( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE, $do_clear_on_save );
     }
 
     public function get_cache_exclusions()
     {
-        $tmp = get_option( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS, self::DEFAULT_VALUE_CACHE_EXCLUSIONS );
+        $tmp = $this->get_option_for_instance( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS, self::DEFAULT_VALUE_CACHE_EXCLUSIONS );
         if( ! $tmp )
         {
             $tmp = array();
@@ -117,7 +128,7 @@ class cache_settings
         {
             $cache_exclusions = serialize( $cache_exclusions );
         }
-        update_option( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS, $cache_exclusions );
+        $this->update_option_for_instance( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS, $cache_exclusions );
     }
 
     public function add_single_cache_exclusion( $patternType, $pattern, $id = null )
@@ -148,6 +159,21 @@ class cache_settings
         return $this->get_cache_mode() == cache_settings::CACHE_MODE_PHP || $this->get_cache_mode() == cache_settings::CACHE_MODE_ENHANCED;
     }
 
+    public function get_option_for_instance( $key_name, $default_value = false )
+    {
+        return get_option( $this->get_key_name_with_instance_id( $key_name ), $default_value );
+    }
+
+    public function update_option_for_instance( $key_name, $value )
+    {
+        return update_option( $this->get_key_name_with_instance_id( $key_name ), $value );
+    }
+
+    public function delete_option_for_instance( $key_name )
+    {
+        return delete_option( $this->get_key_name_with_instance_id( $key_name ) );
+    }
+
     public function get_cache_folder_name_safe()
     {
         if( ! $this->cache_folder_name_safe )
@@ -167,11 +193,11 @@ class cache_settings
 
     public function uninstall()
     {
-        delete_option( self::OPTION_KEY_NAME_CACHE_MODE );
-        delete_option( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS );
-        delete_option( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE );
-        delete_option( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE );
-        delete_option( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS );
+        $this->delete_option_for_instance( self::OPTION_KEY_NAME_CACHE_MODE );
+        $this->delete_option_for_instance( self::OPTION_KEY_NAME_DO_CACHE_HTTPS_URLS );
+        $this->delete_option_for_instance( self::OPTION_KEY_NAME_DO_APPEND_DEBUG_MESSAGE );
+        $this->delete_option_for_instance( self::OPTION_KEY_NAME_DO_CLEAR_ON_SAVE );
+        $this->delete_option_for_instance( self::OPTION_KEY_NAME_CACHE_EXCLUSIONS );
     }
 
 /*Static Factory Methods*/

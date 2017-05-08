@@ -23,7 +23,7 @@ class wordfence
     {
         self::runInstall();
         //Used by MU code below
-        update_option( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION, 1 );
+        cache_settings::get_instance()->update_option_for_instance( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION, 1 );
     }
 
     public static function uninstall_plugin()
@@ -49,7 +49,7 @@ class wordfence
         }
 
         //Used by MU code below
-        update_option( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION, 0 );
+        cache_settings::get_instance()->update_option_for_instance( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION, 0 );
 
         cache_settings::get_instance()->uninstall();
     }
@@ -66,8 +66,8 @@ class wordfence
         {
             ignore_user_abort( true );
         }
-        $previous_version = get_option( VENDI_CACHE_OPTION_KEY_FOR_VERSION, '0.0.0' );
-        update_option( VENDI_CACHE_OPTION_KEY_FOR_VERSION, VENDI_CACHE_VERSION ); //In case we have a fatal error we don't want to keep running install.
+        $previous_version = cache_settings::get_instance()->get_option_for_instance( VENDI_CACHE_OPTION_KEY_FOR_VERSION, '0.0.0' );
+        cache_settings::get_instance()->update_option_for_instance( VENDI_CACHE_OPTION_KEY_FOR_VERSION, VENDI_CACHE_VERSION ); //In case we have a fatal error we don't want to keep running install.
         //EVERYTHING HERE MUST BE IDEMPOTENT
 
         if( self::get_vwc_cache_settings()->is_any_cache_mode_enabled() )
@@ -81,7 +81,7 @@ class wordfence
         register_activation_hook( VENDI_CACHE_FCPATH, array( __CLASS__, 'install_plugin' ) );
         register_deactivation_hook( VENDI_CACHE_FCPATH, array( __CLASS__, 'uninstall_plugin' ) );
 
-        $versionInOptions = get_option( VENDI_CACHE_OPTION_KEY_FOR_VERSION, false );
+        $versionInOptions = cache_settings::get_instance()->get_option_for_instance( VENDI_CACHE_OPTION_KEY_FOR_VERSION, false );
         if( ( ! $versionInOptions ) || version_compare( VENDI_CACHE_VERSION, $versionInOptions, '>' ) )
         {
             //Either there is no version in options or the version in options is greater and we need to run the upgrade
@@ -93,7 +93,7 @@ class wordfence
         if( defined( 'MULTISITE' ) && MULTISITE === true )
         {
             //Because the plugin is active once installed, even before it's network activated, for site 1 (WordPress team, why?!)
-            if( 1 === get_current_blog_id() && get_option( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION ) != 1 )
+            if( 1 === get_current_blog_id() && cache_settings::get_instance()->get_option_for_instance( VENDI_CACHE_OPTION_KEY_FOR_ACTIVATION ) != 1 )
             {
                 return;
             }
@@ -286,7 +286,7 @@ class wordfence
 
     public static function activation_warning()
     {
-        $activationError = get_option( VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR, '' );
+        $activationError = cache_settings::get_instance()->get_option_for_instance( VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR, '' );
         if( strlen( $activationError ) > 400 )
         {
             $activationError = substr( $activationError, 0, 400 ) . '...[output truncated]';
@@ -306,7 +306,7 @@ class wordfence
         }
 
         $warningAdded = false;
-        if( get_option( VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR, false ) )
+        if( cache_settings::get_instance()->get_option_for_instance( VENDI_CACHE_OPTION_KEY_ACTIVATION_ERROR, false ) )
         {
             if( wfUtils::isAdminPageMU() )
             {
